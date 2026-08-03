@@ -1,0 +1,3 @@
+# Ignore File Folder
+/node_modules
+./dist

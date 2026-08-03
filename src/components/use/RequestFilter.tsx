@@ -1,0 +1,328 @@
+// HRDotNet-Mobile
+// Designed by : Alex Diane Vivienne Candano
+// Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
+
+import React, { useState, useReducer, useEffect } from 'react';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { View, Text, Modal, TextInput, TouchableOpacity } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
+
+import { PropsRequestSearch, StateApplicationsSearch } from 'src/types/Types';
+import { APIMethods, ContentTypes, ValuesRequestSearch } from 'src/constants/Values';
+import { UtilsDisplay } from 'src/utils/UtilsDisplay';
+import { COLORS, STRINGS, STYLES, DateTimeUtils, ERRORS, ARRAY } from 'src';
+import { Utils } from 'src/utils/Utils';
+import { UtilsFetch } from 'src/utils/UtilsFetch';
+
+const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
+  const styles = STYLES.ComponentRequestSearch;
+
+  const [value, setValue] = useState<string>('');
+  const [items, setItems] = useState<Array<unknown>>([]);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [componentState, setComponentState] = useReducer(
+    (state: StateApplicationsSearch, newState: Partial<StateApplicationsSearch>) => ({ ...state, ...newState }),
+    ValuesRequestSearch.State,
+  );
+
+  const actionState = () => {
+    setComponentState({
+      isVisibleFilter: false,
+      searchDates: {},
+      timePicker: false,
+      fromPicker: false,
+      toPicker: false,
+    });
+
+    handle[1]({ isVisibleFilter: false, isLoading: false });
+    setValue('');
+    setOpen(false);
+  };
+
+  const [isLogTypeDropdownOpen, setLogTypeDropdownOpen] = useState(false);
+  const [logTypeValue, setLogTypeValue] = useState(null);
+  const [logTypeItems, setLogTypeItems] = useState([
+    { label: 'Time In', value: '1' },
+    { label: 'Time Out', value: '2' },
+  ]);
+
+
+  const [isScheduleDropdownOpen, setScheduleeDropdownOpen] = useState(false);
+  const [scheduleValue, setScheduleValue] = useState(null);
+  const [scheduleItems, setScheduleItems] = useState([
+    { label: '12:00', value: '1' },
+    { label: '11:00', value: '2' },
+  ]);
+
+  const [isLeaveTypeDropdownOpen, setLeaveTypeDropdownOpen] = useState(false);
+  const [leaveTypeValue, setLeaveTypeValue] = useState(null);
+  const [leaveTypeItems, setLeaveTypeItems] = useState([
+    { label: 'Sick Leave', value: 'Sick Leave' },
+    { label: 'Vacation Leave', value: 'Vacation Leave' },
+  ]);
+
+  const onHandleSearchSubmit = () => {
+    handle[1]({ isLoading: true });
+    const exit = () => {
+      alert(ERRORS.blankSearchFields);
+      return;
+    };
+
+    if (value.includes('Date') || value.includes('date')) {
+      if (!componentState.searchDates?.from || !componentState.searchDates?.to) {
+        exit();
+      } else {
+        state[1]({
+          urlQuery:
+            `&DateField=${value}&DateFrom=${componentState.searchDates?.from}` + `&DateTo=${componentState.searchDates?.to}&sortBy=-DocumentNo`,
+        });
+      }
+    }
+    // other filter
+    else {
+      // log filter
+      if (value == 'logType') {
+        state[1]({ urlQuery: `&LogTypeId=${logTypeValue}&sortBy=-DocumentNo` })
+      }
+      else if (value == 'Requested') {
+        state[1]({ urlQuery: `&Requested=${scheduleValue}&sortBy=-DocumentNo` })
+      }
+      else if (value == 'LeaveParameter') {
+        state[1]({ urlQuery: `&LeaveParameter=${leaveTypeValue}&sortBy=-DocumentNo` })
+      }
+      else if (!value || !componentState.search) {
+        exit();
+      }
+      // search filter
+      else {
+        state[1]({
+          urlQuery: `&${value}=${componentState.search}&sortBy=-DocumentNo`,
+        });
+      }
+    }
+
+
+    actionState();
+  };
+
+  const DisplayView = (
+    title: string,
+    value: string | number,
+    convert: string | number,
+    placeholder: string,
+    icon: React.ComponentProps<typeof Ionicons>['name'],
+    press: () => void,
+  ) => (
+    <View style={styles.dateWrapper}>
+      <Text style={styles.titleText}>{title}</Text>
+
+      <View style={styles.dateView}>
+        <Text style={styles.text}>{value ? convert : <Text style={styles.placeholder}>{placeholder}</Text>}</Text>
+
+        <TouchableOpacity onPress={press}>
+          <Ionicons name={icon} size={20} color={COLORS.darkGray} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  useEffect(() => {
+    setItems([]);
+    Utils.setItemRequestFilter(state[0]?.selectedButton, setItems);
+    setComponentState({ isVisibleFilter: handle[0].isVisibleFilter });
+
+    if (state[0]?.selectedButton == 0) {
+      UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules`)
+        .then((response) => {
+          if (Array.isArray(response.data.items)) {
+            const mappedData = response.data.items.map((item: any, index: number) => ({
+              label: item.name,
+              value: item.name,
+            }));
+            setScheduleItems(mappedData);
+          }
+          else {
+            console.error("response.data.items is not an array");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+  }, [handle]);
+
+  return (
+    <Modal
+      transparent={true}
+      visible={componentState.isVisibleFilter}
+      onRequestClose={() => actionState()}
+      hardwareAccelerated={true}
+      animationType="fade"
+    >
+      <View style={styles.modalView}>
+        <View style={styles.modalWrapper}>
+          <FontAwesome
+            name="close"
+            size={20}
+            color={COLORS.lighterGray}
+            onPress={() => actionState()}
+            style={styles.closeButton}
+          />
+
+          <DropDownPicker
+            open={open}
+            value={value}
+            onChangeValue={() => {
+              setComponentState({ search: '', searchDates: {} });
+            }}
+            items={items as React.ComponentProps<typeof DropDownPicker>['items']}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            modalAnimationType="fade"
+            maxHeight={300}
+            style={styles.dropdown}
+            textStyle={{ fontFamily: 'Inter_400Regular' }}
+            placeholderStyle={{ color: COLORS.lighterGray }}
+            placeholder={STRINGS.placeholderFilter}
+          />
+
+          {value &&
+            (value.includes('Date') || value.includes('date') ? (
+              <React.Fragment>
+                {DisplayView(
+                  STRINGS.from,
+                  componentState.searchDates?.from!,
+                  DateTimeUtils.dateDefaultToWord(componentState.searchDates?.from!),
+                  STRINGS.placeholderDate,
+                  'calendar',
+                  () => setComponentState({ fromPicker: true }),
+                )}
+
+                {DisplayView(
+                  STRINGS.to,
+                  componentState.searchDates?.to!,
+                  DateTimeUtils.dateDefaultToWord(componentState.searchDates?.to!),
+                  STRINGS.placeholderDate,
+                  'calendar',
+                  () => setComponentState({ toPicker: true }),
+                )}
+              </React.Fragment>
+            ) : value.includes('Time') ? (
+              DisplayView(
+                STRINGS.time,
+                componentState.search,
+                DateTimeUtils.timeSecondsToUnits(componentState.search),
+                STRINGS.placeholderTime,
+                'time',
+                () => setComponentState({ timePicker: true }),
+              )
+            ) : value.includes('logType') ? (
+              <DropDownPicker
+                open={isLogTypeDropdownOpen}
+                value={logTypeValue}
+                items={logTypeItems}
+                setOpen={setLogTypeDropdownOpen}
+                setValue={setLogTypeValue}
+                setItems={setLogTypeItems}
+                style={{ marginVertical: 10 }}
+                zIndex={0}
+              />
+            ) : value.includes('LeaveParameter') ? (
+              <DropDownPicker
+                open={isLeaveTypeDropdownOpen}
+                value={leaveTypeValue}
+                items={leaveTypeItems}
+                setOpen={setLeaveTypeDropdownOpen}
+                setValue={setLeaveTypeValue}
+                setItems={setLeaveTypeItems}
+                style={{ marginVertical: 10 }}
+                zIndex={0}
+              />
+            ) : value.includes('Requested') ? (
+              <DropDownPicker
+                open={isScheduleDropdownOpen}
+                value={scheduleValue}
+                items={scheduleItems}
+                setOpen={setScheduleeDropdownOpen}
+                setValue={setScheduleValue}
+                setItems={setScheduleItems}
+                style={{ marginVertical: 10 }}
+                zIndex={0}
+              />
+            ) : (
+              <View style={styles.row}>
+                <FontAwesome name="search" size={20} color={COLORS.orange} />
+
+                <TextInput
+                  value={componentState.search}
+                  autoCorrect={false}
+                  cursorColor={COLORS.lighterGray}
+                  onChangeText={(text) => setComponentState({ search: text })}
+                  placeholder={STRINGS.placeholderSearch}
+                  placeholderTextColor={COLORS.lighterGray}
+                  style={styles.search}
+                />
+              </View>
+            ))}
+
+          {/* {UtilsDisplay.DisplayDateTimePicker(
+            componentState.timePicker,
+            'time',
+            (time: string) => {
+                console.log("Timee")
+
+              setComponentState({
+                timePicker: false,
+                search: DateTimeUtils.timeSecondsSetZeroSeconds(time),
+              });
+            },
+            () => setComponentState({ timePicker: false }),
+          )} */}
+
+          {UtilsDisplay.DisplayDateTimePicker(
+            componentState.fromPicker,
+            'date',
+            (date: string) => {
+              setComponentState({
+                fromPicker: false,
+                searchDates: {
+                  to: '',
+                  from: DateTimeUtils.isoToDateDefault(date),
+                },
+              });
+            },
+            () => setComponentState({ fromPicker: false }),
+          )}
+
+          {UtilsDisplay.DisplayDateTimePicker(
+            componentState.toPicker,
+            'date',
+            (date: string) => {
+              setComponentState({
+                toPicker: false,
+                searchDates: {
+                  ...componentState.searchDates,
+                  to: DateTimeUtils.isoToDateDefault(date),
+                },
+              });
+            },
+            () => setComponentState({ toPicker: false }),
+            DateTimeUtils.dayToDate(),
+            componentState.searchDates?.from!
+              ? DateTimeUtils.dateDefaultToDate(componentState.searchDates?.from!)
+              : new Date(),
+          )}
+
+          <TouchableOpacity onPress={onHandleSearchSubmit} style={styles.button}>
+            <Text style={styles.buttonText}>{STRINGS.filter}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export default RequestFilter;

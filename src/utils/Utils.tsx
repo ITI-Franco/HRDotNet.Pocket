@@ -1,0 +1,1191 @@
+// HRDotNet-Mobile
+// Designed by : Alex Diane Vivienne Candano
+// Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
+
+import React from 'react';
+import { ActivityIndicator, Linking, Alert, Platform } from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Gesture } from 'react-native-gesture-handler';
+import CryptoJS from 'react-native-crypto-js';
+import { FieldLabels, RequestType, RequiredFieldRequest } from 'src/constants/Enum';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import * as Location from 'expo-location';
+import { ARRAY, COLORS, DateTimeUtils, ERRORS, STRINGS } from 'src';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import {
+  ParamsSelectionList,
+  SchemaCalendarEntries,
+  TypeSelectionList,
+  StateClockInOut,
+  ParamsAttachedFile,
+  SchemaRequestApplications,
+  TypeHandle,
+  TypePanel,
+  TypeReqAction,
+  TypeNavStack,
+  TypeNavProp,
+  HistoryItem,
+  PropsRequestSummary,
+  AttachmentHistory,
+} from 'src/types/Types';
+import { Camera } from 'expo-camera';
+import { fieldDisplayNames, FieldKey } from 'src/constants/Values';
+
+const [onPanel] = ARRAY.panel as TypePanel[];
+const [onReqAction] = ARRAY.reqAction as TypeReqAction[];
+
+export const Utils = {
+  statusIcon: (id: number) => {
+    const iconConfig: { [key: number]: { name: string; size: number } } = {
+      1: { name: 'document-text-sharp', size: 17 }, // Filed
+      2: { name: 'checkmark-circle', size: 20 }, // Approved
+      3: { name: 'close-circle', size: 19 }, // Cancelled
+      4: { name: 'search-circle', size: 22 }, // Reviewed
+      11: { name: 'remove-circle', size: 22 }, // Posted
+    };
+
+    const icon = iconConfig[id];
+
+    return icon ? (
+      <Ionicons
+        name={icon.name as React.ComponentProps<typeof Ionicons>['name']}
+        size={icon.size}
+        color={COLORS.clearWhite}
+        style={{ marginRight: 10 }}
+      />
+    ) : null;
+  },
+
+  loanStatusIcon: (status: string) => {
+    const iconConfig: { [key: string]: { name: string; size: number } } = {
+      Filed: { name: 'document-text-sharp', size: 17 }, // Filed
+      Approved: { name: 'checkmark-circle', size: 20 }, // Approved
+      Cancelled: { name: 'close-circle', size: 19 }, // Cancelled
+      Reviewed: { name: 'search-circle', size: 22 }, // Reviewed
+      Posted: { name: 'remove-circle', size: 22 }, // Posted
+    };
+
+    const icon = iconConfig[status];
+
+    return icon ? (
+      <Ionicons
+        name={icon.name as React.ComponentProps<typeof Ionicons>['name']}
+        size={icon.size}
+        color={COLORS.clearWhite}
+        style={{ marginRight: 10 }}
+      />
+    ) : null;
+  },
+
+  checkCalendarEntrySource: (val: SchemaCalendarEntries) => {
+    let color: string = '',
+      title: string = '',
+      name: string | undefined = '',
+      tag: string = '';
+
+    const timeFrom: string = DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateFrom);
+
+    const timeSched = `\n${!DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
+      ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
+      : timeFrom
+      }`;
+
+    if (val.source.toUpperCase().includes('L-')) {
+      (color = COLORS.lightPurple), (title = STRINGS.leave);
+    } else if (val.source.includes(STRINGS.holiday)) {
+      color = COLORS.red;
+      title = val.source.split(' - ')[1];
+      tag = STRINGS.holiday.toUpperCase();
+    } else {
+      switch (val.source) {
+        case 'DEFAULT':
+        case 'SA':
+          color = COLORS.orange;
+          name = val.source === 'SA' ? STRINGS.schedAssignment : STRINGS.defaultSched;
+          title = val.source === 'SA' ? STRINGS.schedAssignment + timeSched : STRINGS.defaultSched + timeSched;
+          break;
+
+        case 'COS':
+          color = COLORS.lightOrange;
+          name = STRINGS.changeOfSchedule;
+          title = STRINGS.changeOfSchedule + timeSched;
+          break;
+
+        case 'OT':
+          color = COLORS.lightBlue;
+          name = STRINGS.overtime;
+          title = STRINGS.overtime + timeSched;
+          break;
+
+        case 'ML':
+          color = COLORS.green;
+          name = STRINGS.missedLog;
+          title = STRINGS.missedLog + timeSched;
+          break;
+
+        case 'OB':
+          color = COLORS.blue;
+          name = STRINGS.officialBusiness;
+          title = STRINGS.officialBusiness + timeSched;
+          break;
+
+        case 'CTO':
+          color = COLORS.blue;
+          name = STRINGS.compensatoryTimeOff;
+          title = STRINGS.compensatoryTimeOff + timeSched;
+          break;
+
+        default:
+          color = COLORS.darkGray;
+          name = undefined;
+          title = 'Event';
+      }
+    }
+
+    return { color, title, name, tag };
+  },
+
+  panelPageHeaderTitle: (panel: number, reqAction: number) => {
+    let pageTitle: string | undefined = '';
+
+    const pageHeaderTitle = (title: string) => {
+      return (pageTitle = reqAction === 1 ? `${title}` : `${title} ${reqAction !== 2 ? `Cancel` : `Update`}`);
+    };
+
+    switch (panel) {
+      case 0:
+        pageHeaderTitle(STRINGS.pageTitleCOSRequest);
+        break;
+
+      case 1:
+        pageHeaderTitle(STRINGS.pageTitleOBRequest);
+        break;
+
+      case 2:
+        pageHeaderTitle(STRINGS.pageTitleOTRequest);
+        break;
+
+      case 3:
+        pageHeaderTitle(STRINGS.pageTitleOFFRequest);
+        break;
+
+      case 4:
+        pageHeaderTitle(STRINGS.pageTitleLVRequest);
+        break;
+
+      case 5:
+        pageHeaderTitle(STRINGS.pageTitleMLRequest);
+        break;
+
+      case 6:
+        pageHeaderTitle(STRINGS.pageTitleCTORequest);
+        break;
+
+      default:
+        break;
+    }
+
+    return pageTitle;
+  },
+
+  checkCalendarSource: (val: string) => {
+    let color: string = '';
+    let tag: string = '';
+
+    if (val.toUpperCase().includes('L-')) {
+      (color = COLORS.lightPurple), (tag = STRINGS.leave);
+    } else if (val.includes(STRINGS.holiday)) {
+      color = COLORS.red;
+      tag = STRINGS.holiday;
+    } else {
+      switch (val) {
+        case 'DEFAULT':
+        case 'COS':
+        case 'SA':
+        case 'OT':
+        case 'ML':
+          color = COLORS.green;
+          tag = STRINGS.workDay;
+          break;
+
+        case 'RD':
+          color = COLORS.lightPurple;
+          tag = STRINGS.restDay;
+          break;
+
+        default:
+          color = COLORS.darkGray;
+          tag = STRINGS.event;
+      }
+    }
+
+    return { color, tag };
+  },
+
+  capitalize: (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
+
+  toTitleCase: (str: string | null | undefined): string => {
+    if (!str) return "";
+
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  },
+
+  formatEmployeeName: (name: string) => {
+    const parts = name.split(",").map((p) => p.trim());
+
+    const lastName = parts[0] || "";
+    const firstName = parts[1] || "";
+
+    let suffix = "";
+    let middleName = "";
+
+    if (parts[2] && parts[2].charAt(0) === "-") {
+      suffix = parts[2].replace(/-/g, "");
+      middleName = parts[3] || "";
+    } else {
+      middleName = parts[2] || "";
+    }
+
+    const format = `${Utils.toTitleCase(lastName)}, ${Utils.toTitleCase(firstName)} ${suffix} ${Utils.toTitleCase(middleName)}`;
+
+    return format;
+  },
+
+  appendHistoryItem: (oldHistoryLog: string | null, newHistoryLog: HistoryItem): string => {
+    try {
+      const parsed = oldHistoryLog ? JSON.parse(oldHistoryLog) : { items: [] };
+
+      if (!Array.isArray(parsed.items)) parsed.items = [];
+
+      const generateGuid = (length = 10) => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let result = "";
+        for (let i = 0; i < length; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      };
+
+      // Determine next ID (start from 1, or increment from the last one)
+      const nextId = parsed.items.length > 0 ? Math.max(...parsed.items.map((i: HistoryItem) => i.id ?? 0)) + 1 : 1;
+
+      const itemWithId: HistoryItem = { ...newHistoryLog, id: nextId, guid: generateGuid() };
+
+      parsed.items.push(itemWithId);
+
+      return JSON.stringify(parsed);
+    } catch (error) {
+      console.error("Error parsing existing edit log:", error);
+      return JSON.stringify({ items: [newHistoryLog] });
+    }
+  },
+
+  parseHistoryItem: (historyLog: string | null): HistoryItem[] => {
+    if (!historyLog) return [];
+
+    try {
+      const parsed = JSON.parse(historyLog);
+
+      if (Array.isArray(parsed.items)) {
+        return parsed.items as HistoryItem[];
+      }
+
+      return [];
+    } catch (error) {
+      console.error("Error parsing edit log:", error);
+      return [];
+    }
+  },
+
+  generateHistoryItem: (
+    reason: string,
+    processedName = "",
+    status = "New",
+    dateFiled?: string,
+    onBehalfName?: string
+  ): Omit<HistoryItem, "id"> => {
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+
+    return {
+      deviceName: "Mobile",
+      reason: reason.trim(),
+      date,
+      time,
+      processedBy: {
+        name: processedName,
+        id: 0,
+      },
+      status: {
+        name: status,
+      },
+      dateFiled,
+      onBehalfName,
+    };
+  },
+
+  redirectSelection: (setHandle: React.Dispatch<Partial<TypeHandle>>) => {
+    return Gesture.Tap()
+      .runOnJS(true)
+      .numberOfTaps(5)
+      .onStart(async () => {
+        // remove as per QA
+        // setHandle({
+        //   isToast: {
+        //     show: true,
+        //     set: 2,
+        //     message: (await Utils.extractValue(STRINGS.geoPattern, STRINGS.HRDotNet)) as unknown as string,
+        //   },
+        // });
+      });
+  },
+
+  requestFieldError: () => {
+    return <FontAwesome name="asterisk" size={13} color={COLORS.red} style={{ marginTop: 2 }} />;
+  },
+
+  objectHaveValues: (val: { [key: string]: unknown }) => {
+    return Object.values(val).every((value) => value !== '' || value !== undefined || value !== null);
+  },
+
+  checkExistFileAttach: (attach: string, exec?: string) => {
+    return !attach ? '' : exec;
+  },
+
+  extractFileFormat: async (val: string) => {
+    return val.substring(val.lastIndexOf('.') + 1).toLowerCase();
+  },
+
+  extractFileAttach: async (params: ParamsAttachedFile, parsed: Array<{ path: string }>) => {
+    return `${process.env.EXPO_PUBLIC_REQUEST}/Uploads/${params?.filing?.documentNo.replace(/[^A-Za-z]/g, '')}/${parsed[0].path}?${DateTimeUtils.day()}`;
+  },
+
+  fileAttach: async (setState: React.Dispatch<Partial<{ attachment: { uri: string; format: string } }>>) => {
+    const result = await DocumentPicker.getDocumentAsync();
+
+    if (!result.canceled) {
+      const fileInfo = result?.assets[0];
+      const uri = fileInfo?.uri;
+
+      const fileExtension = await Utils.extractFileFormat(uri);
+      const fileSizeInMB = fileInfo?.size ? fileInfo.size / (1024 * 1024) : 0;
+
+      const onHandleFilename = async (uri: string) => {
+        const convertedUri = `${FileSystem.documentDirectory}${fileInfo?.name}`;
+        await FileSystem.copyAsync({ from: uri, to: convertedUri });
+        return convertedUri;
+      };
+
+      if (fileSizeInMB <= 25 && ARRAY.fileFormats.includes(fileExtension)) {
+        const convertedUri = `${FileSystem.documentDirectory}${fileInfo?.name}`;
+        await FileSystem.copyAsync({ from: uri, to: convertedUri });
+
+        if (ARRAY.imageFormat.includes(fileExtension)) {
+          const resizedImage = await ImageManipulator.manipulateAsync(uri, [], { compress: 0.2 });
+          setState({
+            attachment: { uri: await onHandleFilename(resizedImage.uri), format: fileExtension },
+          });
+        } else {
+          setState({ attachment: { uri: await onHandleFilename(uri), format: fileExtension } });
+        }
+      } else {
+        fileSizeInMB > 25 ? alert(ERRORS.fileSizeError) : alert(ERRORS.fileFormatError);
+      }
+    }
+  },
+
+  cameraPermission: async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Utils.alertSingle(ERRORS.permissionTitle, ERRORS.permissionCamera, () => Linking.openSettings());
+    } else {
+      return true;
+    }
+  },
+
+  amountFormat: (amount: number) => {
+    return amount
+      ? amount.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+      : 0;
+  },
+
+  placeholderLoading: (state?: { imageSize: number }) => {
+    return (
+      <ActivityIndicator
+        size={'small'}
+        color={COLORS.darkGray}
+        style={{ height: state!.imageSize, width: state!.imageSize }}
+      />
+    );
+  },
+
+  calculationDistance: (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const deg2rad = (deg: number) => deg * (Math.PI / 180);
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c * 1000;
+
+    return distance;
+  },
+
+  extractValue: async (value: string, select: string) => {
+    return CryptoJS.AES.decrypt(value, select).toString(CryptoJS.enc.Utf8);
+  },
+
+  locationPermissionEnabled: async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        ERRORS.permissionTitle,
+        ERRORS.permissionLocation,
+        [{ text: 'OK', onPress: () => Linking.openSettings() }],
+        { cancelable: false },
+      );
+    }
+  },
+
+  geolocation: async (setState: React.Dispatch<React.SetStateAction<StateClockInOut>>) => {
+    Location.hasServicesEnabledAsync()
+      .then(async (isLocationEnabled) => {
+        if (!isLocationEnabled) {
+          return Location.enableNetworkProviderAsync();
+        } else {
+          return Location.getCurrentPositionAsync({});
+        }
+      })
+      .then((result) => {
+        const { coords }: { coords: { latitude: number; longitude: number } } = result as Location.LocationObject;
+        return Location.reverseGeocodeAsync({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+      })
+      .then((geocodeLocation) => {
+        if (geocodeLocation) {
+          const loc = geocodeLocation[0];
+          setState((prevState) => ({
+            ...prevState,
+            location:
+              loc &&
+              `${loc?.name || ''} ${loc?.street || ''} 
+                            ${loc?.city ? loc?.city + ', ' : ''} ${loc?.country || ''}`,
+          }));
+        }
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  },
+
+  getLocationClocked: async (state: StateClockInOut, setState: React.Dispatch<Partial<StateClockInOut>>) => {
+    try {
+      await Utils.locationPermissionEnabled();
+
+      const userLocation = await Location.getCurrentPositionAsync({});
+      const geocodeLocation = await Location.reverseGeocodeAsync({
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+      });
+
+      const checkNull = (value: string | null) => (value != null ? value : '');
+      const currAddress = geocodeLocation[0];
+
+      setState({
+        clockedData: {
+          ...state.clockedData,
+          address: currAddress
+            ? `${checkNull(currAddress?.name)} ${checkNull(currAddress?.street)} ` +
+            `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
+            : STRINGS.noAddressLocation,
+        },
+      });
+
+      const locationWatcher = await Location.watchPositionAsync({ distanceInterval: 5 }, (newLocation) => {
+        setState({
+          location: newLocation.coords,
+          region: {
+            ...state.region,
+            latitude: newLocation.coords.latitude,
+            longitude: newLocation.coords.longitude,
+          },
+        });
+
+        const insideGeofences = state.geofences.map(
+          (geofence: { latitude: number; longitude: number; radius: number }) => {
+            const distance = Utils.calculationDistance(
+              newLocation.coords.latitude,
+              newLocation.coords.longitude,
+              geofence.latitude,
+              geofence.longitude,
+            );
+
+            return distance <= geofence.radius;
+          },
+        );
+
+        setState({ isInside: insideGeofences });
+      });
+
+      return () => locationWatcher.remove();
+    } catch (error) {
+      Utils.getLocationClocked(state, setState);
+    }
+  },
+
+  setSelectionList: (params: ParamsSelectionList) => {
+    let select: unknown = [];
+    let stateLocationID = params.stateLocationID;
+
+    switch (params?.action) {
+      case STRINGS.selectionListOBRequestI:
+        select = ARRAY.locationList;
+        break;
+
+      case STRINGS.selectionListOBRequestII:
+        select = ARRAY.branchList.filter((item) =>
+          stateLocationID === undefined
+            ? item.IDLocation === params.currParams.location?.ID || []
+            : item.IDLocation === stateLocationID,
+        );
+        break;
+
+      case STRINGS.selectionListCOSRequest:
+        // select = ARRAY.requestSchedule;
+        select = [];
+        break;
+
+      case STRINGS.selectionListLVRequest:
+        select = ARRAY.leaveTypes;
+        break;
+
+      default:
+        [];
+        break;
+    }
+
+    return select;
+  },
+
+  setSelectionNavigate: (
+    params: { action: string; currParams: unknown },
+    navigation: NavigationProp<ParamListBase>,
+    item: TypeSelectionList,
+  ) => {
+    let navigate: unknown = [];
+
+    const onHandleNavigate = (path: string, title: string) => {
+      navigation.goBack()
+      navigation.navigate(path, {
+        ...params?.currParams!,
+        [title]: { ID: item.ID, name: item.name, code: item.code },
+      });
+    };
+
+    switch (params?.action) {
+      case STRINGS.selectionListCOSRequest:
+        onHandleNavigate(STRINGS.pathCOSRequest, 'requested');
+        break;
+
+      case STRINGS.selectionListOBRequestI:
+        onHandleNavigate(STRINGS.pathOBRequest, 'location');
+        break;
+
+      case STRINGS.selectionListOBRequestII:
+        onHandleNavigate(STRINGS.pathOBRequest, 'branch');
+        break;
+
+      case STRINGS.selectionListLVRequest:
+        onHandleNavigate(STRINGS.pathLVRequest, 'leaveType');
+        break;
+
+      default:
+        undefined;
+        break;
+    }
+
+    return navigate;
+  },
+
+  setRequestDetailsType: (panel: number) => {
+    let type: string = '';
+
+    switch (panel) {
+      case onPanel.COS:
+        type = STRINGS.changeOfSchedule;
+        break;
+      case onPanel.OB:
+        type = STRINGS.officialBusiness;
+        break;
+      case onPanel.OT:
+        type = STRINGS.overtime;
+        break;
+      case onPanel.OFF:
+        type = STRINGS.offset;
+        break;
+      case onPanel.LV:
+        type = STRINGS.leave;
+        break;
+      case onPanel.ML:
+        type = STRINGS.missedLog;
+        break;
+      default:
+        type = '';
+    }
+
+    return type;
+  },
+
+  setItemRequestFilter: (value: number, set: React.Dispatch<React.SetStateAction<unknown[]>>) => {
+    switch (value) {
+      case onPanel.COS:
+        set(ARRAY.COSFilter);
+        break;
+
+      case onPanel.OB:
+        set(ARRAY.OBFilter);
+        break;
+
+      case onPanel.OT:
+        set(ARRAY.OTFilter);
+        break;
+
+      case onPanel.OFF:
+        set(ARRAY.OFFFilter);
+        break;
+
+      case onPanel.LV:
+        set(ARRAY.LVFilter);
+        break;
+
+      case onPanel.ML:
+        set(ARRAY.MLFilter);
+        break;
+
+      default:
+        break;
+    }
+  },
+
+  panelNavigateCamera: (
+    panel: number | unknown,
+    navigation: NavigationProp<ParamListBase>,
+    params: { onPanel?: number },
+    uri: string,
+    ext: string,
+  ) => {
+    const navigateToScreen = (screen: string) => {
+      navigation.navigate(screen, { ...params, image: { uri: uri, format: ext } });
+    };
+
+    switch (panel) {
+      case onPanel.COS:
+        navigateToScreen(STRINGS.pathCOSRequest);
+        break;
+
+      case onPanel.OB:
+        navigateToScreen(STRINGS.pathOBRequest);
+        break;
+
+      case onPanel.OT:
+        navigateToScreen(STRINGS.pathOTRequest);
+        break;
+
+      case onPanel.OFF:
+        navigateToScreen(STRINGS.pathOFFRequest);
+        break;
+
+      case onPanel.LV:
+        navigateToScreen(STRINGS.pathLVRequest);
+        break;
+
+      case onPanel.ML:
+        navigateToScreen(STRINGS.pathMLRequest);
+        break;
+
+      default:
+        break;
+    }
+  },
+
+  panelNavigateRequest: (
+    panel: number,
+    reqAction: number,
+    navigation: NavigationProp<ParamListBase>,
+    data?: SchemaRequestApplications,
+  ) => {
+    const params = reqAction === onReqAction.New ? undefined : data;
+    const navigatePath = (path: string) => {
+      navigation.navigate(path, { onReqAction: reqAction, data: params });
+    };
+
+    switch (panel) {
+      case onPanel.COS:
+        navigatePath(STRINGS.pathCOSRequest);
+        break;
+
+      case onPanel.OB:
+        navigatePath(STRINGS.pathOBRequest);
+        break;
+
+      case onPanel.OT:
+        navigatePath(STRINGS.pathOTRequest);
+        break;
+
+      case onPanel.OFF:
+        navigatePath(STRINGS.pathOFFRequest);
+        break;
+
+      case onPanel.LV:
+        navigatePath(STRINGS.pathLVRequest);
+        break;
+
+      case onPanel.ML:
+        navigatePath(STRINGS.pathMLRequest);
+        break;
+
+      case onPanel.CTO:
+        navigatePath(STRINGS.pathCTORequest);
+        break;
+
+      default:
+        break;
+    }
+  },
+
+
+  getChangedFields: (newValues: any, oldValues: any, optionalKeys: string[] = []) => {
+    const changes: Record<string, { from: any; to: any }> = {};
+
+    Object.keys(newValues).forEach((key) => {
+      const newVal = newValues[key];
+      const oldVal = oldValues[key];
+
+      const isOptional = optionalKeys.includes(key);
+
+      if (
+        !isOptional &&
+        (newVal === null ||
+          newVal === undefined ||
+          (typeof newVal === "string" && newVal.trim() === "") ||
+          newVal === "Invalid Date")
+      ) {
+        return;
+      }
+
+      if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+        changes[key] = { from: oldVal, to: newVal };
+      }
+    });
+
+    return changes;
+  },
+
+  getAttachmentHistory: (
+    originalAttachments: AttachmentHistory[],
+    newAttachments: AttachmentHistory[],
+    employeeName: string
+  ): string[] => {
+    const originalNames = originalAttachments.map((f) => f.name);
+    const newNames = newAttachments.map((f) => f.name);
+
+    const added = newNames.filter((name) => !originalNames.includes(name));
+    const removed = originalNames.filter((name) => !newNames.includes(name));
+
+    const history: string[] = [];
+
+    if (added.length || removed.length) {
+      history.push(`${employeeName} modified the attachment`);
+    }
+
+    return history;
+  },
+
+  alertSingle: (title: string, message: string, action: () => void) => {
+    Alert.alert(title, message, [{ text: 'OK', onPress: async () => await action() }], { cancelable: false });
+  },
+
+  checkHaveValueRequest: async (
+    panel: number,
+    reqAction: number,
+    state: unknown, // Data sa Form
+    params: unknown,
+    setHandle: React.Dispatch<Partial<TypeHandle>>,
+    navigation: NavigationProp<ParamListBase>,
+  ) => {
+
+    const getSourceVal = (value: string) => {
+      if (FieldLabels[panel] && value in FieldLabels[panel]) {
+        return FieldLabels[panel][value];
+      }
+      return value;
+    };
+
+    function getIndefiniteArticle(word: string): string {
+      const vowels = ['a', 'e', 'i', 'o', 'u'];
+      return vowels.includes(word[0].toLowerCase()) ? 'an' : 'a';
+    }
+
+    const formatKey = (key: string) => {
+      let field = key.replace(/([a-z])([A-Z])/g, '$1 $2');
+      field = field
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      const enumVal = getSourceVal(key);
+      return `Please assign ${getIndefiniteArticle(enumVal === key ? field : enumVal)} ${enumVal === key ? field : enumVal}.`;
+    };
+
+    const isEmptyValue = (value: unknown): boolean => {
+      if (value == null || value === '') {
+        return true;
+      }
+      if (Array.isArray(value)) {
+        return value.length === 0 || value.every(isEmptyValue);
+      }
+      if (typeof value === 'object') {
+        return Object.keys(value).length === 0 || Object.values(value).every(isEmptyValue);
+      }
+      return false;
+    };
+
+    const checkEmpty = async (obj: { [key: string]: unknown }) => {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          //  skip checking
+          if (
+            // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
+            ['branch'].includes(key) ||
+            ['restDay'].includes(key) ||
+            ['documentNo'].includes(key) ||
+            (panel === 2 && reqAction === 3 && key === 'timeRecord') ||
+            (panel === 3 && reqAction === 3 && key === 'timeRecord')
+          ) {
+            continue;
+          }
+          if (isEmptyValue(value)) {
+            // alert(formatKey(key));
+            Alert.alert(
+              '', // Leave the title as an empty string
+              formatKey(key), // Message
+              [
+                { text: 'OK' }, // Button options
+              ],
+            );
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    const CheckIsEmptyAll = async (obj: { [key: string]: unknown }) => {
+      const requiredFields = RequiredFieldRequest[panel as RequestType];
+      for (const field of requiredFields) {
+        if (obj.hasOwnProperty(field)) {
+          isEmptyValue(obj[field]);
+          if (!isEmptyValue(obj[field])) {
+            return false;
+          }
+        }
+      }
+      if (requiredFields.length > 0) {
+        return true;
+      }
+    };
+
+    if (await CheckIsEmptyAll(state as { [key: string]: unknown })) {
+      // alert('Please complete your request form.');
+      Alert.alert(
+        '', // Leave the title as an empty string
+        'Please complete your request form.', // Message
+        [
+          { text: 'OK' }, // Button options
+        ],
+      );
+      setHandle({ isInputCheck: true });
+    } else if (!(await checkEmpty(state as { [key: string]: unknown }))) {
+      setHandle({ isInputCheck: true });
+      return;
+    } else {
+      navigation.navigate(STRINGS.pathRequestSummary, {
+        onPanel: panel,
+        onReqAction: reqAction,
+        data: params,
+        props: state,
+      });
+    }
+  },
+
+
+  platformCheck: () => {
+    return Platform.OS === 'ios' ? true : false; // True for IOS, False for Android
+  },
+
+
+  panelDateToParse: (panel: number, data?: PropsRequestSummary) => {
+    let dateToParse: string | { dateFrom: string, dateTo: string } | undefined = undefined
+
+    switch (panel) {
+      case onPanel.COS:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      case onPanel.OB:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      case onPanel.OT:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      case onPanel.OFF:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      case onPanel.LV:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      case onPanel.ML:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        break;
+
+      default:
+        dateToParse = "";
+        break;
+    }
+    return dateToParse
+  },
+
+  parseAttachments: (attachments?: string | any[]) => {
+    if (!attachments) return [];
+
+    return typeof attachments === "string"
+      ? JSON.parse(attachments)
+      : attachments;
+  },
+
+  panelCompareFields: (
+    panel: number,
+    newData?: PropsRequestSummary,
+    oldData?: SchemaRequestApplications
+  ) => {
+    let newFields = {};
+    let oldFields = {};
+
+    switch (panel) {
+      case onPanel.ML:
+        newFields = {
+          DateFiled: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
+          LogType: newData?.logType.name,
+          TimeInOut: newData?.logTime,
+          Reason: newData?.reason,
+          ReferenceNo: newData?.referenceNo ?? "",
+        };
+
+        oldFields = {
+          DateFiled: DateTimeUtils.isoToDateWord(
+            String(oldData?.filing.dateFiled)
+          ),
+          LogType: oldData?.filing?.logType?.name,
+          TimeInOut: oldData?.filing.timeInOut,
+          Reason: oldData?.filing.reason,
+          ReferenceNo: oldData?.filing.referenceNo ?? "",
+        };
+        break;
+
+      case onPanel.OT:
+        newFields = {
+          // OT mappings
+        };
+
+        oldFields = {
+          // OT mappings
+        };
+        break;
+
+      case onPanel.LV:
+        newFields = {
+          // Leave mappings
+        };
+
+        oldFields = {
+          // Leave mappings
+        };
+        break;
+
+      default:
+        break;
+    }
+
+    return {
+      newFields,
+      oldFields,
+    };
+  },
+
+  panelReadableChanges: (
+    panel: number,
+    changedFields: Record<string, { from: any; to: any }>,
+    attachmentChanges: string[]
+  ) => {
+    switch (panel) {
+      case onPanel.ML:
+        return [
+          ...Object.entries(changedFields)
+            .filter(([key]) => !["FileAttachment", "UploadedFile"].includes(key))
+            .map(([key, { from, to }]) => {
+              const displayKey = fieldDisplayNames[key] ?? key;
+
+              switch (key) {
+                case FieldKey.TimeInOut:
+                  return `${displayKey}: from "${DateTimeUtils.isoToTimeSecondToPMAM(from)}" into "${DateTimeUtils.isoToTimeSecondToPMAM(to)}"`;
+
+                case FieldKey.MLDateFiled:
+                  return `${displayKey}: from "${DateTimeUtils.getIsoDateWord(from)}" into "${DateTimeUtils.getIsoDateWord(to)}"`;
+
+                case FieldKey.ReferenceNo:
+                  if (!from && to) {
+                    return `${displayKey}: Added "${to}"`;
+                  }
+
+                  if (from && !to) {
+                    return `${displayKey}: Removed "${from}"`;
+                  }
+
+                  return `${displayKey}: from "${from}" into "${to}"`;
+
+                default:
+                  return `${displayKey}: from "${from}" into "${to}"`;
+              }
+            }),
+
+          ...attachmentChanges,
+        ].join(", ");
+
+      case onPanel.OT:
+        // OT-specific formatting
+        return "";
+
+      case onPanel.LV:
+        // Leave-specific formatting
+        return "";
+
+      default:
+        return "";
+    }
+  },
+  itemApprovalsContent: (data: SchemaRequestApplications, panel: number) => {
+    let content: Array<{ label: string; value: string }> = [];
+
+    switch (panel) {
+      case 0:
+        content = [
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          { label: 'Requested Schedule: ', value: data?.filing?.requested?.name! },
+        ];
+        break;
+
+      case 1:
+        content = [
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          {
+            label: 'OB Time: ',
+            value: DateTimeUtils.twoTimeRangeFormat(
+              data?.filing?.timeRange?.timeIn!,
+              data?.filing?.timeRange?.timeOut!,
+            ),
+          },
+          { label: STRINGS.cllnLocation, value: data?.filing?.location?.name! },
+        ];
+        break;
+
+      case 2:
+        content = [
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          {
+            label: STRINGS.cllnOvertimeHours,
+            value: DateTimeUtils.twoIsoTimeRangeFormat(
+              data?.filing?.requested?.dateFrom!,
+              data?.filing?.requested?.dateTo!,
+            ),
+          },
+        ];
+        break;
+
+      case 3:
+        content = [
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          {
+            label: STRINGS.cllnOffsetHours,
+            value: DateTimeUtils.twoIsoTimeRangeFormat(
+              data?.filing?.requested?.dateFrom!,
+              data?.filing?.requested?.dateTo!,
+            ),
+          },
+        ];
+        break;
+
+      case 4:
+        content = [
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          { label: 'Leave Type: ', value: data?.filing?.leaveParameter?.name! },
+          { label: 'Leave Option: ', value: data?.filing?.leaveOption?.name! },
+        ];
+        break;
+
+      case 5:
+        content = [
+          { label: STRINGS.cllnLogType, value: data?.filing?.logType?.name! },
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          { label: 'Log Time: ', value: DateTimeUtils.timeSecondsToUnits(data?.filing?.timeInOut!) },
+        ];
+        break;
+
+      case 6:
+        content = [
+          { label: STRINGS.cllnLogType, value: data?.filing?.logType?.name! },
+          { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
+          { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
+          { label: 'Log Time: ', value: DateTimeUtils.timeSecondsToUnits(data?.filing?.timeInOut!) },
+        ];
+        break;
+
+      default:
+        content = [{ label: '', value: '' }];
+        break;
+    }
+
+    return content;
+  },
+
+  resetNavigation: async (nav: TypeNavStack['navigation'], name: string, screen: string) =>
+    nav.reset({ index: 0, routes: [{ name: name, params: { screen: screen } }] }),
+};

@@ -1,0 +1,71 @@
+// HRDotNet-Mobile
+// Designed by : Alex Diane Vivienne Candano
+// Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
+
+import React, { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import Checkbox from 'expo-checkbox';
+
+import { COLORS, STRINGS, STYLES } from 'src';
+import { ApprovalsAction as ValuesAction } from 'src/constants/Values';
+import { useApprovals, useReviewals } from 'src/contexts/pages';
+
+const ReviewalsAction: React.FC = () => {
+  const styles = STYLES.ComponentApprovalsAction;
+  const { state, onHandleSelectAll, onHandleApprovals } = useReviewals();
+
+  const [values, setValues] = useState<{
+    isDisabled: boolean;
+    selectAll: boolean;
+  }>({
+    isDisabled: false,
+    selectAll: false,
+  });
+
+  useEffect(() => {
+    setValues({
+      isDisabled: state.data.every((item) => !item.isChecked),
+      selectAll: state.data.length > 0 ? state.data.every((item) => item.isChecked) : false,
+    });
+  }, [state]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.rowView}>
+        <Checkbox
+          color={COLORS.orange}
+          style={styles.checkBox}
+          value={values.selectAll}
+          disabled={state.data.length <= 0 ? true : false}
+          onValueChange={(value: boolean) => onHandleSelectAll(value)}
+        />
+
+        <Text style={styles.regularText}>{STRINGS.all}</Text>
+      </View>
+
+      <View style={styles.rowView}>
+        <TouchableOpacity
+          style={[styles.button, values.isDisabled && styles.disabled]}
+          disabled={values.isDisabled}
+          onPress={() => onHandleApprovals(ValuesAction.Cancel)}
+        >
+          <MaterialIcons name="cancel" size={24} color={values.isDisabled ? COLORS.lightestGray : COLORS.red} />
+          <Text style={styles.boldText}>{STRINGS.cancel}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, values.isDisabled && styles.disabled]}
+          disabled={values.isDisabled}
+          onPress={() => onHandleApprovals(ValuesAction.Approve)}
+        >
+          <FontAwesome name="check-circle" size={24} color={values.isDisabled ? COLORS.lightestGray : COLORS.purple} />
+          <Text style={styles.boldText}>{STRINGS.review}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default ReviewalsAction;
