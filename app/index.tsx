@@ -47,7 +47,6 @@ import LoaderPage from 'src/components/loader/LoaderPage';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
 import { COLORS, FONTS, STRINGS } from '../src';
 import Forbidden from './pages/navigate/Forbidden';
-// import CTORequest from './pages/request/CTORequest';
 
 const Index: React.FC = () => {
   const Stack = createStackNavigator();
@@ -122,8 +121,6 @@ const Index: React.FC = () => {
   return (
     <NavigationIndependentTree>
       <NavigationContainer
-        // independent={true}
-        // onStateChange={()=>  {UtilsFetch.interceptors()}}
         children={
           <Stack.Navigator
             screenOptions={{

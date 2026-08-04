@@ -50,12 +50,6 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   const currProps = params.props as PropsRequestSummary; // Form values state
   const currUpdateProps = params.data as SchemaRequestApplications;
 
-  // console.log(
-  //   "Updd",
-  //   JSON.stringify(currProps, null, 2),
-  //   JSON.stringify(currUpdateProps, null, 2)
-  // );
-
   const onHandleClosePrompt = () => {
     setHandle({ isSuccess: false });
     navigation.navigate(STRINGS.pathTabStack, { screen: STRINGS.tabTitleRequest, params: { refresh: true } });
