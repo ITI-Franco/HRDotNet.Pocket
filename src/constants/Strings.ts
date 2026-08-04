@@ -203,6 +203,9 @@ export const STRINGS = {
 
   requestFieldDocumentNo: 'Document No',
   requestFieldCancellationReason: 'Cancellation Reason',
+  requestFieldReviewReason: 'Review Reason',
+  requestFieldApproveReason: 'Approve Reason',
+
 
   pathTabStack: 'TabStack',
   pathTabHome: 'Home',
@@ -438,14 +441,25 @@ export const STRINGS = {
     `<b><u>${value} half</u></b> of <b><u>${text}</u></b>`,
 
   styledDisabled: `<t>Disabled</t>`,
+
   tapSelectPlaceholder: (text: string) => `<t>Tap to Select ${text}</t>`,
+
   requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
     `Your <b><u>${title}</u></b> request ` +
     `${reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `}` +
-    `was successfully ${reqAction === 1 ? 'submitted. We will get back to you soon.' : `${reqAction === 2 ? 'updated.' : 'cancelled.'}`}`,
+    `was successfully ${reqAction === 1
+      ? 'submitted. We will get back to you soon.'
+      : reqAction === 2
+        ? 'updated.'
+        : reqAction === 4
+          ? 'reviewed.'
+          : reqAction === 5
+            ? 'approved.'
+            : 'cancelled.'
+    }`,
 
   requestCancellation: (params: SchemaRequestApplications, state: any) =>
-    `${params.filing?.reason} (${STRINGS.cancellation} ${params.name} ${DateTimeUtils.getIsoDateWithBackSlash()} ${DateTimeUtils.getIsoTimeDefaultWithUnits()}) Reason: ${state.reason}`,
+    `${state.reason}`,
 
   successSingleApprovals: (action: number, value: string) =>
     `You have successfully ` +

@@ -8,7 +8,7 @@ import { useRoute } from '@react-navigation/native';
 import PageHeader from 'src/components/header/PageHeader';
 import SummaryPanel from 'src/components/panel/request/SummaryPanel';
 import Toast from 'src/components/use/Toast';
-import { STRINGS, ARRAY, DateTimeUtils } from 'src';
+import { STRINGS, ARRAY } from 'src';
 import { useFetch } from 'src/hooks/useFetch';
 import {
   PropsRequestSummary,
@@ -16,10 +16,11 @@ import {
   TypeNavStack,
   SchemaRequestApplications,
   TypeReqAction,
+  StateApplicationsDetails,
+  ParamsRequestDetails,
 } from 'src/types/Types';
-import { ValuesRequestSummary } from 'src/constants/Values';
+import { ValuesRequestDetails, ValuesRequestSummary } from 'src/constants/Values';
 import { useGlobalStore } from 'src/store/GlobalStore';
-import { Utils } from 'src/utils/Utils';
 
 const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   const [onReqAction] = useState<TypeReqAction[]>(ARRAY.reqAction)[0];
@@ -32,6 +33,13 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
     data?: unknown;
   };
 
+  const reviewParams = useRoute().params as ParamsRequestDetails;
+
+  const [state, setState] = useReducer(
+    (state: StateApplicationsDetails, newState: Partial<StateApplicationsDetails>) => ({ ...state, ...newState }),
+    ValuesRequestDetails(reviewParams).State,
+  );
+
   const [handle, setHandle] = useReducer(
     (state: TypeHandle, newState: Partial<TypeHandle>) => ({ ...state, ...newState }),
     ValuesRequestSummary.Handle,
@@ -42,36 +50,32 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   const currProps = params.props as PropsRequestSummary; // Form values state
   const currUpdateProps = params.data as SchemaRequestApplications;
 
-  // console.log(
-  //   "Updd",
-  //   JSON.stringify(currProps, null, 2),
-  //   JSON.stringify(currUpdateProps, null, 2)
-  // );
-
-
-
   const onHandleClosePrompt = () => {
     setHandle({ isSuccess: false });
     navigation.navigate(STRINGS.pathTabStack, { screen: STRINGS.tabTitleRequest, params: { refresh: true } });
   };
 
-  const cancellationReason =
-    currOnReqAction === 3 ? STRINGS.requestCancellation(currUpdateProps, currProps) : currProps.reason;
 
   const onHandleSubmit = () => {
     (async () => {
       try {
         setHandle({ isLoading: true });
-        await useFetch.SubmitRequest(
-          navigation,
-          currPanel,
-          currOnReqAction,
-          JSON.stringify({ ...currProps, reason: cancellationReason }),
-          currUpdateProps,
-          handle,
-          setHandle,
-          employeeName,
-        );
+        if (onReqAction.Review === params.onReqAction) {
+          await useFetch.NewSingleReviews(navigation, state, JSON.stringify({ ...currProps }), setState, handle, setHandle, employeeName)
+        } else if (onReqAction.Approve === params.onReqAction) {
+          await useFetch.NewSingleApprovals(navigation, state, JSON.stringify({ ...currProps }), setState, handle, setHandle, employeeName)
+        } else {
+          await useFetch.SubmitRequest(
+            navigation,
+            currPanel,
+            currOnReqAction,
+            JSON.stringify({ ...currProps }),
+            currUpdateProps,
+            handle,
+            setHandle,
+            employeeName,
+          );
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -80,14 +84,20 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
     })();
   };
 
+
+  const requestActionTitle: Record<number, string> = {
+    [onReqAction.Update]: STRINGS.update,
+    [onReqAction.Review]: STRINGS.review,
+    [onReqAction.Approve]: STRINGS.approve,
+    [onReqAction.Cancel]: STRINGS.cancel,
+  };
+
   return (
     <React.Fragment>
       <PageHeader
         name={`${STRINGS.pageTitleReqSummary} ${currOnReqAction === onReqAction.New
           ? ''
-          : currOnReqAction !== onReqAction.Update
-            ? STRINGS.cancel
-            : STRINGS.update
+          : requestActionTitle[currOnReqAction] || ''
           }`}
       />
 

@@ -39,7 +39,7 @@ const ApprovalsItem: React.FC<PropsApprovalsItem> = ({ data, onPanel, navigation
           });
         }}
       >
-        <Text style={styles.boldTextName}>{data.name}</Text>
+        <Text style={styles.boldTextName}>{Utils.formatEmployeeName(data.name)}</Text>
 
         <View style={styles.rowView}>
           <Text style={styles.boldText}>{'Transaction Date: '}</Text>
@@ -50,11 +50,11 @@ const ApprovalsItem: React.FC<PropsApprovalsItem> = ({ data, onPanel, navigation
           <Text style={styles.boldText}>{'Date Filed: '}</Text>
           <Text style={styles.valueText}>
             {(data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! ||
-            (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
+              (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
               ? DateTimeUtils.twoDateRangeFormat(
-                  (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
-                  (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
-                )
+                (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
+                (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
+              )
               : data?.filing?.dateRange?.dateFrom || data?.filing?.dateRange?.dateTo
                 ? DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom, data?.filing?.dateRange?.dateTo)
                 : DateTimeUtils.dateDefaultToWord(data?.filing?.dateFiled as string)}

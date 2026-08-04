@@ -53,7 +53,7 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     const handleFilingData = setHandle({ checkSelect: currParams?.data?.filing?.logType?.id });
 
     currParams.onReqAction !== onReqAction.Update
-      ? (setState({ reason: '' }), stateFilingData, handleFilingData)
+      ? (setState({}), stateFilingData, handleFilingData)
       : stateFilingData,
       handleFilingData;
   }, []);
@@ -87,6 +87,56 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
       navigation,
     );
   };
+  const stateToUse = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return state.cancelReason;
+
+      case onReqAction.Review:
+        return state.reviewReason;
+
+      case onReqAction.Approve:
+        return state.approveReason;
+
+      default:
+        return "";
+    }
+  })();
+
+  const setStateToUse = (text: string) => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        setState({ cancelReason: text });
+        break;
+
+      case onReqAction.Review:
+        setState({ reviewReason: text });
+        break;
+
+      case onReqAction.Approve:
+        setState({ approveReason: text });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const reasonLabel = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return STRINGS.requestFieldCancellationReason;
+
+      case onReqAction.Review:
+        return STRINGS.requestFieldReviewReason;
+
+      case onReqAction.Approve:
+        return STRINGS.requestFieldApproveReason;
+
+      default:
+        return STRINGS.requestFieldReason;
+    }
+  })();
 
   return (
     <View style={styles.mainView}>
@@ -95,7 +145,7 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
         <ScrollView>
           <View style={styles.container}>
-            {currParams.onReqAction === onReqAction.Cancel
+            {currParams.onReqAction === onReqAction.Cancel || currParams.onReqAction === onReqAction.Review || currParams.onReqAction === onReqAction.Approve
               ? [
                 UtilsDisplay.DisplayFieldTextInput(
                   handle.isInputCheck!,
@@ -108,10 +158,10 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
 
                 UtilsDisplay.DisplayFieldTextInput(
                   handle.isInputCheck!,
-                  STRINGS.requestFieldCancellationReason,
-                  state.reason,
+                  reasonLabel,
+                  stateToUse || "",
                   true,
-                  (text: string) => setState({ reason: text }),
+                  setStateToUse,
                   true,
                 ),
               ]
@@ -153,7 +203,7 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                 UtilsDisplay.DisplayFieldTextInput(
                   handle.isInputCheck!,
                   STRINGS.requrestFieldReferenceNo,
-                  state.referenceNo,
+                  state.referenceNo || "",
                   true,
                   (text: string) => setState({ referenceNo: text }),
                   true,
