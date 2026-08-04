@@ -138,6 +138,9 @@ export type SchemaRequestApplications = {
       name: string;
     };
     reason: string;
+    approveReason?: string;
+    reviewReason?: string;
+    cancelReason?: string;
 
     fileAttachment: string;
   };
@@ -243,6 +246,9 @@ export type TypeReqAction = {
   New: number;
   Update: number;
   Cancel: number;
+  Review: number;
+  Approve: number;
+
 };
 
 export type TypeNavStack = {
@@ -691,9 +697,12 @@ export type StateMLRequest = {
   logType: CheckboxData;
   logTime: string;
   reason: string;
-  referenceNo: string;
+  referenceNo?: string;
   attachment: Attachment;
   documentNo?: string;
+  cancelReason?: string;
+  approveReason?: string;
+  reviewReason?: string;
 };
 
 // OB Request
@@ -760,6 +769,9 @@ export type PropsRequestSummary = {
   leaveOption: CheckboxData;
 
   reason: string;
+  cancelReason: string;
+  reviewReason: string;
+  approveReason: string;
   referenceNo: string;
   attachment: Attachment;
   documentNo?: string;

@@ -95,7 +95,7 @@ const ApprovalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
 
   const DisplayApprovalButton = () => {
     return (
-      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-around', gap: 10}}>
+      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-around', gap: 10 }}>
         <TouchableOpacity
           style={{ ...styles.button, backgroundColor: COLORS.red }}
           onPress={() => onRequestHandle(onReqAction.Cancel)}
@@ -111,7 +111,7 @@ const ApprovalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
               backgroundColor: COLORS.green,
             },
           ]}
-          onPress={onHandleApprove}
+          onPress={() => onRequestHandle(onReqAction.Approve)}
         >
           <FontAwesome name={'check-circle'} size={24} color={COLORS.clearWhite} />
           <Text style={styles.textButton}>{STRINGS.approve}</Text>
@@ -122,11 +122,6 @@ const ApprovalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
 
   const onRequestHandle = (reqAction: number) => {
     Utils.panelNavigateRequest(state.panel, reqAction, navigation, state.data);
-  };
-
-  const onHandleApprove = async () => {
-    setHandle({ isAction: 1, isLoading: true });
-    await useFetch.SingleApprovals(navigation, state, setState, handle, setHandle);
   };
 
   const onHandleClosePrompt = () => {
@@ -173,7 +168,7 @@ const ApprovalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
               <Shadow distance={3} offset={[1, 2]} style={styles.content}>
                 <View style={[styles.rowWrapper]}>
                   <Text style={styles.titleText}>{'Name: '}</Text>
-                  <Text style={styles.valueText}>{state.data.name}</Text>
+                  <Text style={styles.valueText}>{Utils.formatEmployeeName(state.data.name)}</Text>
                 </View>
                 {ARRAY.requestDetailsHeader(state.type, state.data as SchemaRequestApplications).map(
                   (item: TypeObjectValues, index: number) => DisplayRow(item, index),

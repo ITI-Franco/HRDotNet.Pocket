@@ -179,7 +179,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     true,
                     handle.isInputCheck!,
                     STRINGS.OBRequestFieldIII,
-                    state.location.name || '',
+                    state.location?.name || '',
                     state.location?.name,
                     STRINGS.tapSelectPlaceholder('Location'),
                     () => {
@@ -197,7 +197,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     false,
                     handle.isInputCheck!,
                     STRINGS.OBRequestFieldIV,
-                    state.location.name || '',
+                    state.location?.name || '',
                     state.branch?.name,
                     STRINGS.tapSelectPlaceholder('Branch'),
                     () =>
@@ -205,6 +205,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                         currParams,
                         stateLocationID: state.location?.ID,
                         action: STRINGS.selectionListOBRequestII,
+                        label: 'Branch',
                       }),
                     !state.location?.name ? true : false,
                     !state.location?.name ? false : true,
@@ -219,6 +220,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     true,
                     FieldLimit.referenceNo.maxLength,
                     STRINGS.placeholderReferenceNo,
+                    false,
                   ),
 
                   UtilsDisplay.DisplayFieldTextInput(

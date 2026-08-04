@@ -764,6 +764,9 @@ export const ValuesMLRequest = {
     reason: '',
     referenceNo: '',
     attachment: Attachment,
+    cancelReason: "",
+    reviewReason: "",
+    approveReason: "",
     documentNo: '',
   },
 

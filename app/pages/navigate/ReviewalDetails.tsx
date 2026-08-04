@@ -24,7 +24,7 @@ import {
   TypeHandle,
   TypeNavStack,
   TypePanel,
-  TypeReqAction,  
+  TypeReqAction,
 } from 'src/types/Types';
 
 const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
@@ -92,7 +92,7 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
 
     return display;
   };
-  
+
   const DisplayApprovalButton = () => {
     return (
       <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-around' }}>
@@ -111,7 +111,8 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
               backgroundColor: COLORS.purple,
             },
           ]}
-          onPress={onHandleReview}
+
+          onPress={() => onRequestHandle(onReqAction.Review)}
         >
           <FontAwesome name="search" size={24} color={COLORS.clearWhite} />
           <Text style={styles.textButton}>{STRINGS.review}</Text>
@@ -122,11 +123,6 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
 
   const onRequestHandle = (reqAction: number) => {
     Utils.panelNavigateRequest(state.panel, reqAction, navigation, state.data);
-  };
-
-  const onHandleReview = async () => {
-    setHandle({ isAction: 1, isLoading: true });
-    await useFetch.SingleReviews(navigation, state, setState, handle, setHandle);
   };
 
   const onHandleClosePrompt = () => {
@@ -173,7 +169,7 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
               <Shadow distance={3} offset={[1, 2]} style={styles.content}>
                 <View style={[styles.rowWrapper]}>
                   <Text style={styles.titleText}>{'Name: '}</Text>
-                  <Text style={styles.valueText}>{state.data.name}</Text>
+                  <Text style={styles.valueText}>{Utils.formatEmployeeName(state.data.name)}</Text>
                 </View>
                 {ARRAY.requestDetailsHeader(state.type, state.data as SchemaRequestApplications).map(
                   (item: TypeObjectValues, index: number) => DisplayRow(item, index),

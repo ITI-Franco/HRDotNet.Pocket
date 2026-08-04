@@ -31,51 +31,34 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     ValuesSelectionList(params).Handle,
   );
 
-  useEffect(() => {
+  const fetchData = (keyword: string) => {
+    const search = encodeURIComponent(keyword);
+
     if ((params as any).currParams.onPanel == 0) {
-      UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules`)
+      UtilsFetch.connect(
+        APIMethods.GET,
+        ContentTypes.JSON,
+        `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules?Name=${search}`,
+      )
         .then((response) => {
-          if (Array.isArray(response.data.items)) {
-            const mappedData = response.data.items.map((item: any, index: number) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
-            }));
+          const mappedData = response.data.items.map((item: any) => ({
+            ID: item.id,
+            name: item.name,
+            code: item.name,
+          }));
 
-            setState({ data: mappedData });
-          } else {
-            console.error('response.data.items is not an array');
-          }
+          setState({ data: mappedData });
         })
-        .catch(async (error: TypeError) => {
-          console.error(error);
-        });
+        .catch(console.error);
     } else if ((params as any).currParams.onPanel == 1) {
-      if ((params as any).action == 'OBRequest-Location') {
+      if ((params as any).action === 'OBRequest-Location') {
         UtilsFetch.connect(
           APIMethods.GET,
           ContentTypes.JSON,
-          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations?Name=${encodeURIComponent(state.name ?? '')}`,
+          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations?Name=${search}`,
         )
           .then((response) => {
-            const mappedData = response.data.items.map((item: any, index: number) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
-            }));
-            setState({ data: mappedData });
-          })
-          .catch(async (error: TypeError) => {
-            console.error(error);
-          });
-      } else if ((params as any).action == 'OBRequest-Branch') {
-        UtilsFetch.connect(
-          APIMethods.GET,
-          ContentTypes.JSON,
-          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/branches?Location=${(params as any).currParams.location.name}`,
-        )
-          .then((response) => {
-            const mappedData = response.data.items.map((item: any, index: number) => ({
+            const mappedData = response.data.items.map((item: any) => ({
               ID: item.id,
               name: item.name,
               code: item.name,
@@ -83,29 +66,52 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
 
             setState({ data: mappedData });
           })
-          .catch(async (error: TypeError) => {
-            console.error(error);
-          });
+          .catch(console.error);
+      } else if ((params as any).action === 'OBRequest-Branch') {
+        UtilsFetch.connect(
+          APIMethods.GET,
+          ContentTypes.JSON,
+          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/branches?Location=${encodeURIComponent(
+            (params as any).currParams.location.name,
+          )}&Name=${search}`,
+        )
+          .then((response) => {
+            const mappedData = response.data.items.map((item: any) => ({
+              ID: item.id,
+              name: item.name,
+              code: item.name,
+            }));
+
+            setState({ data: mappedData });
+          })
+          .catch(console.error);
       }
     } else if ((params as any).currParams.onPanel == 4) {
       UtilsFetch.connect(
         APIMethods.GET,
         ContentTypes.JSON,
-        `${process.env.EXPO_PUBLIC_REQUEST}/leave-management/maintenance/leave-parameters`,
+        `${process.env.EXPO_PUBLIC_REQUEST}/leave-management/maintenance/leave-parameters?Name=${search}`,
       )
         .then((response) => {
-          const mappedData = response.data.items.map((item: any, index: number) => ({
+          const mappedData = response.data.items.map((item: any) => ({
             ID: item.id,
             name: item.name,
             code: item.code,
           }));
+
           setState({ data: mappedData });
         })
-        .catch(async (error: TypeError) => {
-          console.error(error);
-        });
+        .catch(console.error);
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchData(state.name ?? '');
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [state.name]);
 
   const renderItem = ({ item, index }: { item: TypeSelectionList; index: number }) => (
     <MemoizedRequestItem item={item} index={index} />

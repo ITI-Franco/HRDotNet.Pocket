@@ -151,8 +151,16 @@ export const Utils = {
   panelPageHeaderTitle: (panel: number, reqAction: number) => {
     let pageTitle: string | undefined = '';
 
+    const actionTitles: Record<number, string> = {
+      2: 'Update',
+      3: 'Cancel',
+      4: 'Review',
+      5: 'Approve',
+    };
+
     const pageHeaderTitle = (title: string) => {
-      return (pageTitle = reqAction === 1 ? `${title}` : `${title} ${reqAction !== 2 ? `Cancel` : `Update`}`);
+      const action = actionTitles[reqAction];
+      return action ? `${title} ${action}` : title;
     };
 
     switch (panel) {
@@ -831,6 +839,8 @@ export const Utils = {
     setHandle: React.Dispatch<Partial<TypeHandle>>,
     navigation: NavigationProp<ParamListBase>,
   ) => {
+    console.log('Reee', reqAction);
+
     const getSourceVal = (value: string) => {
       if (FieldLabels[panel] && value in FieldLabels[panel]) {
         return FieldLabels[panel][value];
@@ -874,11 +884,25 @@ export const Utils = {
           //  skip checking
           if (
             // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
+            // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
             ['branch'].includes(key) ||
             ['restDay'].includes(key) ||
             ['documentNo'].includes(key) ||
+            ['referenceNo'].includes(key) ||
             (panel === 2 && reqAction === 3 && key === 'timeRecord') ||
-            (panel === 3 && reqAction === 3 && key === 'timeRecord')
+            (panel === 3 && reqAction === 3 && key === 'timeRecord') ||
+            (reqAction === 1 && key === 'cancelReason') ||
+            (reqAction === 2 && key === 'cancelReason') ||
+            (reqAction === 4 && key === 'cancelReason') ||
+            (reqAction === 5 && key === 'cancelReason') ||
+            (reqAction === 1 && key === 'reviewReason') ||
+            (reqAction === 3 && key === 'reviewReason') ||
+            (reqAction === 2 && key === 'reviewReason') ||
+            (reqAction === 5 && key === 'reviewReason') ||
+            (reqAction === 1 && key === 'approveReason') ||
+            (reqAction === 3 && key === 'approveReason') ||
+            (reqAction === 2 && key === 'approveReason') ||
+            (reqAction === 4 && key === 'approveReason')
           ) {
             continue;
           }

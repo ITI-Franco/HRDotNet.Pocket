@@ -320,7 +320,6 @@ export const useFetch = {
         });
       })
       .catch(async (error: TypeError) => {
-        console.log("Err", error)
         await UtilsFetch.catchEvent({
           error: error,
           setHandle: setHandle,
@@ -532,6 +531,9 @@ export const useFetch = {
       formData.append(typedData.title, typedData.value);
     });
 
+    // Iba iba per applications yung date 
+    const dateParse = Utils.panelDateToParse(panel, parsed)
+
     if (reqAction === onReqAction.Update || onReqAction.Cancel) {
 
 
@@ -547,8 +549,6 @@ export const useFetch = {
 
         const readableChanges = Utils.panelReadableChanges(panel, changedFields, attachmentChanges)
 
-        const dateParse = Utils.panelDateToParse(panel, parsed)
-
         const generateEditLog = Utils.generateHistoryItem(
           readableChanges || "No changes detected",
           formatName,
@@ -560,6 +560,18 @@ export const useFetch = {
 
         formData.append("EditLog", editLog)
 
+      } else if (reqAction === onReqAction.Cancel) {
+
+
+        const generateEditLog = Utils.generateHistoryItem(
+          parsed.cancelReason,
+          formatName,
+          "Cancelled",
+          dateParse
+        );
+        const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
+
+        formData.append("EditLog", editLog)
       }
       let dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate) as Array<{
         title: string;
@@ -571,7 +583,7 @@ export const useFetch = {
         formData.append(typedData.title, typedData.value);
       });
 
-      console.log()
+
     }
 
     formData.append('Reason', parsed?.reason);
@@ -593,9 +605,6 @@ export const useFetch = {
             uri: parsed?.attachment?.uri,
             type: type,
           });
-
-        // Iba iba per applications yung date 
-        const dateParse = Utils.panelDateToParse(panel, parsed)
 
         const generateEditLog = Utils.generateHistoryItem(
           parsed?.reason,
@@ -638,9 +647,6 @@ export const useFetch = {
           );
         } else {
           const errors = await UtilsFetch.catchErrors(error);
-
-          console.log("Err", errors,)
-          console.log("Form", formData)
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -740,12 +746,73 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false }));
   },
 
+  NewSingleApprovals: async (
+    nav: StackNavigationProp<ParamListBase>,
+    state: StateApplicationsDetails,
+    data: string,
+    setState: React.Dispatch<Partial<StateApplicationsDetails>>,
+    handle: TypeHandle,
+    setHandle: React.Dispatch<Partial<TypeHandle>>,
+    formatName?: string
+  ) => {
+    let formSingle: Array<{ title: string; value: string }> = [];
+    let url: string = await UtilsFetch.singleApprovals(state.panel, state.data.filing.filingStatus.id);
+    const parsed: PropsRequestSummary = await JSON.parse(data);
+
+    const dateParse = Utils.panelDateToParse(state.panel, parsed)
+    const generateEditLog = Utils.generateHistoryItem(
+      parsed.approveReason,
+      formatName,
+      "Approved",
+      dateParse
+    );
+
+    const updatedData = {
+      ...state.data,
+      editLog: Utils.appendHistoryItem(
+        state.data.editLog,
+        generateEditLog
+      ),
+    };
+
+
+    formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
+    await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
+      .then(async (response: { data: SchemaApprovalsManager }) => {
+        setHandle({ isSuccess: true });
+      })
+      .catch(async (error: any) => {
+        const errors = await UtilsFetch.catchErrors(error);
+        if (errors.code === 403) {
+          Utils.alertSingle('403 Forbidden', 'You do not have permission to review this application.', () => {
+            nav.goBack();
+          });
+        } else {
+          // Handle all other error cases
+          await UtilsFetch.catchEvent({
+            error: error,
+            setHandle: setHandle,
+            toastSet: errors.code === 0 ? 0 : 1,
+            onRefresh: () =>
+              useFetch.Refresh(nav, () => useFetch.NewSingleApprovals(nav, state, data, setState, handle, setHandle)),
+            toastMessage: UtilsFetch.requestError(
+              errors.code,
+              errors.parsed,
+              UtilsFetch.handleErrorException(errors.response, ERRORS.appFilingException),
+            ),
+          });
+        }
+      })
+      .finally(() => setHandle({ isLoading: false }));
+  },
+
   SingleReviews: async (
     nav: StackNavigationProp<ParamListBase>,
     state: StateApplicationsDetails,
     setState: React.Dispatch<Partial<StateApplicationsDetails>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
+
   ) => {
     let formSingle: Array<{ title: string; value: string }> = [];
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
@@ -769,6 +836,69 @@ export const useFetch = {
             toastSet: errors.code === 0 ? 0 : 1,
             onRefresh: () =>
               useFetch.Refresh(nav, () => useFetch.SingleApprovals(nav, state, setState, handle, setHandle)),
+            toastMessage: UtilsFetch.requestError(
+              errors.code,
+              errors.parsed,
+              UtilsFetch.handleErrorException(errors.response, ERRORS.appFilingException),
+            ),
+          });
+        }
+      })
+      .finally(() => setHandle({ isLoading: false }));
+  },
+
+  NewSingleReviews: async (
+    nav: StackNavigationProp<ParamListBase>,
+    state: StateApplicationsDetails,
+    data: string,
+    setState: React.Dispatch<Partial<StateApplicationsDetails>>,
+    handle: TypeHandle,
+    setHandle: React.Dispatch<Partial<TypeHandle>>,
+    formatName?: string
+  ) => {
+    let formSingle: Array<{ title: string; value: string }> = [];
+    let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
+    const parsed: PropsRequestSummary = await JSON.parse(data);
+
+    const dateParse = Utils.panelDateToParse(state.panel, parsed)
+    const generateEditLog = Utils.generateHistoryItem(
+      parsed.reviewReason,
+      formatName,
+      "Reviewed",
+      dateParse
+    );
+
+    const updatedData = {
+      ...state.data,
+      editLog: Utils.appendHistoryItem(
+        state.data.editLog,
+        generateEditLog
+      ),
+    };
+
+
+    formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
+
+
+    await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
+      .then(() => {
+        setHandle({ isSuccess: true });
+
+      })
+      .catch(async (error: any) => {
+        const errors = await UtilsFetch.catchErrors(error);
+
+        if (errors.code === 403) {
+          Utils.alertSingle('403 Forbidden', 'You do not have permission to review this application.', () => {
+            nav.goBack();
+          });
+        } else {
+          await UtilsFetch.catchEvent({
+            error: error,
+            setHandle: setHandle,
+            toastSet: errors.code === 0 ? 0 : 1,
+            onRefresh: () =>
+              useFetch.Refresh(nav, () => useFetch.NewSingleReviews(nav, state, data, setState, handle, setHandle)),
             toastMessage: UtilsFetch.requestError(
               errors.code,
               errors.parsed,

@@ -203,6 +203,8 @@ export const STRINGS = {
 
   requestFieldDocumentNo: 'Document No',
   requestFieldCancellationReason: 'Cancellation Reason',
+  requestFieldReviewReason: 'Review Reason',
+  requestFieldApproveReason: 'Approve Reason',
 
   pathTabStack: 'TabStack',
   pathTabHome: 'Home',
