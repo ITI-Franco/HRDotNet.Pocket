@@ -2,8 +2,7 @@
 // Designed by : Alexiane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { useRef } from 'react';
-import { Camera, CameraType } from 'expo-camera';
+import { useRef } from 'react';
 
 import { ARRAY } from './Array';
 import {
@@ -24,8 +23,6 @@ import { DateTimeUtils } from '../utils/DateTimeUtils';
 import * as ImagePicker from 'expo-image-picker';
 import { Utils } from 'src/utils/Utils';
 import { STRINGS } from './Strings';
-import TeamSchema from 'app/pages/view/TeamsMember';
-import TeamMember from 'app/pages/view/TeamsMember';
 
 const today = new Date();
 // Local Object Values
@@ -37,7 +34,7 @@ export const APIMethods = {
 export const ContentTypes = {
   JSON: 'application/json',
   Multipart: 'multipart/form-data',
-}
+};
 
 export const StatusCode = {
   Unauthorized: 401,
@@ -499,7 +496,7 @@ export const ValuesClockInOut = (params: { value: number }) => {
         longitude: 0,
         latitudeDelta: 0.001,
         longitudeDelta: 0.001,
-        zoom: 10
+        zoom: 10,
       },
       geofences: ARRAY.geofences,
       isInside: [],
@@ -640,6 +637,7 @@ export const ValuesSelectionList = (params: ParamsSelectionList) => {
   return {
     State: {
       data: Utils.setSelectionList(params) as Array<TypeSelectionList>,
+      name: '',
     },
 
     Handle: {
@@ -864,8 +862,8 @@ export const ValuesRequestSearch = {
   State: {
     search: '',
     searchDates: {
-      from: "",
-      to: ""
+      from: '',
+      to: '',
     },
     isVisibleFilter: false,
     fromPicker: false,
@@ -886,42 +884,50 @@ export const ValuesSummaryPanel = {
   },
 };
 
-export const FieldLimit = 1000;
+export const FieldLimit = {
+  reason: {
+    minLength: 8,
+    maxLength: 150,
+  },
+  referenceNo: {
+    maxLength: 14,
+  },
+};
 
 export const fieldDisplayNames: Record<string, string> = {
-  TimeInOut: "Log Time",
-  LogType: "Log Type",
-  Reason: "Reason",
-  ReferenceNo: "Reference No.",
-  FileAttachment: "Attachment",
-  UploadedFile: "Uploaded File",
-  TimeIn: "Time In",
-  TimeOut: "Time Out",
-  DateFrom: "Start Date",
-  DateTo: "End Date",
-  LocationBranchId: "Branch ID",
-  LocationBranch: "Branch",
-  MLDateFiled: "Missed Log Date",
-  COSDatePeriod: "COS Period",
-  DateFiled: "Date Filed",
-  RestDay: "Rest Day",
-  Schedule: "Requested Schedule",
-  OBDatePeriod: "OB Period",
-  OTDate: "Overtime Date",
+  TimeInOut: 'Log Time',
+  LogType: 'Log Type',
+  Reason: 'Reason',
+  ReferenceNo: 'Reference No.',
+  FileAttachment: 'Attachment',
+  UploadedFile: 'Uploaded File',
+  TimeIn: 'Time In',
+  TimeOut: 'Time Out',
+  DateFrom: 'Start Date',
+  DateTo: 'End Date',
+  LocationBranchId: 'Branch ID',
+  LocationBranch: 'Branch',
+  MLDateFiled: 'Missed Log Date',
+  COSDatePeriod: 'COS Period',
+  DateFiled: 'Date Filed',
+  RestDay: 'Rest Day',
+  Schedule: 'Requested Schedule',
+  OBDatePeriod: 'OB Period',
+  OTDate: 'Overtime Date',
 };
 
 export enum FieldKey {
-  TimeIn = "TimeIn",
-  TimeOut = "TimeOut",
-  DateFrom = "DateFrom",
-  DateTo = "DateTo",
-  LocationBranchId = "LocationBranchId",
-  LocationBranch = "LocationBranch",
-  TimeInOut = "TimeInOut",
-  MLDateFiled = "DateFiled",
-  ReferenceNo = "ReferenceNo",
-  COSDateFiled = "DateFiled",
-  RestDay = "RestDay",
-  Schedule = "Schedule",
-  Reason = "Reason",
+  TimeIn = 'TimeIn',
+  TimeOut = 'TimeOut',
+  DateFrom = 'DateFrom',
+  DateTo = 'DateTo',
+  LocationBranchId = 'LocationBranchId',
+  LocationBranch = 'LocationBranch',
+  TimeInOut = 'TimeInOut',
+  MLDateFiled = 'DateFiled',
+  ReferenceNo = 'ReferenceNo',
+  COSDateFiled = 'DateFiled',
+  RestDay = 'RestDay',
+  Schedule = 'Schedule',
+  Reason = 'Reason',
 }

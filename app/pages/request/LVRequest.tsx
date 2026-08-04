@@ -55,10 +55,10 @@ const LVRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     );
     const handleFilingData = setHandle({ checkSelect: currParams?.data?.filing?.leaveOption?.id });
 
-    currParams.onReqAction !== onReqAction.Update
+    (currParams.onReqAction !== onReqAction.Update
       ? (setState({ reason: '' }), stateFilingData, handleFilingData)
       : stateFilingData,
-      handleFilingData;
+      handleFilingData);
   }, []);
 
   useEffect(() => {
@@ -183,7 +183,7 @@ const LVRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     true,
                     (text: string) => setState({ reason: text }),
                     true,
-                    FieldLimit,
+                    FieldLimit.reason.maxLength,
                   ),
 
                   UtilsDisplay.DisplayFieldAttachment(

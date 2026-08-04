@@ -24,7 +24,7 @@ import { useGlobalStore } from 'src/store/GlobalStore';
 
 const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   const [onReqAction] = useState<TypeReqAction[]>(ARRAY.reqAction)[0];
-  const { employeeName } = useGlobalStore()
+  const { employeeName } = useGlobalStore();
 
   const params = useRoute().params as {
     onPanel?: number;
@@ -55,15 +55,30 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
     navigation.navigate(STRINGS.pathTabStack, { screen: STRINGS.tabTitleRequest, params: { refresh: true } });
   };
 
-
   const onHandleSubmit = () => {
     (async () => {
       try {
         setHandle({ isLoading: true });
         if (onReqAction.Review === params.onReqAction) {
-          await useFetch.NewSingleReviews(navigation, state, JSON.stringify({ ...currProps }), setState, handle, setHandle, employeeName)
+          await useFetch.NewSingleReviews(
+            navigation,
+            state,
+            JSON.stringify({ ...currProps }),
+            setState,
+            handle,
+            setHandle,
+            employeeName,
+          );
         } else if (onReqAction.Approve === params.onReqAction) {
-          await useFetch.NewSingleApprovals(navigation, state, JSON.stringify({ ...currProps }), setState, handle, setHandle, employeeName)
+          await useFetch.NewSingleApprovals(
+            navigation,
+            state,
+            JSON.stringify({ ...currProps }),
+            setState,
+            handle,
+            setHandle,
+            employeeName,
+          );
         } else {
           await useFetch.SubmitRequest(
             navigation,
@@ -84,7 +99,6 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
     })();
   };
 
-
   const requestActionTitle: Record<number, string> = {
     [onReqAction.Update]: STRINGS.update,
     [onReqAction.Review]: STRINGS.review,
@@ -95,10 +109,13 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   return (
     <React.Fragment>
       <PageHeader
-        name={`${STRINGS.pageTitleReqSummary} ${currOnReqAction === onReqAction.New
-          ? ''
-          : requestActionTitle[currOnReqAction] || ''
-          }`}
+        name={`${STRINGS.pageTitleReqSummary} ${
+          currOnReqAction === onReqAction.New
+            ? ''
+            : currOnReqAction !== onReqAction.Update
+              ? STRINGS.cancel
+              : STRINGS.update
+        }`}
       />
 
       {handle.isToast!.show && <Toast handle={handle.isToast!} setHandle={setHandle} />}

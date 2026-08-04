@@ -46,7 +46,6 @@ export type HistoryItem = {
   onBehalfName?: string;
 };
 
-
 export type SchemaRequestApplications = {
   id: number;
   code: string;
@@ -69,11 +68,11 @@ export type SchemaRequestApplications = {
     };
 
     dateFiled?:
-    | {
-      dateFrom: string;
-      dateTo: string;
-    }
-    | string;
+      | {
+          dateFrom: string;
+          dateTo: string;
+        }
+      | string;
 
     leaveParameter?: {
       // Leave
@@ -340,6 +339,7 @@ export type TypeObjectValues = {
   disabled?: boolean;
   space?: boolean;
   image?: ImageRequireSource;
+  withAsterisk?: boolean;
   navigate?: () => void;
 };
 
@@ -665,7 +665,7 @@ export type StateLoanDetails = {
 };
 
 // Selection List
-export type StateSelectionList = { data: Array<TypeSelectionList> };
+export type StateSelectionList = { data: Array<TypeSelectionList>; name?: string };
 
 // COS Request
 export type StateCOSRequest = {
@@ -716,6 +716,7 @@ export type StateOBRequest = {
   reason: string;
   attachment: Attachment;
   documentNo?: string;
+  referenceNo?: string;
 };
 
 // OFF Request
@@ -736,7 +737,6 @@ export type StateApplicationsDetails = {
   data: SchemaRequestApplications;
   type: string;
 };
-
 
 // Request Summary
 export type PropsRequestSummary = {

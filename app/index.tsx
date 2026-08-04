@@ -46,8 +46,7 @@ import NotificationDetails from './pages/view/NotificationDetails';
 import LoaderPage from 'src/components/loader/LoaderPage';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
 import { COLORS, FONTS, STRINGS } from '../src';
-import { Forbidden } from './pages/navigate/Forbidden';
-// import CTORequest from './pages/request/CTORequest';
+import Forbidden from './pages/navigate/Forbidden';
 
 const Index: React.FC = () => {
   const Stack = createStackNavigator();
@@ -121,102 +120,100 @@ const Index: React.FC = () => {
 
   return (
     <NavigationIndependentTree>
-    <NavigationContainer
-      // independent={true}
-      // onStateChange={()=>  {UtilsFetch.interceptors()}}
-      children={
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: false,
-            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-            transitionSpec: {
-              open: {
-                animation: 'spring',
-                config: {
-                  stiffness: 600,
-                  damping: 600,
-                  mass: 4,
-                  overshootClamping: false,
-                  restDisplacementThreshold: 0.01,
-                  restSpeedThreshold: 0.01,
+      <NavigationContainer
+        children={
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              gestureEnabled: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              transitionSpec: {
+                open: {
+                  animation: 'spring',
+                  config: {
+                    stiffness: 600,
+                    damping: 600,
+                    mass: 4,
+                    overshootClamping: false,
+                    restDisplacementThreshold: 0.01,
+                    restSpeedThreshold: 0.01,
+                  },
+                },
+                close: {
+                  animation: 'spring',
+                  config: {
+                    stiffness: 600,
+                    damping: 600,
+                    mass: 4,
+                    overshootClamping: false,
+                    restDisplacementThreshold: 0.01,
+                    restSpeedThreshold: 0.01,
+                  },
                 },
               },
-              close: {
-                animation: 'spring',
-                config: {
-                  stiffness: 600,
-                  damping: 600,
-                  mass: 4,
-                  overshootClamping: false,
-                  restDisplacementThreshold: 0.01,
-                  restSpeedThreshold: 0.01,
-                },
-              },
-            },
-          }}
-          initialRouteName={STRINGS.pathLogin}
-        >
-          <Stack.Screen key={STRINGS.pathLogin} name={STRINGS.pathLogin} component={RndrLogin} />
-          <Stack.Screen key={STRINGS.pathTabStack} name={STRINGS.pathTabStack} component={TabStack} />
-          <Stack.Screen key={STRINGS.pathForbidden} name={STRINGS.pathForbidden} component={Forbidden} />
-          <Stack.Screen key={STRINGS.pathCOSRequest} name={STRINGS.pathCOSRequest} component={COSRequest} />
-          <Stack.Screen key={STRINGS.pathOBRequest} name={STRINGS.pathOBRequest} component={OBRequest} />
-          <Stack.Screen key={STRINGS.pathOTRequest} name={STRINGS.pathOTRequest} component={OTRequest} />
-          <Stack.Screen key={STRINGS.pathOFFRequest} name={STRINGS.pathOFFRequest} component={OFFRequest} />
-          <Stack.Screen key={STRINGS.pathLVRequest} name={STRINGS.pathLVRequest} component={LVRequest} />
-          <Stack.Screen key={STRINGS.pathMLRequest} name={STRINGS.pathMLRequest} component={MLRequest} />
-          {/* <Stack.Screen key={STRINGS.pathCTORequest} name={STRINGS.pathCTORequest} component={CTORequest} /> */}
-
-          <Stack.Screen name={STRINGS.pathSelectionList} component={SelectionList} />
-          <Stack.Screen name={STRINGS.pathRequestSummary} component={RequestSummary} />
-          <Stack.Screen name={STRINGS.pathNotification} component={RndrNotification} />
-          <Stack.Screen name={STRINGS.pathNotificationDetails} component={NotificationDetails} />
-          <Stack.Screen name={STRINGS.pathPayslipDetails} component={PayslipDetails} />
-          <Stack.Screen name={STRINGS.pathPending} component={RndrPending} />
-          <Stack.Screen name={STRINGS.pathTimeOff} component={RndrTimeOff} />
-          <Stack.Screen key={STRINGS.pathLoanLedger} name={STRINGS.pathLoanLedger} component={RndrLoanLedger} />
-          <Stack.Screen name={STRINGS.pathLoanDetails} component={LoanDetails} />
-          <Stack.Screen name={STRINGS.pathAboutUs} component={AboutUs} />
-          <Stack.Screen name={STRINGS.pathTimesheet} component={RndrTimesheet} />
-          <Stack.Screen name={STRINGS.pathClockInOut} component={ClockInOut} />
-          <Stack.Screen name={STRINGS.pathApprovals} component={RndrApprovals} />
-          <Stack.Screen name={STRINGS.pathReviewals} component={RndrReviewals} />
-          {/* <Stack.Screen key={STRINGS.pathTeams} name={STRINGS.pathTeams} component={RndrTeams} /> */}
-          <Stack.Screen key={STRINGS.pathContacts} name={STRINGS.pathContacts} component={RndrContacts} />
-          <Stack.Screen key={STRINGS.pathTeams} name={STRINGS.pathTeamMembers} component={RndrTeamMember} />
-
-          <Stack.Screen name={STRINGS.pathAttachedFile} component={AttachedFile} />
-          <Stack.Screen name={STRINGS.pathRequestDetails} component={RequestDetails} />
-          <Stack.Screen
-            key={STRINGS.pathApprovalDetails}
-            name={STRINGS.pathApprovalDetails}
-            component={ApprovalDetails}
-          />
-          <Stack.Screen
-            key={STRINGS.pathReviewalDetails}
-            name={STRINGS.pathReviewalDetails}
-            component={ReviewalDetails}
-          />
-
-          <Stack.Screen
-            name={STRINGS.pathDrawer}
-            component={Drawer}
-            options={{
-              gestureDirection: 'horizontal-inverted',
             }}
-          />
+            initialRouteName={STRINGS.pathLogin}
+          >
+            <Stack.Screen key={STRINGS.pathLogin} name={STRINGS.pathLogin} component={RndrLogin} />
+            <Stack.Screen key={STRINGS.pathTabStack} name={STRINGS.pathTabStack} component={TabStack} />
+            <Stack.Screen key={STRINGS.pathForbidden} name={STRINGS.pathForbidden} component={Forbidden} />
+            <Stack.Screen key={STRINGS.pathCOSRequest} name={STRINGS.pathCOSRequest} component={COSRequest} />
+            <Stack.Screen key={STRINGS.pathOBRequest} name={STRINGS.pathOBRequest} component={OBRequest} />
+            <Stack.Screen key={STRINGS.pathOTRequest} name={STRINGS.pathOTRequest} component={OTRequest} />
+            <Stack.Screen key={STRINGS.pathOFFRequest} name={STRINGS.pathOFFRequest} component={OFFRequest} />
+            <Stack.Screen key={STRINGS.pathLVRequest} name={STRINGS.pathLVRequest} component={LVRequest} />
+            <Stack.Screen key={STRINGS.pathMLRequest} name={STRINGS.pathMLRequest} component={MLRequest} />
+            {/* <Stack.Screen key={STRINGS.pathCTORequest} name={STRINGS.pathCTORequest} component={CTORequest} /> */}
 
-          <Stack.Screen
-            name={STRINGS.pathCamera}
-            component={RndrCamera}
-            options={{
-              cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid,
-            }}
-          />
-        </Stack.Navigator>
-      }
-    ></NavigationContainer>
+            <Stack.Screen name={STRINGS.pathSelectionList} component={SelectionList} />
+            <Stack.Screen name={STRINGS.pathRequestSummary} component={RequestSummary} />
+            <Stack.Screen name={STRINGS.pathNotification} component={RndrNotification} />
+            <Stack.Screen name={STRINGS.pathNotificationDetails} component={NotificationDetails} />
+            <Stack.Screen name={STRINGS.pathPayslipDetails} component={PayslipDetails} />
+            <Stack.Screen name={STRINGS.pathPending} component={RndrPending} />
+            <Stack.Screen name={STRINGS.pathTimeOff} component={RndrTimeOff} />
+            <Stack.Screen key={STRINGS.pathLoanLedger} name={STRINGS.pathLoanLedger} component={RndrLoanLedger} />
+            <Stack.Screen name={STRINGS.pathLoanDetails} component={LoanDetails} />
+            <Stack.Screen name={STRINGS.pathAboutUs} component={AboutUs} />
+            <Stack.Screen name={STRINGS.pathTimesheet} component={RndrTimesheet} />
+            <Stack.Screen name={STRINGS.pathClockInOut} component={ClockInOut} />
+            <Stack.Screen name={STRINGS.pathApprovals} component={RndrApprovals} />
+            <Stack.Screen name={STRINGS.pathReviewals} component={RndrReviewals} />
+            {/* <Stack.Screen key={STRINGS.pathTeams} name={STRINGS.pathTeams} component={RndrTeams} /> */}
+            <Stack.Screen key={STRINGS.pathContacts} name={STRINGS.pathContacts} component={RndrContacts} />
+            <Stack.Screen key={STRINGS.pathTeams} name={STRINGS.pathTeamMembers} component={RndrTeamMember} />
+
+            <Stack.Screen name={STRINGS.pathAttachedFile} component={AttachedFile} />
+            <Stack.Screen name={STRINGS.pathRequestDetails} component={RequestDetails} />
+            <Stack.Screen
+              key={STRINGS.pathApprovalDetails}
+              name={STRINGS.pathApprovalDetails}
+              component={ApprovalDetails}
+            />
+            <Stack.Screen
+              key={STRINGS.pathReviewalDetails}
+              name={STRINGS.pathReviewalDetails}
+              component={ReviewalDetails}
+            />
+
+            <Stack.Screen
+              name={STRINGS.pathDrawer}
+              component={Drawer}
+              options={{
+                gestureDirection: 'horizontal-inverted',
+              }}
+            />
+
+            <Stack.Screen
+              name={STRINGS.pathCamera}
+              component={RndrCamera}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid,
+              }}
+            />
+          </Stack.Navigator>
+        }
+      ></NavigationContainer>
     </NavigationIndependentTree>
   );
 };

@@ -66,24 +66,23 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
   }, [params]);
 
   useEffect(() => {
-     if(currParams.onReqAction !== onReqAction.Cancel){
-    setHandle({ isLoading: true });
+    if (currParams.onReqAction !== onReqAction.Cancel) {
+      setHandle({ isLoading: true });
 
-    const interval = setTimeout(async () => {
-      try {
-        if (state.date != '') {
-          await useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle);
-          await useFetch.TimeRecord(navigation, state, setState, handle, setHandle);
-
+      const interval = setTimeout(async () => {
+        try {
+          if (state.date != '') {
+            await useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle);
+            await useFetch.TimeRecord(navigation, state, setState, handle, setHandle);
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setHandle({ isLoading: false });
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setHandle({ isLoading: false });
-      }
-    }, 100);
+      }, 100);
 
-    return () => clearTimeout(interval);
+      return () => clearTimeout(interval);
     }
   }, [state.date]);
 
@@ -102,26 +101,24 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
     setState({ reqTimeOut: DateTimeUtils.timeSecondsToUnitsZero(time) });
   };
 
-
   const onNextHandler = async () => {
-
     let scheduleToUse;
-     const scheduleIn = DateTimeUtils.timeSecondsToUnits(state.schedule?.timeIn);
-     const scheduleOut = DateTimeUtils.timeSecondsToUnits(state.schedule?.timeOut);
-     const timeRecordIn = DateTimeUtils.timeSecondsToUnits(state.timeRecord[0]?.date);
+    const scheduleIn = DateTimeUtils.timeSecondsToUnits(state.schedule?.timeIn);
+    const scheduleOut = DateTimeUtils.timeSecondsToUnits(state.schedule?.timeOut);
+    const timeRecordIn = DateTimeUtils.timeSecondsToUnits(state.timeRecord[0]?.date);
 
-       if (state.schedule.isPremium === true) {
-            scheduleToUse = timeRecordIn < scheduleIn ? scheduleIn : timeRecordIn;
-        } else {
-            scheduleToUse =  state.schedule?.timeOut ? state.schedule.timeOut : undefined;
-       }
-    
-    if(state.reqTimeIn < scheduleToUse! ) {
-      return Alert.alert('', 'Requested Time In is greater than Actual OT In')
-    } else if (state.timeRecord[state?.timeRecord?.length - 1]?.date < state.reqTimeOut) {
-      return Alert.alert('', 'Requested Time Out is greater than Actual OT Out')
+    if (state.schedule.isPremium === true) {
+      scheduleToUse = timeRecordIn < scheduleIn ? scheduleIn : timeRecordIn;
+    } else {
+      scheduleToUse = state.schedule?.timeOut ? state.schedule.timeOut : undefined;
     }
-      await Utils.checkHaveValueRequest(
+
+    if (state.reqTimeIn < scheduleToUse!) {
+      return Alert.alert('', 'Requested Time In is greater than Actual OT In');
+    } else if (state.timeRecord[state?.timeRecord?.length - 1]?.date < state.reqTimeOut) {
+      return Alert.alert('', 'Requested Time Out is greater than Actual OT Out');
+    }
+    await Utils.checkHaveValueRequest(
       onPanel.OT,
       currParams.onReqAction,
       state,
@@ -235,7 +232,7 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
                     true,
                     (text: string) => setState({ reason: text }),
                     true,
-                    FieldLimit,
+                    FieldLimit.reason.maxLength,
                   ),
 
                   UtilsDisplay.DisplayFieldAttachment(

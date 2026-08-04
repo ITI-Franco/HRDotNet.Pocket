@@ -87,13 +87,14 @@ export const Utils = {
 
     const timeFrom: string = DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateFrom);
 
-    const timeSched = `\n${!DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
-      ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
-      : timeFrom
-      }`;
+    const timeSched = `\n${
+      !DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
+        ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
+        : timeFrom
+    }`;
 
     if (val.source.toUpperCase().includes('L-')) {
-      (color = COLORS.lightPurple), (title = STRINGS.leave);
+      ((color = COLORS.lightPurple), (title = STRINGS.leave));
     } else if (val.source.includes(STRINGS.holiday)) {
       color = COLORS.red;
       title = val.source.split(' - ')[1];
@@ -151,10 +152,10 @@ export const Utils = {
     let pageTitle: string | undefined = '';
 
     const actionTitles: Record<number, string> = {
-      2: "Update",
-      3: "Cancel",
-      4: "Review",
-      5: "Approve",
+      2: 'Update',
+      3: 'Cancel',
+      4: 'Review',
+      5: 'Approve',
     };
 
     const pageHeaderTitle = (title: string) => {
@@ -203,7 +204,7 @@ export const Utils = {
     let tag: string = '';
 
     if (val.toUpperCase().includes('L-')) {
-      (color = COLORS.lightPurple), (tag = STRINGS.leave);
+      ((color = COLORS.lightPurple), (tag = STRINGS.leave));
     } else if (val.includes(STRINGS.holiday)) {
       color = COLORS.red;
       tag = STRINGS.holiday;
@@ -237,31 +238,31 @@ export const Utils = {
   },
 
   toTitleCase: (str: string | null | undefined): string => {
-    if (!str) return "";
+    if (!str) return '';
 
     return str
       .toLowerCase()
-      .split(" ")
+      .split(' ')
       .map((word) => {
         return word.charAt(0).toUpperCase() + word.slice(1);
       })
-      .join(" ");
+      .join(' ');
   },
 
   formatEmployeeName: (name: string) => {
-    const parts = name.split(",").map((p) => p.trim());
+    const parts = name.split(',').map((p) => p.trim());
 
-    const lastName = parts[0] || "";
-    const firstName = parts[1] || "";
+    const lastName = parts[0] || '';
+    const firstName = parts[1] || '';
 
-    let suffix = "";
-    let middleName = "";
+    let suffix = '';
+    let middleName = '';
 
-    if (parts[2] && parts[2].charAt(0) === "-") {
-      suffix = parts[2].replace(/-/g, "");
-      middleName = parts[3] || "";
+    if (parts[2] && parts[2].charAt(0) === '-') {
+      suffix = parts[2].replace(/-/g, '');
+      middleName = parts[3] || '';
     } else {
-      middleName = parts[2] || "";
+      middleName = parts[2] || '';
     }
 
     const format = `${Utils.toTitleCase(lastName)}, ${Utils.toTitleCase(firstName)} ${suffix} ${Utils.toTitleCase(middleName)}`;
@@ -276,8 +277,8 @@ export const Utils = {
       if (!Array.isArray(parsed.items)) parsed.items = [];
 
       const generateGuid = (length = 10) => {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let result = "";
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
         for (let i = 0; i < length; i++) {
           result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
@@ -293,7 +294,7 @@ export const Utils = {
 
       return JSON.stringify(parsed);
     } catch (error) {
-      console.error("Error parsing existing edit log:", error);
+      console.error('Error parsing existing edit log:', error);
       return JSON.stringify({ items: [newHistoryLog] });
     }
   },
@@ -310,24 +311,24 @@ export const Utils = {
 
       return [];
     } catch (error) {
-      console.error("Error parsing edit log:", error);
+      console.error('Error parsing edit log:', error);
       return [];
     }
   },
 
   generateHistoryItem: (
     reason: string,
-    processedName = "",
-    status = "New",
+    processedName = '',
+    status = 'New',
     dateFiled?: string,
-    onBehalfName?: string
-  ): Omit<HistoryItem, "id"> => {
+    onBehalfName?: string,
+  ): Omit<HistoryItem, 'id'> => {
     const now = new Date();
-    const date = now.toISOString().split("T")[0];
-    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    const date = now.toISOString().split('T')[0];
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 
     return {
-      deviceName: "Mobile",
+      deviceName: 'Mobile',
       reason: reason.trim(),
       date,
       time,
@@ -360,7 +361,7 @@ export const Utils = {
   },
 
   requestFieldError: () => {
-    return <FontAwesome name="asterisk" size={13} color={COLORS.red} style={{ marginTop: 2 }} />;
+    return <FontAwesome name="asterisk" size={6} color={COLORS.red} style={{ marginTop: 2 }} />;
   },
 
   objectHaveValues: (val: { [key: string]: unknown }) => {
@@ -425,9 +426,9 @@ export const Utils = {
   amountFormat: (amount: number) => {
     return amount
       ? amount.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
       : 0;
   },
 
@@ -522,7 +523,7 @@ export const Utils = {
           ...state.clockedData,
           address: currAddress
             ? `${checkNull(currAddress?.name)} ${checkNull(currAddress?.street)} ` +
-            `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
+              `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
             : STRINGS.noAddressLocation,
         },
       });
@@ -601,7 +602,7 @@ export const Utils = {
     let navigate: unknown = [];
 
     const onHandleNavigate = (path: string, title: string) => {
-      navigation.goBack()
+      navigation.goBack();
       navigation.navigate(path, {
         ...params?.currParams!,
         [title]: { ID: item.ID, name: item.name, code: item.code },
@@ -779,7 +780,6 @@ export const Utils = {
     }
   },
 
-
   getChangedFields: (newValues: any, oldValues: any, optionalKeys: string[] = []) => {
     const changes: Record<string, { from: any; to: any }> = {};
 
@@ -793,8 +793,8 @@ export const Utils = {
         !isOptional &&
         (newVal === null ||
           newVal === undefined ||
-          (typeof newVal === "string" && newVal.trim() === "") ||
-          newVal === "Invalid Date")
+          (typeof newVal === 'string' && newVal.trim() === '') ||
+          newVal === 'Invalid Date')
       ) {
         return;
       }
@@ -810,7 +810,7 @@ export const Utils = {
   getAttachmentHistory: (
     originalAttachments: AttachmentHistory[],
     newAttachments: AttachmentHistory[],
-    employeeName: string
+    employeeName: string,
   ): string[] => {
     const originalNames = originalAttachments.map((f) => f.name);
     const newNames = newAttachments.map((f) => f.name);
@@ -839,8 +839,7 @@ export const Utils = {
     setHandle: React.Dispatch<Partial<TypeHandle>>,
     navigation: NavigationProp<ParamListBase>,
   ) => {
-
-    console.log("Reee", reqAction)
+    console.log('Reee', reqAction);
 
     const getSourceVal = (value: string) => {
       if (FieldLabels[panel] && value in FieldLabels[panel]) {
@@ -885,15 +884,25 @@ export const Utils = {
           //  skip checking
           if (
             // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
+            // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
             ['branch'].includes(key) ||
             ['restDay'].includes(key) ||
             ['documentNo'].includes(key) ||
             ['referenceNo'].includes(key) ||
             (panel === 2 && reqAction === 3 && key === 'timeRecord') ||
             (panel === 3 && reqAction === 3 && key === 'timeRecord') ||
-            (reqAction === 1 && key === 'cancelReason' || reqAction === 2 && key === 'cancelReason' || reqAction === 4 && key === 'cancelReason' || reqAction === 5 && key === 'cancelReason') ||
-            (reqAction === 1 && key === 'reviewReason' || reqAction === 3 && key === 'reviewReason' || reqAction === 2 && key === 'reviewReason' || reqAction === 5 && key === 'reviewReason') ||
-            (reqAction === 1 && key === 'approveReason' || reqAction === 3 && key === 'approveReason' || reqAction === 2 && key === 'approveReason' || reqAction === 4 && key === 'approveReason')
+            (reqAction === 1 && key === 'cancelReason') ||
+            (reqAction === 2 && key === 'cancelReason') ||
+            (reqAction === 4 && key === 'cancelReason') ||
+            (reqAction === 5 && key === 'cancelReason') ||
+            (reqAction === 1 && key === 'reviewReason') ||
+            (reqAction === 3 && key === 'reviewReason') ||
+            (reqAction === 2 && key === 'reviewReason') ||
+            (reqAction === 5 && key === 'reviewReason') ||
+            (reqAction === 1 && key === 'approveReason') ||
+            (reqAction === 3 && key === 'approveReason') ||
+            (reqAction === 2 && key === 'approveReason') ||
+            (reqAction === 4 && key === 'approveReason')
           ) {
             continue;
           }
@@ -951,60 +960,52 @@ export const Utils = {
     }
   },
 
-
   platformCheck: () => {
     return Platform.OS === 'ios' ? true : false; // True for IOS, False for Android
   },
 
-
   panelDateToParse: (panel: number, data?: PropsRequestSummary) => {
-    let dateToParse: string | { dateFrom: string, dateTo: string } | undefined = undefined
+    let dateToParse: string | { dateFrom: string; dateTo: string } | undefined = undefined;
 
     switch (panel) {
       case onPanel.COS:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       case onPanel.OB:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       case onPanel.OT:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       case onPanel.OFF:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       case onPanel.LV:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       case onPanel.ML:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || "")
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
         break;
 
       default:
-        dateToParse = "";
+        dateToParse = '';
         break;
     }
-    return dateToParse
+    return dateToParse;
   },
 
   parseAttachments: (attachments?: string | any[]) => {
     if (!attachments) return [];
 
-    return typeof attachments === "string"
-      ? JSON.parse(attachments)
-      : attachments;
+    return typeof attachments === 'string' ? JSON.parse(attachments) : attachments;
   },
 
-  panelCompareFields: (
-    panel: number,
-    newData?: PropsRequestSummary,
-    oldData?: SchemaRequestApplications
-  ) => {
+  panelCompareFields: (panel: number, newData?: PropsRequestSummary, oldData?: SchemaRequestApplications) => {
     let newFields = {};
     let oldFields = {};
 
@@ -1015,17 +1016,15 @@ export const Utils = {
           LogType: newData?.logType.name,
           TimeInOut: newData?.logTime,
           Reason: newData?.reason,
-          ReferenceNo: newData?.referenceNo ?? "",
+          ReferenceNo: newData?.referenceNo ?? '',
         };
 
         oldFields = {
-          DateFiled: DateTimeUtils.isoToDateWord(
-            String(oldData?.filing.dateFiled)
-          ),
+          DateFiled: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateFiled)),
           LogType: oldData?.filing?.logType?.name,
           TimeInOut: oldData?.filing.timeInOut,
           Reason: oldData?.filing.reason,
-          ReferenceNo: oldData?.filing.referenceNo ?? "",
+          ReferenceNo: oldData?.filing.referenceNo ?? '',
         };
         break;
 
@@ -1062,13 +1061,13 @@ export const Utils = {
   panelReadableChanges: (
     panel: number,
     changedFields: Record<string, { from: any; to: any }>,
-    attachmentChanges: string[]
+    attachmentChanges: string[],
   ) => {
     switch (panel) {
       case onPanel.ML:
         return [
           ...Object.entries(changedFields)
-            .filter(([key]) => !["FileAttachment", "UploadedFile"].includes(key))
+            .filter(([key]) => !['FileAttachment', 'UploadedFile'].includes(key))
             .map(([key, { from, to }]) => {
               const displayKey = fieldDisplayNames[key] ?? key;
 
@@ -1096,18 +1095,18 @@ export const Utils = {
             }),
 
           ...attachmentChanges,
-        ].join(", ");
+        ].join(', ');
 
       case onPanel.OT:
         // OT-specific formatting
-        return "";
+        return '';
 
       case onPanel.LV:
         // Leave-specific formatting
-        return "";
+        return '';
 
       default:
-        return "";
+        return '';
     }
   },
   itemApprovalsContent: (data: SchemaRequestApplications, panel: number) => {

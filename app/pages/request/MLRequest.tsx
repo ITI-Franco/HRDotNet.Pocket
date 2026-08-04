@@ -52,10 +52,10 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     );
     const handleFilingData = setHandle({ checkSelect: currParams?.data?.filing?.logType?.id });
 
-    currParams.onReqAction !== onReqAction.Update
+    (currParams.onReqAction !== onReqAction.Update
       ? (setState({}), stateFilingData, handleFilingData)
       : stateFilingData,
-      handleFilingData;
+      handleFilingData);
   }, []);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
         return state.approveReason;
 
       default:
-        return "";
+        return '';
     }
   })();
 
@@ -145,91 +145,92 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
         <ScrollView>
           <View style={styles.container}>
-            {currParams.onReqAction === onReqAction.Cancel || currParams.onReqAction === onReqAction.Review || currParams.onReqAction === onReqAction.Approve
+            {currParams.onReqAction === onReqAction.Cancel ||
+            currParams.onReqAction === onReqAction.Review ||
+            currParams.onReqAction === onReqAction.Approve
               ? [
-                UtilsDisplay.DisplayFieldTextInput(
-                  handle.isInputCheck!,
-                  STRINGS.requestFieldDocumentNo,
-                  state.documentNo!,
-                  true,
-                  () => ({}),
-                  false,
-                ),
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
+                    STRINGS.requestFieldDocumentNo,
+                    state.documentNo!,
+                    true,
+                    () => ({}),
+                    false,
+                  ),
 
-                UtilsDisplay.DisplayFieldTextInput(
-                  handle.isInputCheck!,
-                  reasonLabel,
-                  stateToUse || "",
-                  true,
-                  setStateToUse,
-                  true,
-                ),
-              ]
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
+                    reasonLabel,
+                    stateToUse || '',
+                    true,
+                    setStateToUse,
+                    true,
+                  ),
+                ]
               : [
-                UtilsDisplay.DisplayFieldWithIcon(
-                  handle.isInputCheck!,
-                  STRINGS.MLRequestFieldI,
-                  state.dateFiled,
-                  true,
-                  DateTimeUtils.dateDefaultToWord(state.dateFiled),
-                  STRINGS.styledPlaceholderDate,
-                  () => setHandle({ isDatePicker: true }),
-                  'calendar',
-                ),
+                  UtilsDisplay.DisplayFieldWithIcon(
+                    handle.isInputCheck!,
+                    STRINGS.MLRequestFieldI,
+                    state.dateFiled,
+                    true,
+                    DateTimeUtils.dateDefaultToWord(state.dateFiled),
+                    STRINGS.styledPlaceholderDate,
+                    () => setHandle({ isDatePicker: true }),
+                    'calendar',
+                  ),
 
-                UtilsDisplay.DisplayFieldCheckbox(
-                  checkboxData,
-                  true,
-                  handle.isInputCheck!,
-                  handle.checkSelect!,
-                  state.logType.name!,
-                  STRINGS.MLRequestFieldII,
-                  (item, index) => onHandleCheck(item as CheckboxData, index as number),
-                  true,
-                ),
+                  UtilsDisplay.DisplayFieldCheckbox(
+                    checkboxData,
+                    true,
+                    handle.isInputCheck!,
+                    handle.checkSelect!,
+                    state.logType.name!,
+                    STRINGS.MLRequestFieldII,
+                    (item, index) => onHandleCheck(item as CheckboxData, index as number),
+                    true,
+                  ),
 
-                UtilsDisplay.DisplayFieldWithIcon(
-                  handle.isInputCheck!,
-                  STRINGS.MLRequestFieldIII,
-                  state.logTime,
-                  true,
-                  DateTimeUtils.timeSecondsToUnits(state.logTime),
-                  STRINGS.styledPlaceholderTime,
-                  () => setHandle({ isTimePicker: true }),
-                  'time',
-                ),
+                  UtilsDisplay.DisplayFieldWithIcon(
+                    handle.isInputCheck!,
+                    STRINGS.MLRequestFieldIII,
+                    state.logTime,
+                    true,
+                    DateTimeUtils.timeSecondsToUnits(state.logTime),
+                    STRINGS.styledPlaceholderTime,
+                    () => setHandle({ isTimePicker: true }),
+                    'time',
+                  ),
 
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
+                    STRINGS.requrestFieldReferenceNo,
+                    state.referenceNo || '',
+                    true,
+                    (text: string) => setState({ referenceNo: text }),
+                    true,
+                    14,
+                  ),
 
-                UtilsDisplay.DisplayFieldTextInput(
-                  handle.isInputCheck!,
-                  STRINGS.requrestFieldReferenceNo,
-                  state.referenceNo || "",
-                  true,
-                  (text: string) => setState({ referenceNo: text }),
-                  true,
-                  14,
-                ),
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
+                    STRINGS.requestFieldReason,
+                    state.reason,
+                    true,
+                    (text: string) => setState({ reason: text }),
+                    true,
+                    FieldLimit.reason.maxLength,
+                  ),
 
-                UtilsDisplay.DisplayFieldTextInput(
-                  handle.isInputCheck!,
-                  STRINGS.requestFieldReason,
-                  state.reason,
-                  true,
-                  (text: string) => setState({ reason: text }),
-                  true,
-                  FieldLimit,
-                ),
-
-                UtilsDisplay.DisplayFieldAttachment(
-                  handle.isInputCheck!,
-                  STRINGS.fileAttachment,
-                  state.attachment.uri || state.attachment.url!,
-                  true,
-                  () => navigation.navigate(STRINGS.pathCamera, currParams),
-                  () => Utils.fileAttach(setState),
-                  () => currParams,
-                ),
-              ]}
+                  UtilsDisplay.DisplayFieldAttachment(
+                    handle.isInputCheck!,
+                    STRINGS.fileAttachment,
+                    state.attachment.uri || state.attachment.url!,
+                    true,
+                    () => navigation.navigate(STRINGS.pathCamera, currParams),
+                    () => Utils.fileAttach(setState),
+                    () => currParams,
+                  ),
+                ]}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
