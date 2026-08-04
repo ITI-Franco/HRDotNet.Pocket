@@ -38,6 +38,8 @@ export const ARRAY = {
       New: 1,
       Update: 2,
       Cancel: 3,
+      Review: 4,
+      Approve: 5,
     },
   ],
 
@@ -698,8 +700,39 @@ export const ARRAY = {
 
   requestCancellation: (props: PropsRequestSummary) => [
     { label: STRINGS.requestFieldDocumentNo, value: props?.documentNo },
-    { label: STRINGS.requestFieldCancellationReason, value: props?.reason },
+    { label: STRINGS.requestFieldCancellationReason, value: props?.cancelReason },
   ],
+
+  requestReview: (props: PropsRequestSummary) => [
+    { label: STRINGS.requestFieldDocumentNo, value: props?.documentNo },
+    { label: STRINGS.requestFieldReviewReason, value: props?.reviewReason },
+  ],
+
+  requestApproval: (props: PropsRequestSummary) => [
+    { label: STRINGS.requestFieldDocumentNo, value: props?.documentNo },
+    { label: STRINGS.requestFieldApproveReason, value: props?.approveReason },
+  ],
+
+  getRequestDetails: (
+    defaultDetails: { label: string; value: any }[],
+    props: PropsRequestSummary,
+    reqAction?: number,
+  ) => {
+    switch (reqAction) {
+      case ARRAY.reqAction[0].Cancel:
+        return [...ARRAY.requestCancellation(props)];
+
+      case ARRAY.reqAction[0].Review:
+        return [...ARRAY.requestReview(props)];
+
+      case ARRAY.reqAction[0].Approve:
+        return [...ARRAY.requestApproval(props)];
+
+      default:
+        return defaultDetails;
+    }
+  },
+
 
   requestSummary: (props: PropsRequestSummary, reqAction?: number) => [
     {
@@ -819,16 +852,32 @@ export const ARRAY = {
       ),
     },
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : [
-            { label: STRINGS.MLRequestFieldI, value: DateTimeUtils.dateDashToWord(props?.dateFiled) },
-            { label: STRINGS.MLRequestFieldII, value: props?.logType?.name },
-            { label: STRINGS.MLRequestFieldIII, value: DateTimeUtils.timeSecondsToUnits(props?.logTime) },
-            { label: STRINGS.requestFieldReason, value: props?.reason },
-            { label: STRINGS.requrestFieldReferenceNo, value: props?.referenceNo },
-          ],
+      details: ARRAY.getRequestDetails(
+        [
+          {
+            label: STRINGS.MLRequestFieldI,
+            value: DateTimeUtils.dateDashToWord(props?.dateFiled),
+          },
+          {
+            label: STRINGS.MLRequestFieldII,
+            value: props?.logType?.name,
+          },
+          {
+            label: STRINGS.MLRequestFieldIII,
+            value: DateTimeUtils.timeSecondsToUnits(props?.logTime),
+          },
+          {
+            label: STRINGS.requestFieldReason,
+            value: props?.reason,
+          },
+          {
+            label: STRINGS.requrestFieldReferenceNo,
+            value: props?.referenceNo,
+          },
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.missedLog,
         DateTimeUtils.twoDateRangeFormat(props?.dateFiled, props?.dateFiled),
@@ -836,6 +885,7 @@ export const ARRAY = {
         props?.documentNo,
       ),
     },
+
   ],
 
   fileFormats: ['doc', 'docx', 'png', 'pdf', 'jpeg', 'jpg', 'txt'],
@@ -925,12 +975,13 @@ export const ARRAY = {
     { title: 'CompanyId', value: data?.companyId },
     { title: 'BranchId', value: data?.branchId },
 
-    { title: 'FilingStatusId', value: data?.filing?.filingStatus?.id },
-    { title: 'FilingStatus', value: data?.filing?.filingStatus?.name },
+    { title: 'FilingStatus.Id', value: data?.filing?.filingStatus?.id },
+    { title: 'FilingStatus.Name', value: data?.filing?.filingStatus?.name },
     { title: 'ReferenceNo,', value: '' },
     { title: 'DateTransaction', value: DateTimeUtils.isoToDateDash(data?.filing?.dateTransaction) },
     { title: 'Reason', value: data?.filing?.reason },
     { title: 'FileAttachment', value: data?.filing?.fileAttachment },
+    { title: 'EditLog', value: data?.editLog },
   ],
 
   reqBodyDefaultML: (data: SchemaRequestApplications) => [
@@ -1000,7 +1051,7 @@ export const ARRAY = {
   reqBodyML: (data: SchemaRequestApplications) => [
     ...ARRAY.reqBodyDefault(data),
     ...ARRAY.reqBodyDefaultML(data),
-    { title: 'DepartmentId', value: data?.departmentId },
+    { title: 'DepartmentId', value: data?.departmentId || 0 },
     { title: 'DateFiled', value: DateTimeUtils.isoToDateDash(data?.filing?.dateFiled as string) },
     { title: 'LogType.Id', value: data?.filing?.logType?.id },
     { title: 'LogType.Name', value: data?.filing?.logType?.name },
