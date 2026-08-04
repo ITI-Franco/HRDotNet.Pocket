@@ -35,15 +35,15 @@ export const Context = createContext<TypeContext>({
   platform: '',
   params: undefined,
   state: ValuesHome.State,
-  setState: () => { },
+  setState: () => {},
   handle: ValuesHome.Handle,
-  setHandle: () => { },
+  setHandle: () => {},
 
-  onHandleEffectI: () => { },
-  onHandleEffectII: () => { },
-  onHandleBadge: () => { },
-  fetchUserDetails: () => { },
-  checkTeamMembers: () => { },
+  onHandleEffectI: () => {},
+  onHandleEffectII: () => {},
+  onHandleBadge: () => {},
+  fetchUserDetails: () => {},
+  checkTeamMembers: () => {},
 });
 
 export const CtxHome = ({ children }: { children: React.ReactNode }) => {
@@ -104,20 +104,18 @@ export const CtxHome = ({ children }: { children: React.ReactNode }) => {
   };
 
   const checkTeamMembers = async () => {
-    let result: any[] = []
-       await UtilsFetch.connect(
-         APIMethods.GET,
-         ContentTypes.JSON,
-        `${process.env.EXPO_PUBLIC_PROFILE_REQUEST}`
-       ).then ((response:{data:{teamMembers:TeamMember[]; name: string}}) =>{
-         setState({
-          teamMembersCount: response.data.teamMembers.length
-         })
-       }).catch((error: TypeError) => {
-         console.error(error);
-       })
-       return result
-  }
+    let result: any[] = [];
+    await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, `${process.env.EXPO_PUBLIC_PROFILE_REQUEST}`)
+      .then((response: { data: { teamMembers: TeamMember[]; name: string } }) => {
+        setState({
+          teamMembersCount: response.data.teamMembers?.length ?? 0,
+        });
+      })
+      .catch((error: TypeError) => {
+        console.error(error);
+      });
+    return result;
+  };
 
   return (
     <Context.Provider

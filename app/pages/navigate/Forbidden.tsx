@@ -8,7 +8,7 @@ import TabHeader from 'src/components/header/TabHeader';
 import { COLORS, STRINGS } from 'src/index';
 import Entypo from '@expo/vector-icons/Entypo';
 
-export const Forbidden = () => {
+const Forbidden: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   return (
@@ -69,3 +69,5 @@ export const Forbidden = () => {
     </React.Fragment>
   );
 };
+
+export default Forbidden;

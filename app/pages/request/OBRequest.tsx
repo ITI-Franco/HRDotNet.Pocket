@@ -5,7 +5,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { View, Text, Platform, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-
 import PageHeader from 'src/components/header/PageHeader';
 import { STRINGS, STYLES, DateTimeUtils, ARRAY } from 'src';
 import { Utils } from 'src/utils/Utils';
@@ -52,10 +51,10 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     );
     const handleFilingData = setHandle({ checkSelect: currParams?.data?.filing?.logType?.id });
 
-    currParams.onReqAction !== onReqAction.Update
+    (currParams.onReqAction !== onReqAction.Update
       ? (setState({ reason: '' }), stateFilingData, handleFilingData)
       : stateFilingData,
-      handleFilingData;
+      handleFilingData);
   }, []);
 
   useEffect(() => {
@@ -100,7 +99,6 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     );
   };
 
-
   return (
     <View style={styles.mainView}>
       <PageHeader name={Utils.panelPageHeaderTitle(currParams.onPanel, currParams.onReqAction)} />
@@ -135,9 +133,10 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     state.OBDateFrom,
                     true,
                     DateTimeUtils.dateDefaultToWord(state.OBDateFrom),
-                    STRINGS.styledPlaceholderDate,
+                    STRINGS.placeholderDateRange.startDate,
                     () => setHandle({ isDateFromPicker: true }),
                     'calendar',
+                    true,
                   ),
 
                   UtilsDisplay.DisplayFieldWithIcon(
@@ -146,9 +145,34 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     state.OBDateTo,
                     true,
                     DateTimeUtils.dateDefaultToWord(state.OBDateTo),
-                    STRINGS.styledPlaceholderDate,
+                    STRINGS.placeholderDateRange.endDate,
                     () => setHandle({ isDateToPicker: true }),
                     'calendar',
+                    true,
+                  ),
+
+                  UtilsDisplay.DisplayFieldWithIcon(
+                    handle.isInputCheck!,
+                    STRINGS.OBRequestFieldVII,
+                    state.OBTimeIn,
+                    true,
+                    DateTimeUtils.timeSecondsToUnits(state.OBTimeIn),
+                    STRINGS.placeholderTimeRange.startTime,
+                    () => setHandle({ isTimeFromPicker: true }),
+                    'time',
+                    true,
+                  ),
+
+                  UtilsDisplay.DisplayFieldWithIcon(
+                    handle.isInputCheck!,
+                    STRINGS.OBRequestFieldVIII,
+                    state.OBTimeOut,
+                    true,
+                    DateTimeUtils.timeSecondsToUnits(state.OBTimeOut),
+                    STRINGS.placeholderTimeRange.endTime,
+                    () => setHandle({ isTimeToPicker: true }),
+                    'time',
+                    true,
                   ),
 
                   UtilsDisplay.DisplayButtonField(
@@ -158,11 +182,15 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     state.location.name || '',
                     state.location?.name,
                     STRINGS.tapSelectPlaceholder('Location'),
-                    () =>
+                    () => {
                       navigation.navigate(STRINGS.pathSelectionList, {
                         currParams,
                         action: STRINGS.selectionListOBRequestI,
-                      }),
+                        label: 'Location',
+                      });
+                    },
+                    false,
+                    true,
                   ),
 
                   UtilsDisplay.DisplayButtonField(
@@ -179,38 +207,30 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                         action: STRINGS.selectionListOBRequestII,
                       }),
                     !state.location?.name ? true : false,
+                    !state.location?.name ? false : true,
                   ),
 
-                  UtilsDisplay.DisplayFieldWithIcon(
+                  UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
-                    STRINGS.OBRequestFieldVII,
-                    state.OBTimeIn,
+                    STRINGS.requrestFieldReferenceNo,
+                    state?.referenceNo ?? '',
                     true,
-                    DateTimeUtils.timeSecondsToUnits(state.OBTimeIn),
-                    STRINGS.styledPlaceholderTime,
-                    () => setHandle({ isTimeFromPicker: true }),
-                    'time',
-                  ),
-
-                  UtilsDisplay.DisplayFieldWithIcon(
-                    handle.isInputCheck!,
-                    STRINGS.OBRequestFieldVIII,
-                    state.OBTimeOut,
+                    (text: string) => setState({ referenceNo: text }),
                     true,
-                    DateTimeUtils.timeSecondsToUnits(state.OBTimeOut),
-                    STRINGS.styledPlaceholderTime,
-                    () => setHandle({ isTimeToPicker: true }),
-                    'time',
+                    FieldLimit.referenceNo.maxLength,
+                    STRINGS.placeholderReferenceNo,
                   ),
 
                   UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
                     STRINGS.requestFieldReason,
-                    state.reason,
+                    state?.reason ?? '',
                     true,
                     (text: string) => setState({ reason: text }),
                     true,
-                    FieldLimit,
+                    FieldLimit.reason.maxLength,
+                    STRINGS.placeholderReason,
+                    true,
                   ),
 
                   UtilsDisplay.DisplayFieldAttachment(
@@ -221,6 +241,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                     () => navigation.navigate(STRINGS.pathCamera, currParams),
                     () => Utils.fileAttach(setState),
                     () => currParams,
+                    true,
                   ),
                 ]}
           </View>

@@ -9,7 +9,7 @@ import { TypeSchemaNotification } from 'src/types/Types';
 
 const paddingIOS = Platform.OS === 'ios';
 
-var { width, height } = Dimensions.get('window')
+var { width, height } = Dimensions.get('window');
 
 export const STYLES = {
   Login: StyleSheet.create({
@@ -20,7 +20,7 @@ export const STYLES = {
 
     wrapper: {
       flex: 1,
-      position: "relative"
+      position: 'relative',
     },
 
     logo: {
@@ -420,7 +420,6 @@ export const STYLES = {
       paddingHorizontal: 9,
       borderRadius: 10,
       overflow: 'hidden',
-
     },
   }),
 
@@ -1009,7 +1008,7 @@ export const STYLES = {
         borderRadius: 20,
         minWidth: 155,
         // paddingHorizontal: 30,
-        padding: 10
+        padding: 10,
       },
 
       approveButton: { backgroundColor: COLORS.green },
@@ -1138,8 +1137,8 @@ export const STYLES = {
 
     clockInButton: {
       //backgroundColor: COLORS.orange,
-      backgroundColor: "gray", // temporary
-      opacity: .5, // temporary
+      backgroundColor: 'gray', // temporary
+      opacity: 0.5, // temporary
       width: 170,
       borderRadius: 15,
       paddingVertical: 5,
@@ -2168,7 +2167,7 @@ export const STYLES = {
         fontFamily: 'Inter_500Medium',
         fontSize: 15,
         marginStart: 5,
-        color: COLORS.darkGray
+        color: COLORS.darkGray,
       },
     }),
 
@@ -2379,7 +2378,7 @@ export const STYLES = {
     title: {
       fontFamily: 'Inter_600SemiBold',
       marginLeft: 15,
-      marginRight: 8,
+      marginRight: 2,
       marginBottom: 5,
     },
   }),
@@ -2657,7 +2656,7 @@ export const STYLES = {
 
     searchTwo: {
       fontFamily: 'Inter_400Regular',
-      flexWrap: "wrap",
+      flexWrap: 'wrap',
       borderColor: COLORS.lighterGray,
       flex: 1,
       width: '100%',
@@ -2667,7 +2666,7 @@ export const STYLES = {
       borderRadius: 90,
       paddingVertical: 5,
       gap: 5,
-      marginBottom: 10
+      marginBottom: 10,
     },
 
     titleText: {

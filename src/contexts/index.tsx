@@ -33,7 +33,7 @@ import { CtxTeams } from './pages/home/Teams.context';
 import { CtxContacts } from './pages/home/Contacts.context';
 import { CtxLoanLedger } from './pages/home/LoanLedger.context';
 import { CtxPendings } from './pages/home/Pending.context';
-import { Pending } from 'app/pages/home/Pending';
+import Pending from 'app/pages/home/Pending';
 import { CtxProfile } from './tabs/Profile.context';
 import { CtxNotification } from './pages/home/Notification.context';
 import { createStackNavigator } from '@react-navigation/stack';

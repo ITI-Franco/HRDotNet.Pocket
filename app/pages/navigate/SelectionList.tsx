@@ -5,15 +5,16 @@
 import React, { useEffect, useReducer, useRef } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-
 import Loader from 'src/components/loader/Loader';
 import PageHeader from 'src/components/header/PageHeader';
 import Note from 'src/components/note/Note';
-import { STRINGS, STYLES } from 'src';
+import { COLORS, STRINGS, STYLES } from 'src';
 import { Utils } from 'src/utils/Utils';
 import { StateSelectionList, TypeHandle, TypeSelectionList, TypeNavProp } from 'src/types/Types';
-import { APIMethods, ContentTypes, ValuesSelectionList } from 'src/constants/Values';
+import { APIMethods, ContentTypes, FieldLimit, ValuesSelectionList } from 'src/constants/Values';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
+import { UtilsDisplay } from 'src/utils/UtilsDisplay';
+import { Ionicons } from '@expo/vector-icons';
 
 const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
   const styles = STYLES.ComponentSelectionList;
@@ -54,7 +55,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
         UtilsFetch.connect(
           APIMethods.GET,
           ContentTypes.JSON,
-          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations`,
+          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations?Name=${encodeURIComponent(state.name ?? '')}`,
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any, index: number) => ({
@@ -122,8 +123,22 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
         <Loader />
       ) : (
         <View style={styles.container}>
-          <PageHeader name={STRINGS.pageTitleSelectionList} />
+          <PageHeader name={`${STRINGS.pageTitleSelectionList} ${(params as any).label ?? ''}`} />
 
+          <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
+            {UtilsDisplay.DisplayFieldTextInput(
+              false,
+              undefined,
+              state?.name || '',
+              true,
+              (text: string) => setState({ name: text }),
+              true,
+              FieldLimit.reason.maxLength,
+              `Enter ${(params as any).label ?? ''}`,
+              false,
+              <Ionicons name="search" size={26} color={COLORS.lighterGray} />,
+            )}
+          </View>
           {state.data.length > 0 ? (
             <FlatList
               ref={scrollViewRef}

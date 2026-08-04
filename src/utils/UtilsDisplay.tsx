@@ -14,19 +14,30 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import FileAttachedNote from 'src/components/note/FileAttachedNote';
 import RequestField from 'src/components/sections/request/RequestField';
-import { ARRAY, COLORS, ERRORS, STRINGS, STYLES } from 'src';
+import { ARRAY, COLORS, STRINGS, STYLES } from 'src';
 import { CheckboxData, TypeNavStack } from 'src/types/Types';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { Utils } from './Utils';
 
 export const UtilsDisplay = {
-  DisplayFieldOnlyInput: (handle: boolean, title: string, value: string | undefined, allowInputCheck: boolean) => {
+  DisplayFieldOnlyInput: (
+    handle: boolean,
+    title: string,
+    value: string | undefined,
+    allowInputCheck: boolean,
+    withAsterisk?: boolean,
+  ) => {
     const styles = STYLES.NewRequest;
 
     return (
       <View style={styles.wrapper}>
-        <RequestField title={title} inputValue={value} isInputCheck={allowInputCheck ? handle : undefined} />
+        <RequestField
+          title={title}
+          inputValue={value}
+          isInputCheck={allowInputCheck ? handle : undefined}
+          withAsterisk={withAsterisk}
+        />
 
         <View style={styles.disabledInput}>
           <Text style={styles.disabledInputText}>{value || STRINGS.none}</Text>
@@ -44,6 +55,7 @@ export const UtilsDisplay = {
     placeholder: string,
     onPress: () => void,
     icon: React.ComponentProps<typeof Ionicons>['name'],
+    withAsterisk?: boolean,
   ) => {
     const styles = STYLES.NewRequest;
 
@@ -53,6 +65,7 @@ export const UtilsDisplay = {
           title={title}
           inputValue={allowInputValue ? value : undefined}
           isInputCheck={allowInputValue ? handle : undefined}
+          withAsterisk={withAsterisk}
         />
 
         <View style={[styles.rowView, styles.border]}>
@@ -77,6 +90,7 @@ export const UtilsDisplay = {
     title: string,
     onHandleCheck: (item: CheckboxData, index: number) => void,
     showFieldTitle?: boolean,
+    withAsterisk?: boolean,
   ) => {
     const styles = STYLES.NewRequest;
 
@@ -87,6 +101,7 @@ export const UtilsDisplay = {
             title={title}
             inputValue={allowInputValue ? value : undefined}
             isInputCheck={allowInputValue ? handle : undefined}
+            withAsterisk={withAsterisk}
           />
         )}
 
@@ -109,30 +124,47 @@ export const UtilsDisplay = {
 
   DisplayFieldTextInput: (
     handle: boolean,
-    title: string,
+    title: string | undefined,
     value: string,
     allowInputCheck: boolean,
     onChangeText: (text: string) => void,
     disabled?: boolean,
-    limit?: number, // Optional prop for input character limit
+    limit?: number,
+    placeholder?: string,
+    withAsterisk?: boolean,
+    leftSection?: React.ReactNode,
   ) => {
     const styles = STYLES.NewRequest;
 
     return (
       <View style={styles.wrapper}>
-        <RequestField title={title} inputValue={value} isInputCheck={allowInputCheck ? handle : undefined} />
-
-        <TextInput
-          style={[styles.textInput, disabled === false ? styles.disabledInput : styles.border]}
-          onChangeText={(text) => onChangeText(text)}
-          value={value}
-          placeholder={STRINGS.details}
-          multiline
-          autoCorrect={false}
-          placeholderTextColor={COLORS.lighterGray}
-          editable={disabled}
-          maxLength={limit}
+        <RequestField
+          title={title ? title : ''}
+          inputValue={value}
+          isInputCheck={allowInputCheck ? handle : undefined}
+          withAsterisk={withAsterisk}
         />
+
+        <View
+          style={[
+            { flexDirection: 'row', alignItems: 'center' },
+            disabled === false ? styles.disabledInput : styles.border,
+          ]}
+        >
+          {leftSection && <View style={{ paddingLeft: 10, justifyContent: 'center' }}>{leftSection}</View>}
+
+          <TextInput
+            style={[styles.textInput, { flex: 1 }]}
+            onChangeText={(text) => onChangeText(text)}
+            value={value}
+            placeholder={placeholder || STRINGS.details}
+            multiline
+            autoCorrect={false}
+            placeholderTextColor={COLORS.lighterGray}
+            editable={disabled}
+            maxLength={limit}
+          />
+        </View>
       </View>
     );
   },
@@ -145,12 +177,18 @@ export const UtilsDisplay = {
     onCameraPress: () => void,
     onFilePress: () => void,
     getCurrParams: () => void,
+    withAsterisk?: boolean,
   ) => {
     const styles = STYLES.NewRequest;
     const navigation: TypeNavStack['navigation'] = useNavigation();
     return (
       <View style={styles.wrapper}>
-        <RequestField title={title} inputValue={value} isInputCheck={allowInputCheck ? handle : undefined} />
+        <RequestField
+          title={title}
+          inputValue={value}
+          isInputCheck={allowInputCheck ? handle : undefined}
+          withAsterisk={withAsterisk}
+        />
 
         <View style={[styles.rowView, styles.border]}>
           {!value ? (
@@ -165,45 +203,41 @@ export const UtilsDisplay = {
           <View style={[styles.rowView, { paddingHorizontal: 0 }]}>
             <TouchableOpacity
               onPress={async () => {
-
                 try {
-
-                    await ImagePicker.requestCameraPermissionsAsync();
+                  await ImagePicker.requestCameraPermissionsAsync();
                   let result = await ImagePicker.launchCameraAsync({
-                  cameraType: ImagePicker.CameraType.front,
-                  aspect: [1, 1],
-                  quality: 0.5,
-                });
-            
-                if (!result.canceled) {
-                  const currParams = getCurrParams() as any;
-                  // const fileName = result.assets[0].fileName;
-                  // const extension = (fileName as any).split('.').pop();
-
-                  const asset = result.assets[0];
-                  let extension = 'jpg';
-                  if (asset.fileName) {
-                    extension = (asset.fileName as any).split('.').pop();
-                  } else {
-                    const match = asset.uri.match(/\.(\w+)$/);
-                    if (match) extension = match[1];
-                  }
-
-                  const resized = await ImageManipulator.manipulateAsync(result.assets[0].uri, [], {
-                    compress: 0.2,
+                    cameraType: ImagePicker.CameraType.front,
+                    aspect: [1, 1],
+                    quality: 0.5,
                   });
-                  
-                  const timestamp = new Date().getTime();
-                  const convertedUri = `${FileSystem.documentDirectory}Mobile_${timestamp}.${extension}`;
-                  await FileSystem.copyAsync({ from: resized.uri, to: convertedUri });
-                  Utils.panelNavigateCamera(currParams.onPanel, navigation, currParams, convertedUri, extension);
-                }
-                } catch (error) {
-                  console.error(error)
-                   alert("Camera access is required. Please enable it in your device settings.")
-                }
-              
 
+                  if (!result.canceled) {
+                    const currParams = getCurrParams() as any;
+                    // const fileName = result.assets[0].fileName;
+                    // const extension = (fileName as any).split('.').pop();
+
+                    const asset = result.assets[0];
+                    let extension = 'jpg';
+                    if (asset.fileName) {
+                      extension = (asset.fileName as any).split('.').pop();
+                    } else {
+                      const match = asset.uri.match(/\.(\w+)$/);
+                      if (match) extension = match[1];
+                    }
+
+                    const resized = await ImageManipulator.manipulateAsync(result.assets[0].uri, [], {
+                      compress: 0.2,
+                    });
+
+                    const timestamp = new Date().getTime();
+                    const convertedUri = `${FileSystem.documentDirectory}Mobile_${timestamp}.${extension}`;
+                    await FileSystem.copyAsync({ from: resized.uri, to: convertedUri });
+                    Utils.panelNavigateCamera(currParams.onPanel, navigation, currParams, convertedUri, extension);
+                  }
+                } catch (error) {
+                  console.error(error);
+                  alert('Camera access is required. Please enable it in your device settings.');
+                }
               }}
             >
               <Ionicons name="camera" size={26} color={COLORS.lighterGray} />
@@ -229,6 +263,7 @@ export const UtilsDisplay = {
     placeholder: string,
     onPress: () => void,
     disabled?: boolean,
+    withAsterisk?: boolean,
   ) => {
     const styles = STYLES.NewRequest;
 
@@ -238,6 +273,7 @@ export const UtilsDisplay = {
           title={title}
           inputValue={allowInputCheck ? (value as string) : undefined}
           isInputCheck={allowInputCheck ? handle : undefined}
+          withAsterisk={withAsterisk}
         />
 
         <TouchableOpacity
@@ -253,33 +289,33 @@ export const UtilsDisplay = {
     );
   },
 
-DisplayDateTimePicker: (
-  visible: boolean,
-  mode: React.ComponentProps<typeof DateTimePicker>['mode'],
-  onConfirm: (date: string) => void,
-  onCancel: () => void,
-  date?: Date,
-  minimumDate?: Date,
-) => {
-  return (
-    <DateTimePicker
-      isVisible={visible}
-      mode={mode}
-      textColor="black"
-      accentColor={COLORS.powderBlue}
-      date={date ?? new Date()} 
-      minimumDate={minimumDate}
-      onConfirm={(pickedDate) => {
-        if (!pickedDate) {
-          onCancel();
-          return;
-        }
-        onConfirm((pickedDate as Date).toISOString());
-      }}
-      onCancel={onCancel}
-    />
-  );
-},
+  DisplayDateTimePicker: (
+    visible: boolean,
+    mode: React.ComponentProps<typeof DateTimePicker>['mode'],
+    onConfirm: (date: string) => void,
+    onCancel: () => void,
+    date?: Date,
+    minimumDate?: Date,
+  ) => {
+    return (
+      <DateTimePicker
+        isVisible={visible}
+        mode={mode}
+        textColor="black"
+        accentColor={COLORS.powderBlue}
+        date={date ?? new Date()}
+        minimumDate={minimumDate}
+        onConfirm={(pickedDate) => {
+          if (!pickedDate) {
+            onCancel();
+            return;
+          }
+          onConfirm((pickedDate as Date).toISOString());
+        }}
+        onCancel={onCancel}
+      />
+    );
+  },
 
   DisplayDataImage: (
     // ML Request New or Update Record

@@ -23,7 +23,7 @@ import { Utils } from 'src/utils/Utils';
 
 const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   const [onReqAction] = useState<TypeReqAction[]>(ARRAY.reqAction)[0];
-  const { employeeName } = useGlobalStore()
+  const { employeeName } = useGlobalStore();
 
   const params = useRoute().params as {
     onPanel?: number;
@@ -47,8 +47,6 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   //   JSON.stringify(currProps, null, 2),
   //   JSON.stringify(currUpdateProps, null, 2)
   // );
-
-
 
   const onHandleClosePrompt = () => {
     setHandle({ isSuccess: false });
@@ -83,12 +81,13 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   return (
     <React.Fragment>
       <PageHeader
-        name={`${STRINGS.pageTitleReqSummary} ${currOnReqAction === onReqAction.New
-          ? ''
-          : currOnReqAction !== onReqAction.Update
-            ? STRINGS.cancel
-            : STRINGS.update
-          }`}
+        name={`${STRINGS.pageTitleReqSummary} ${
+          currOnReqAction === onReqAction.New
+            ? ''
+            : currOnReqAction !== onReqAction.Update
+              ? STRINGS.cancel
+              : STRINGS.update
+        }`}
       />
 
       {handle.isToast!.show && <Toast handle={handle.isToast!} setHandle={setHandle} />}

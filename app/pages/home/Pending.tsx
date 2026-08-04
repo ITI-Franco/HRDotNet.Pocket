@@ -23,7 +23,7 @@ import { usePending } from 'src/contexts/pages';
 import { PendingApplications } from 'src/types/Pending';
 import TabHeader from 'src/components/header/TabHeader';
 
-export const Pending: React.FC = () => {
+const Pending: React.FC = () => {
   const { state, handle, setHandle, onFetchPending, onHandleSearchSubmit } = usePending();
   const platformIOS = Platform.OS === 'ios';
   const search = STYLES.ComponentSearch(platformIOS);
@@ -100,3 +100,5 @@ export const Pending: React.FC = () => {
     </React.Fragment>
   );
 };
+
+export default Pending;

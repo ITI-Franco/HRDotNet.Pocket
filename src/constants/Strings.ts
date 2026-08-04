@@ -50,7 +50,7 @@ export const STRINGS = {
   pageTitleRequestDetails: 'Request Details',
   pageTitleRequestUpdate: 'Request Update',
   pageTitleAttachedFile: 'Attached File',
-  pageTitleSelectionList: 'Selection List',
+  pageTitleSelectionList: 'Select',
   pageTitleUpdateRequest: 'Update Request',
 
   pageTitleReqSummaryUpdate: 'Request Summary Update',
@@ -169,8 +169,8 @@ export const STRINGS = {
   OBRequestFieldIV: 'Branch',
   OBRequestFieldV: 'Time in',
   OBRequestFieldVI: 'Time out',
-  OBRequestFieldVII: 'OB Time-in',
-  OBRequestFieldVIII: 'OB Time-out',
+  OBRequestFieldVII: 'OB Time In',
+  OBRequestFieldVIII: 'OB Time Out',
 
   OTRequestFieldI: 'OT Date',
   OTRequestFieldII: 'Shift',
@@ -197,7 +197,7 @@ export const STRINGS = {
   MLRequestFieldIII: 'Log Time',
   MLRequestFieldIV: '',
 
-  requrestFieldReferenceNo: "Reference No",
+  requrestFieldReferenceNo: 'Reference No.',
   requestFieldReason: 'Reason',
   requestFieldAttachment: 'File Attachment',
 
@@ -363,7 +363,18 @@ export const STRINGS = {
   placeholderSearch: 'Search',
   placeholderDate: 'Date',
   styledPlaceholderDate: '<t>Date</t>',
+  placeholderDateRange: {
+    startDate: 'Select Start Date',
+    endDate: 'Select End Date',
+  },
   styledPlaceholderTime: '<t>Time</t>',
+  placeholderTimeRange: {
+    startTime: 'Select Start Time',
+    endTime: 'Select End Time',
+  },
+  placeholderLocation: 'Enter Location',
+  placeholderReason: 'Enter Reason',
+  placeholderReferenceNo: 'Enter Reference No.',
   placeholderTime: 'Time',
   placeholderGetLocation: 'Processing....',
   blank: '•••••••',
@@ -437,8 +448,8 @@ export const STRINGS = {
     `The system detected the following overtime hours on the ensuing dates for the ` +
     `<b><u>${value} half</u></b> of <b><u>${text}</u></b>`,
 
-  styledDisabled: `<t>Disabled</t>`,
-  tapSelectPlaceholder: (text: string) => `<t>Tap to Select ${text}</t>`,
+  styledDisabled: `<t></t>`,
+  tapSelectPlaceholder: (text: string) => `<t>Select ${text}</t>`,
   requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
     `Your <b><u>${title}</u></b> request ` +
     `${reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `}` +

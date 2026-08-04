@@ -51,10 +51,10 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     );
     const handleFilingData = setHandle({ checkSelect: params?.data?.filing?.requested?.isRestDay === true ? 1 : 0 });
 
-    currParams.onReqAction !== onReqAction.Update
+    (currParams.onReqAction !== onReqAction.Update
       ? (setState({ reason: '' }), stateFilingData, handleFilingData)
       : stateFilingData,
-      handleFilingData;
+      handleFilingData);
   }, []);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                 true,
                 (text: string) => setState({ reason: text }),
                 true,
-                FieldLimit,
+                FieldLimit.reason.maxLength,
               ),
 
               UtilsDisplay.DisplayFieldAttachment(
