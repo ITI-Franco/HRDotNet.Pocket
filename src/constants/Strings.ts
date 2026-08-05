@@ -116,7 +116,7 @@ export const STRINGS = {
   cllnType: 'Type: ',
   cllnLogType: 'Log Type: ',
   cllnLogTime: 'Log Time: ',
-  cllnDateFiled: 'Date Filed: ',
+  cllnDateFiled: 'Date Period: ',
   cllnSource: 'Source: ',
   cllnLoanCode: 'Loan Code: ',
   cllnDocumentNo: 'Document No.: ',
@@ -125,7 +125,7 @@ export const STRINGS = {
   cllnCancelledDate: 'Cancelled Date: ',
   cllnDateGranted: 'Date Granted: ',
   cllnFirstDueDate: 'First Due Date: ',
-  cllnReferenceNo: 'Reference No: ',
+  cllnReferenceNo: 'Reference No.: ',
   cllnLoanAmount: 'Loan Amount: ',
   cllnDisbursedAmount: 'Disbursed Amount: ',
   cllnCycle: 'Cycle: ',
@@ -138,7 +138,7 @@ export const STRINGS = {
   cllnTime: 'Time: ',
   cllnDateTransaction: 'Date Transaction: ',
   cllnOBDate: 'OB Date: ',
-  cllnOBTime: 'OB Time: ',
+  cllnOBTime: 'OB Time In and Out: ',
   cllnBranch: 'Branch: ',
   cllnOvertimeDate: 'Overtime Date: ',
   cllnMissedLogDate: 'Missed Log Date: ',
@@ -171,6 +171,11 @@ export const STRINGS = {
   OBRequestFieldVI: 'Time out',
   OBRequestFieldVII: 'OB Time In',
   OBRequestFieldVIII: 'OB Time Out',
+  OBSummaryFieldI: 'OB Period',
+  OBSummaryFieldII: 'OB Time In and Out',
+  OBSummaryFieldIII: 'Location',
+  OBSummaryFieldIV: 'Branch',
+  OBSummaryFieldV: 'Reference No.',
 
   OTRequestFieldI: 'OT Date',
   OTRequestFieldII: 'Shift',
@@ -437,7 +442,6 @@ export const STRINGS = {
     `${value === 1 ? 'Clocked In' : 'Clocked Out'}: ${DateTimeUtils.dateDefaultToWord(date)} at ${DateTimeUtils.timeSecondsToUnits(time)}`,
 
   // String Components Values
-  // errException: (val: string) => `HRDotNet.Shared.ErrorHandling.Exception.${val}`,
 
   successClocked: (status: string, address: string) =>
     `You have successfully <b>${status}</b> from${'\n'} <b>${address}</b>`,
@@ -455,8 +459,17 @@ export const STRINGS = {
   requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
     `Your <b><u>${title}</u></b> request ` +
     `${reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `}` +
-    `was successfully ${reqAction === 1 ? 'submitted. We will get back to you soon.' : `${reqAction === 2 ? 'updated.' : 'cancelled.'}`}`,
-
+    `was successfully ${
+      reqAction === 1
+        ? 'submitted. We will get back to you soon.'
+        : reqAction === 2
+          ? 'updated.'
+          : reqAction === 4
+            ? 'reviewed.'
+            : reqAction === 5
+              ? 'approved.'
+              : 'cancelled.'
+    }`,
   requestCancellation: (params: SchemaRequestApplications, state: any) =>
     `${params.filing?.reason} (${STRINGS.cancellation} ${params.name} ${DateTimeUtils.getIsoDateWithBackSlash()} ${DateTimeUtils.getIsoTimeDefaultWithUnits()}) Reason: ${state.reason}`,
 

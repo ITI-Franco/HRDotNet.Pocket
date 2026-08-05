@@ -8,7 +8,6 @@ import { Shadow } from 'react-native-shadow-2';
 import * as Animatable from 'react-native-animatable';
 import { Image } from 'expo-image';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
-
 import Toast from 'src/components/use/Toast';
 import TimeClock from 'src/components/sections/home/TimeClock';
 import TimeOffButton from 'src/components/button/TimeOffButton';
@@ -26,17 +25,26 @@ import { useFetch } from 'src/hooks/useFetch';
 import { useGlobalStore } from 'src/store/GlobalStore';
 
 const Home: React.FC<TypeNavStack> = ({ navigation }) => {
-  const { insets, platform, params, state, handle, setHandle, onHandleEffectI, onHandleEffectII, fetchUserDetails, checkTeamMembers } =
-    useHome();
-  const [employeeLastName, setEmployeeLastName] = useState("")
-  const { employeeName, setEmployeeName } = useGlobalStore()
-
+  const {
+    insets,
+    platform,
+    params,
+    state,
+    handle,
+    setHandle,
+    onHandleEffectI,
+    onHandleEffectII,
+    fetchUserDetails,
+    checkTeamMembers,
+  } = useHome();
+  const [employeeLastName, setEmployeeLastName] = useState('');
+  const { employeeName, setEmployeeName } = useGlobalStore();
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
         const data = await useFetch.Profile();
-        setEmployeeName(Utils.formatEmployeeName(data.FullName))
+        setEmployeeName(Utils.formatEmployeeName(data.FullName));
       } catch (error) {
         console.error(error);
       }
@@ -44,7 +52,6 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
 
     loadProfile();
   }, []);
-
 
   const styles = STYLES.Home(insets, platform);
 
@@ -61,7 +68,7 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    checkTeamMembers()
+    checkTeamMembers();
   }, []);
 
   useFocusEffect(
@@ -74,16 +81,13 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
     try {
       const token = await AsyncStorage.getItem('AT');
       if (token) {
-        const { EmployeeName } = jwtDecode<{ EmployeeName: string }>(
-          token,
-        );
-        const lastName = EmployeeName.split(",")
-        setEmployeeLastName(lastName[0])
-
+        const { EmployeeName } = jwtDecode<{ EmployeeName: string }>(token);
+        const lastName = EmployeeName.split(',');
+        setEmployeeLastName(lastName[0]);
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) { }
+    } catch (err) {}
   })();
   return (
     <React.Fragment>

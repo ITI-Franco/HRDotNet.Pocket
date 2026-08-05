@@ -883,8 +883,6 @@ export const Utils = {
           const value = obj[key];
           //  skip checking
           if (
-            // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
-            // (['attachment'].includes(key) && panel != 1 && panel != 5) ||
             ['branch'].includes(key) ||
             ['restDay'].includes(key) ||
             ['documentNo'].includes(key) ||
@@ -973,7 +971,7 @@ export const Utils = {
         break;
 
       case onPanel.OB:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
+        dateToParse = DateTimeUtils.toDateRangeHalftMonthWord(data?.OBDateFrom!, data?.OBDateTo!);
         break;
 
       case onPanel.OT:
@@ -1048,6 +1046,29 @@ export const Utils = {
         };
         break;
 
+      case onPanel.OB:
+        newFields = {
+          DateFrom: DateTimeUtils.isoToDateWord(String(newData?.OBDateFrom)),
+          DateTo: DateTimeUtils.isoToDateWord(String(newData?.OBDateTo)),
+          TimeIn: newData?.OBTimeIn,
+          TimeOut: newData?.OBTimeOut,
+          Location: newData?.location.name ?? '',
+          LocationBranch: newData?.branch.name ?? '',
+          ReferenceNo: newData?.referenceNo ?? '',
+          Reason: newData?.reason,
+        };
+
+        oldFields = {
+          DateFrom: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateRange?.dateFrom)),
+          DateTo: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateRange?.dateTo)),
+          TimeIn: oldData?.filing?.timeRange?.timeIn,
+          TimeOut: oldData?.filing.timeRange?.timeOut,
+          Location: oldData?.filing.location?.name ?? '',
+          LocationBranch: oldData?.filing.location?.locationBranch ?? '',
+          ReferenceNo: oldData?.filing.referenceNo ?? '',
+          Reason: oldData?.filing.reason,
+        };
+
       default:
         break;
     }
@@ -1105,6 +1126,43 @@ export const Utils = {
         // Leave-specific formatting
         return '';
 
+      case onPanel.OB:
+        return [
+          ...Object.entries(changedFields)
+            .filter(([key]) => !['FileAttachment', 'UploadedFile', 'DateFrom', 'DateTo'].includes(key))
+            .map(([key, { from, to }]) => {
+              const displayKey = fieldDisplayNames[key] ?? key;
+
+              if (key === FieldKey.TimeIn) {
+                return `${displayKey}: from "${DateTimeUtils.isoToTimeSecondToPMAM(from)}" into "${DateTimeUtils.isoToTimeSecondToPMAM(to)}"`;
+              }
+
+              if (key === FieldKey.TimeOut) {
+                return `${displayKey}: from "${DateTimeUtils.isoToTimeSecondToPMAM(from)}" into "${DateTimeUtils.isoToTimeSecondToPMAM(to)}"`;
+              }
+
+              if (key === FieldKey.LocationBranch) {
+                return `${displayKey}: from "${from}" into "${to}"`;
+              }
+
+              if (key === FieldKey.ReferenceNo) {
+                if (!from && to) {
+                  return `${displayKey}: Added "${to}"`;
+                }
+
+                if (from && !to) {
+                  return `${displayKey}: Removed "${from}"`;
+                }
+
+                return `${displayKey}: from "${from}" into "${to}"`;
+              }
+
+              return `${displayKey}: from "${from}" into "${to}"`;
+            }),
+
+          ...attachmentChanges,
+        ].join(', ');
+
       default:
         return '';
     }
@@ -1126,7 +1184,7 @@ export const Utils = {
           { label: STRINGS.cllnDocumentNo, value: data?.filing.documentNo },
           { label: 'Status: ', value: data?.filing?.filingStatus?.name! },
           {
-            label: 'OB Time: ',
+            label: `${STRINGS.cllnOBTime}:`,
             value: DateTimeUtils.twoTimeRangeFormat(
               data?.filing?.timeRange?.timeIn!,
               data?.filing?.timeRange?.timeOut!,

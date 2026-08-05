@@ -436,7 +436,7 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  Teams: async () => { },
+  Teams: async () => {},
 
   RequestById: async (
     nav: StackNavigationProp<ParamListBase>,
@@ -493,7 +493,7 @@ export const useFetch = {
     try {
       const extract = await Utils.extractFileAttach(params, parsed);
       const response = await fetch(extract);
-      response.ok && setHandle({ isSuccess: true }), setFile(extract);
+      (response.ok && setHandle({ isSuccess: true }), setFile(extract));
     } catch (error: unknown) {
       setHandle({ isSuccess: false });
     } finally {
@@ -509,7 +509,7 @@ export const useFetch = {
     updateData: SchemaRequestApplications,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
-    formatName?: string
+    formatName?: string,
   ) => {
     const [onReqAction] = ARRAY.reqAction as TypeReqAction[];
     const parsedUpdate = updateData;
@@ -531,63 +531,55 @@ export const useFetch = {
       formData.append(typedData.title, typedData.value);
     });
 
-    // Iba iba per applications yung date 
-    const dateParse = Utils.panelDateToParse(panel, parsed)
+    // Iba iba per applications yung date
+    const dateParse = Utils.panelDateToParse(panel, parsed);
 
     if (reqAction === onReqAction.Update || onReqAction.Cancel) {
-
-
       if (reqAction === onReqAction.Update) {
-        const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData)
+        const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
 
-        const changedFields = Utils.getChangedFields(newFields, oldFields, ["ReferenceNo"]);
+        const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
-        const originalAttachments = Utils.parseAttachments(updateData.filing.fileAttachment)
-        const newAttachment = Utils.parseAttachments(parsed.attachment.url)
+        const originalAttachments = Utils.parseAttachments(updateData.filing.fileAttachment);
+        const newAttachment = Utils.parseAttachments(parsed.attachment.url);
 
-        const attachmentChanges = Utils.getAttachmentHistory(originalAttachments, newAttachment, formatName || "")
+        const attachmentChanges = Utils.getAttachmentHistory(originalAttachments, newAttachment, formatName || '');
 
-        const readableChanges = Utils.panelReadableChanges(panel, changedFields, attachmentChanges)
+        const readableChanges = Utils.panelReadableChanges(panel, changedFields, attachmentChanges);
 
         const generateEditLog = Utils.generateHistoryItem(
-          readableChanges || "No changes detected",
+          readableChanges || 'No changes detected',
           formatName,
-          "Edited",
-          dateParse
+          'Edited',
+          dateParse,
         );
 
         const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
 
-        formData.append("EditLog", editLog)
-
+        formData.append('EditLog', editLog);
       } else if (reqAction === onReqAction.Cancel) {
-
-
-        const generateEditLog = Utils.generateHistoryItem(
-          parsed.cancelReason,
-          formatName,
-          "Cancelled",
-          dateParse
-        );
+        const generateEditLog = Utils.generateHistoryItem(parsed.cancelReason, formatName, 'Cancelled', dateParse);
         const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
 
-        formData.append("EditLog", editLog)
+        formData.append('EditLog', editLog);
       }
-      let dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate) as Array<{
-        title: string;
-        value: string | number | boolean;
-      }>;
 
-      dataSetUpdate.map((data) => {
-        const typedData = data as { title: string; value: string | number | boolean };
-        formData.append(typedData.title, typedData.value);
+      let dataSetUpdate;
+
+      if (panel === 1) {
+        dataSetUpdate = ARRAY.requestFormDataOB(reqAction, parsedUpdate);
+      } else {
+        dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate);
+      }
+
+      dataSetUpdate.forEach(({ title, value }) => {
+        if (title && value !== undefined && value !== null) {
+          formData.append(title, String(value));
+        }
       });
-
-
     }
 
     formData.append('Reason', parsed?.reason);
-
 
     if (parsed?.attachment?.url === undefined) {
       const undefinedUri = parsed?.attachment?.uri;
@@ -601,21 +593,16 @@ export const useFetch = {
         undefinedUri === ''
           ? formData.append('FileAttachment', parsed?.attachment?.uri)
           : formData.append('FileAttachment', {
-            name: split[split.length - 1],
-            uri: parsed?.attachment?.uri,
-            type: type,
-          });
+              name: split[split.length - 1],
+              uri: parsed?.attachment?.uri,
+              type: type,
+            });
 
-        const generateEditLog = Utils.generateHistoryItem(
-          parsed?.reason,
-          formatName,
-          "New",
-          dateParse
-        );
+        const generateEditLog = Utils.generateHistoryItem(parsed?.reason, formatName, 'New', dateParse);
 
         const editLog = Utils.appendHistoryItem(null, generateEditLog);
 
-        formData.append("EditLog", editLog)
+        formData.append('EditLog', editLog);
       } else {
         formData.append('UploadedFile', {
           name: split[split.length - 1],
@@ -627,7 +614,6 @@ export const useFetch = {
       formData.append('FileAttachment', parsed?.attachment?.url);
     }
 
-
     await UtilsFetch.connect(
       APIMethods.POST,
       ContentTypes.Multipart,
@@ -637,16 +623,15 @@ export const useFetch = {
 
       .then(() => {
         setHandle({ isSuccess: true });
-
       })
       .catch(async (error: TypeError) => {
-
         if (error.request.status === StatusCode.Unauthorized) {
           await useFetch.Refresh(nav, () =>
             useFetch.SubmitRequest(nav, panel, reqAction, data, updateData, handle, setHandle),
           );
         } else {
           const errors = await UtilsFetch.catchErrors(error);
+
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -753,28 +738,19 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplicationsDetails>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
-    formatName?: string
+    formatName?: string,
   ) => {
     let formSingle: Array<{ title: string; value: string }> = [];
     let url: string = await UtilsFetch.singleApprovals(state.panel, state.data.filing.filingStatus.id);
     const parsed: PropsRequestSummary = await JSON.parse(data);
 
-    const dateParse = Utils.panelDateToParse(state.panel, parsed)
-    const generateEditLog = Utils.generateHistoryItem(
-      parsed.approveReason,
-      formatName,
-      "Approved",
-      dateParse
-    );
+    const dateParse = Utils.panelDateToParse(state.panel, parsed);
+    const generateEditLog = Utils.generateHistoryItem(parsed.approveReason, formatName, 'Approved', dateParse);
 
     const updatedData = {
       ...state.data,
-      editLog: Utils.appendHistoryItem(
-        state.data.editLog,
-        generateEditLog
-      ),
+      editLog: Utils.appendHistoryItem(state.data.editLog, generateEditLog),
     };
-
 
     formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
     await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
@@ -812,7 +788,6 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplicationsDetails>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
-
   ) => {
     let formSingle: Array<{ title: string; value: string }> = [];
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
@@ -854,36 +829,25 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplicationsDetails>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
-    formatName?: string
+    formatName?: string,
   ) => {
     let formSingle: Array<{ title: string; value: string }> = [];
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
     const parsed: PropsRequestSummary = await JSON.parse(data);
 
-    const dateParse = Utils.panelDateToParse(state.panel, parsed)
-    const generateEditLog = Utils.generateHistoryItem(
-      parsed.reviewReason,
-      formatName,
-      "Reviewed",
-      dateParse
-    );
+    const dateParse = Utils.panelDateToParse(state.panel, parsed);
+    const generateEditLog = Utils.generateHistoryItem(parsed.reviewReason, formatName, 'Reviewed', dateParse);
 
     const updatedData = {
       ...state.data,
-      editLog: Utils.appendHistoryItem(
-        state.data.editLog,
-        generateEditLog
-      ),
+      editLog: Utils.appendHistoryItem(state.data.editLog, generateEditLog),
     };
 
-
     formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
-
 
     await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
       .then(() => {
         setHandle({ isSuccess: true });
-
       })
       .catch(async (error: any) => {
         const errors = await UtilsFetch.catchErrors(error);
@@ -1160,13 +1124,13 @@ export const useFetch = {
 
         res.length > 0
           ? setState({
-            clockIn: res[0],
-            clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
-          })
+              clockIn: res[0],
+              clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
+            })
           : setState({
-            clockIn: ValuesSchemaCalendarEntries,
-            clockOut: ValuesSchemaCalendarEntries,
-          });
+              clockIn: ValuesSchemaCalendarEntries,
+              clockOut: ValuesSchemaCalendarEntries,
+            });
       })
       .catch(async (error: TypeError) => {
         await UtilsFetch.catchEvent({
@@ -1223,10 +1187,8 @@ export const useFetch = {
         data: personalData,
         details: ARRAY.personalDetails(personalData),
       });
-
-
     } catch (error) {
-      console.log("Error profile response", error)
+      console.log('Error profile response', error);
       throw error;
     }
   },
@@ -1250,11 +1212,9 @@ export const useFetch = {
         EmailAdd: response.data.personalInformation.contact.email,
       };
 
-      return personalData
-
-
+      return personalData;
     } catch (error) {
-      console.log("Error profile response", error)
+      console.log('Error profile response', error);
       throw error;
     }
   },
