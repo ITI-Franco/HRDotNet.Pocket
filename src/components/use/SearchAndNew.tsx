@@ -12,7 +12,7 @@ import { COLORS, STYLES, STRINGS } from 'src';
 import { Utils } from 'src/utils/Utils';
 import { PropsSearchAndNew } from 'src/types/Types';
 
-const SearchAndNew: React.FC<PropsSearchAndNew> = ({ setHandle, onlySearch, onPanel }) => {
+const SearchAndNew: React.FC<PropsSearchAndNew> = ({ setHandle, onlySearch, onPanel, filterValue }) => {
   const platformIOS = Platform.OS === 'ios';
   const styles = STYLES.ComponentSearchAndNew(platformIOS);
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -21,12 +21,13 @@ const SearchAndNew: React.FC<PropsSearchAndNew> = ({ setHandle, onlySearch, onPa
     Utils.panelNavigateRequest(onPanel, 1, navigation);
   };
 
+
   return (
     <View style={styles.topContainer}>
       <TouchableOpacity style={styles.searchContainer} onPress={() => setHandle({ isVisibleFilter: true })}>
         <FontAwesome name="search" size={20} color={COLORS.orange} />
 
-        <Text style={styles.searchText}>{STRINGS.filter}</Text>
+        <Text style={styles.searchText}>{filterValue !== "undefined" ? filterValue : STRINGS.filter}</Text>
       </TouchableOpacity>
 
       {!onlySearch && (

@@ -17,8 +17,7 @@ import { useFetch } from 'src/hooks/useFetch';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
-  state: StateApplications;
-  setState: React.Dispatch<Partial<StateApplications>>;
+  state: StateApplications; setState: React.Dispatch<Partial<StateApplications>>;
   handle: TypeHandle;
   setHandle: React.Dispatch<Partial<TypeHandle>>;
 
@@ -41,24 +40,24 @@ type TypeContext = {
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => {},
+  setState: () => { },
   handle: ValuesApprovals.Handle,
-  setHandle: () => {},
+  setHandle: () => { },
 
-  onHandleCheckbox: () => {},
-  onHandleSelectAll: () => {},
-  onHandleApprovals: () => {},
-  onHandleClosePrompt: () => {},
-  onHandleCancelPrompt: () => {},
-  onHandleReviewPrompt: () => {},
-  onHandlePress: () => {},
-  onHandleRefreshControl: () => {},
-  onHandleSetReachedEnd: () => {},
-  onHandleEffectI: () => {},
-  onHandleEffectII: () => {},
-  onHandleEffectIII: () => {},
-  onHandleEffectIV: () => {},
-  ApprovalCount: () => {},
+  onHandleCheckbox: () => { },
+  onHandleSelectAll: () => { },
+  onHandleApprovals: () => { },
+  onHandleClosePrompt: () => { },
+  onHandleCancelPrompt: () => { },
+  onHandleReviewPrompt: () => { },
+  onHandlePress: () => { },
+  onHandleRefreshControl: () => { },
+  onHandleSetReachedEnd: () => { },
+  onHandleEffectI: () => { },
+  onHandleEffectII: () => { },
+  onHandleEffectIII: () => { },
+  onHandleEffectIV: () => { },
+  ApprovalCount: () => { },
 });
 
 export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
@@ -111,9 +110,9 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-          successList: [],
-          failedList: [],
-        });
+        successList: [],
+        failedList: [],
+      });
   };
 
   const onHandleReviewPrompt = async () => {

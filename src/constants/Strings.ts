@@ -4,6 +4,7 @@
 
 import { DateTimeUtils } from '../utils/DateTimeUtils';
 import { SchemaRequestApplications, TypeHandle } from 'src/types/Types';
+import { ARRAY } from './Array';
 
 enum PromptAction {
   Cancel = 0,
@@ -457,21 +458,11 @@ export const STRINGS = {
   styledDisabled: `<t></t>`,
   tapSelectPlaceholder: (text: string) => `<t>Select ${text}</t>`,
   requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
-    `Your <b><u>${title}</u></b> request ` +
-    `${reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `}` +
-    `was successfully ${
-      reqAction === 1
-        ? 'submitted. We will get back to you soon.'
-        : reqAction === 2
-          ? 'updated.'
-          : reqAction === 4
-            ? 'reviewed.'
-            : reqAction === 5
-              ? 'approved.'
-              : 'cancelled.'
-    }`,
-  requestCancellation: (params: SchemaRequestApplications, state: any) =>
-    `${params.filing?.reason} (${STRINGS.cancellation} ${params.name} ${DateTimeUtils.getIsoDateWithBackSlash()} ${DateTimeUtils.getIsoTimeDefaultWithUnits()}) Reason: ${state.reason}`,
+    `<b><u>${title}</u></b> request ` +
+    `${ARRAY.getRequestReference(reqAction, date, documentNo)}` +
+    `was successfully ${ARRAY.getRequestActionMessage(reqAction)}`,
+
+  requestCancellation: (params: SchemaRequestApplications, state: any) => `${state.reason}`,
 
   successSingleApprovals: (action: number, value: string) =>
     `You have successfully ` +

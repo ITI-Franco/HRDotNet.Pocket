@@ -733,6 +733,25 @@ export const ARRAY = {
     }
   },
 
+  getRequestActionMessage: (reqAction?: number): string => {
+    switch (reqAction) {
+      case 1:
+        return 'submitted. We will get back to you soon.';
+      case 2:
+        return 'updated.';
+      case 4:
+        return 'reviewed.';
+      case 5:
+        return 'approved.';
+      default:
+        return 'cancelled.';
+    }
+  },
+
+  getRequestReference: (reqAction?: number, date?: string, documentNo?: string): string => {
+    return reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `;
+  },
+
   requestSummary: (props: PropsRequestSummary, reqAction?: number) => [
     {
       details:
@@ -1170,7 +1189,7 @@ export const ARRAY = {
 
   MLFilter: () => [
     { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed', value: 'DateFiled' },
+    { label: 'Date Period', value: 'DateFiled' },
     { label: 'Document Number', value: 'DocumentNo' },
     { label: 'Log Type', value: 'logType' },
   ],

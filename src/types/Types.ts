@@ -68,11 +68,11 @@ export type SchemaRequestApplications = {
     };
 
     dateFiled?:
-      | {
-          dateFrom: string;
-          dateTo: string;
-        }
-      | string;
+    | {
+      dateFrom: string;
+      dateTo: string;
+    }
+    | string;
 
     leaveParameter?: {
       // Leave
@@ -623,6 +623,9 @@ export type StateApprovals = {
   page: number;
   urlQuery: string;
   search: string;
+  filterValue?: string;
+  filterType?: string;
+  displayValue?: string;
 };
 
 // Pending
@@ -852,6 +855,11 @@ export type StateApplications = {
   count?: number;
   totalCount?: number;
   selectedButton: number;
+
+  //Filters
+  filterValue?: string;
+  filterType?: string;
+  displayValue?: string;
 };
 
 // Components
@@ -1073,6 +1081,7 @@ export type PropsSearchAndNew = {
   setHandle: React.Dispatch<Partial<TypeHandle>>;
   onlySearch?: boolean;
   onPanel: number;
+  filterValue?: string;
 };
 
 // Toast

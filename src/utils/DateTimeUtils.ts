@@ -163,4 +163,12 @@ export const DateTimeUtils = {
       return `${DateTimeUtils.dateDefaultToHalfMonthWord(one)} - ${DateTimeUtils.dateDefaultToHalfMonthWord(two)}`;
     }
   },
+  getIsoDateFull: (date: string) => dayjs(date).format('YYYYMMDD'),
+  getRemoveDash: (date: string) => date.split('T')[0].replace(/-/g, ''),
+
+  formatDateToMonthDayYear: (date: string): string => {
+    const parsedDate = dayjs(date, 'MMMM DD, YYYY');
+
+    return parsedDate.isValid() ? parsedDate.format('MMM DD, YYYY') : '';
+  },
 };

@@ -109,13 +109,10 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
   return (
     <React.Fragment>
       <PageHeader
-        name={`${STRINGS.pageTitleReqSummary} ${
-          currOnReqAction === onReqAction.New
+        name={`${STRINGS.pageTitleReqSummary} ${currOnReqAction === onReqAction.New
             ? ''
-            : currOnReqAction !== onReqAction.Update
-              ? STRINGS.cancel
-              : STRINGS.update
-        }`}
+            : requestActionTitle[currOnReqAction] || ''
+          }`}
       />
 
       {handle.isToast!.show && <Toast handle={handle.isToast!} setHandle={setHandle} />}

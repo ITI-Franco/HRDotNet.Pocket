@@ -401,6 +401,7 @@ export const useFetch = {
     let result = [];
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
+
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -1107,6 +1108,8 @@ export const useFetch = {
     setState({ data: ARRAY.loanLedger, filteredData: ARRAY.loanLedger });
   },
 
+
+
   Timesheet: async (
     nav: StackNavigationProp<ParamListBase>,
     state: StateTimesheet,
@@ -1192,6 +1195,31 @@ export const useFetch = {
       throw error;
     }
   },
+
+  CurrentCutoff: async (paymentFrequencyId: number, payrollGroupId: number) => {
+    try {
+      const today = new Date();
+
+      const payload = {
+        date: DateTimeUtils.getIsoDateFull(today.toString()),
+        paymentFrequencyId,
+        payrollGroupId,
+      };
+
+      const response = await axios.post(`${process.env.EXPO_PUBLIC_CURRENT_CUTOFF}`, payload)
+
+      const cutoffData = {
+        dateFrom: response.data.dateRange.dateFrom,
+        dateTo: response.data.dateRange.dateTo
+      }
+
+      return cutoffData
+
+
+    } catch (error) {
+      console.log(error)
+    }
+  },
   Profile: async () => {
     try {
       const response = await UtilsFetch.connect(
@@ -1210,6 +1238,8 @@ export const useFetch = {
         Name_Section: response.data.recordInformation.workInformation.company.section.name,
         MobileNo: response.data.personalInformation.contact.mobileNo,
         EmailAdd: response.data.personalInformation.contact.email,
+        paymentFrequecyId: response.data.recordInformation?.payrollInformation.paymentFrequency.id,
+        payrollGroupId: response.data.recordInformation?.payrollInformation.payrollGroup.id,
       };
 
       return personalData;

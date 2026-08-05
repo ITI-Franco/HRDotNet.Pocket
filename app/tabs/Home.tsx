@@ -45,6 +45,11 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       try {
         const data = await useFetch.Profile();
         setEmployeeName(Utils.formatEmployeeName(data.FullName));
+        setEmployeeName(Utils.formatEmployeeName(data.FullName));
+        setEmployeePayrollInfo({
+          paymentFrequencyId: data.paymentFrequecyId,
+          payrollGroupId: data.payrollGroupId,
+        });
       } catch (error) {
         console.error(error);
       }
@@ -52,6 +57,22 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
 
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    const loadCurrentCutoff = async () => {
+      try {
+        const data = await useFetch.CurrentCutoff(
+          employeePayrollInfo.paymentFrequencyId,
+          employeePayrollInfo.payrollGroupId,
+        );
+        setCutoffPeriod([data?.dateFrom, data?.dateTo]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadCurrentCutoff();
+  }, [employeePayrollInfo]);
 
   const styles = STYLES.Home(insets, platform);
 
