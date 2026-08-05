@@ -60,6 +60,7 @@ import {
 import { jwtDecode } from 'jwt-decode';
 import { PersonalStates } from 'src/types/Profile';
 import { TeamSchema, TeamsStates } from 'src/types/Teams';
+import { FilingPanel } from 'src/constants/Enum';
 
 export const useFetch = {
   Refresh: async (nav: StackNavigationProp<ParamListBase>, callback?: () => void) => {
@@ -517,7 +518,7 @@ export const useFetch = {
     const parsed: PropsRequestSummary = await JSON.parse(data);
     const formData: any | FormData = new FormData();
 
-    if (panel === 1 && parsed?.branch?.ID && parsed?.branch?.name) {
+    if (panel === FilingPanel.OB && parsed?.branch?.ID && parsed?.branch?.name) {
       formData.append('LocationBranchId', parsed?.branch?.ID);
       formData.append('LocationBranch', parsed?.branch?.name);
     }
@@ -567,7 +568,7 @@ export const useFetch = {
 
       let dataSetUpdate;
 
-      if (panel === 1) {
+      if (panel === FilingPanel.OB) {
         dataSetUpdate = ARRAY.requestFormDataOB(reqAction, parsedUpdate);
       } else {
         dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate);
@@ -1108,8 +1109,6 @@ export const useFetch = {
     setState({ data: ARRAY.loanLedger, filteredData: ARRAY.loanLedger });
   },
 
-
-
   Timesheet: async (
     nav: StackNavigationProp<ParamListBase>,
     state: StateTimesheet,
@@ -1206,18 +1205,16 @@ export const useFetch = {
         payrollGroupId,
       };
 
-      const response = await axios.post(`${process.env.EXPO_PUBLIC_CURRENT_CUTOFF}`, payload)
+      const response = await axios.post(`${process.env.EXPO_PUBLIC_CURRENT_CUTOFF}`, payload);
 
       const cutoffData = {
         dateFrom: response.data.dateRange.dateFrom,
-        dateTo: response.data.dateRange.dateTo
-      }
+        dateTo: response.data.dateRange.dateTo,
+      };
 
-      return cutoffData
-
-
+      return cutoffData;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   },
   Profile: async () => {
