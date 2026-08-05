@@ -29,7 +29,11 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   const { insets, platform, params, state, handle, setHandle, onHandleEffectI, onHandleEffectII, fetchUserDetails, checkTeamMembers } =
     useHome();
   const [employeeLastName, setEmployeeLastName] = useState("")
-  const { employeeName, setEmployeeName } = useGlobalStore()
+  const [employeePayrollInfo, setEmployeePayrollInfo] = useState({
+    paymentFrequencyId: 0,
+    payrollGroupId: 0
+  })
+  const { setEmployeeName, setCutoffPeriod } = useGlobalStore()
 
 
   useEffect(() => {
@@ -37,6 +41,10 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       try {
         const data = await useFetch.Profile();
         setEmployeeName(Utils.formatEmployeeName(data.FullName))
+        setEmployeePayrollInfo({
+          paymentFrequencyId: data.paymentFrequecyId,
+          payrollGroupId: data.payrollGroupId,
+        })
       } catch (error) {
         console.error(error);
       }
@@ -44,6 +52,19 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
 
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    const loadCurrentCutoff = async () => {
+      try {
+        const data = await useFetch.CurrentCutoff(employeePayrollInfo.paymentFrequencyId, employeePayrollInfo.payrollGroupId);
+        setCutoffPeriod([data?.dateFrom, data?.dateTo])
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadCurrentCutoff();
+  }, [employeePayrollInfo])
 
 
   const styles = STYLES.Home(insets, platform);

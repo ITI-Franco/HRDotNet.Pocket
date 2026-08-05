@@ -58,7 +58,7 @@ const SummaryPanel: React.FC<PropsSummaryPanel> = ({
 
           <ScrollView style={styles.summaryView} showsVerticalScrollIndicator={false}>
             {DetailsRender()}
-            {reqAction == onReqAction.New || reqAction == onReqAction.Update && <RowAttachment attachment={data?.attachment} />}
+            {(reqAction == onReqAction.New || reqAction == onReqAction.Update) && <RowAttachment attachment={data?.attachment} />}
           </ScrollView>
 
           <TouchableOpacity style={styles.button} onPress={() => onHandleSubmit()}>

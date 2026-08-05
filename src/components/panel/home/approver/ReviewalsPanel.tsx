@@ -105,7 +105,7 @@ const ReviewalsPanel: React.FC = () => {
         )
       ) : (
         <React.Fragment>
-          <SearchAndNew setHandle={setHandle} onlySearch={true} onPanel={state.selectedButton} />
+          <SearchAndNew setHandle={setHandle} onlySearch={true} onPanel={state.selectedButton} filterValue={`${state.displayValue}`} />
 
           <ReviewalsAction />
         </React.Fragment>

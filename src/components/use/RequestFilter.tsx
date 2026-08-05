@@ -103,6 +103,28 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     }
 
 
+    if (value === "DocumentNo") {
+      state[1]({ displayValue: `Document No: ${componentState.search}`, filterValue: componentState.search, filterType: value })
+    } else if (value === "DateFiled") {
+      state[1]({
+        displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+        filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
+        filterType: value
+      })
+    } else if (value === "DateTransaction") {
+      state[1]({
+        displayValue: `Transaction Date: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+        filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
+        filterType: value
+      })
+    } else if (value === "logType") {
+      state[1]({
+        displayValue: `Log Type: ${logTypeItems.find((e) => e.value == String(logTypeValue))?.label}`,
+        filterValue: `${String(logTypeValue)}`,
+        filterType: value
+      })
+    }
+
     actionState();
   };
 
@@ -152,6 +174,29 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     }
 
   }, [handle]);
+
+  useEffect(() => {
+
+
+    const type = state[0].filterType || ""
+    const value = state[0].filterValue || ""
+    setValue(type)
+
+    if (type === "DocumentNo") {
+      setComponentState({ search: state[0].filterValue })
+    } else if (type === "DateFiled" || type === "DateTransaction") {
+      const [from, to] = value.split(" - ");
+      setComponentState({
+        searchDates: {
+          from,
+          to,
+        },
+      });
+    }
+    console.log("VALL", type)
+
+
+  }, [componentState.isVisibleFilter, state[0].filterType])
 
   return (
     <Modal
@@ -295,6 +340,9 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
               });
             },
             () => setComponentState({ fromPicker: false }),
+            componentState.searchDates?.from!
+              ? DateTimeUtils.dateDefaultToDate(componentState.searchDates?.from!)
+              : new Date(),
           )}
 
           {UtilsDisplay.DisplayDateTimePicker(
@@ -310,7 +358,10 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
               });
             },
             () => setComponentState({ toPicker: false }),
-            DateTimeUtils.dayToDate(),
+            componentState.searchDates?.to!
+              ? DateTimeUtils.dateDefaultToDate(componentState.searchDates?.to!)
+              : new Date(),
+
             componentState.searchDates?.from!
               ? DateTimeUtils.dateDefaultToDate(componentState.searchDates?.from!)
               : new Date(),
