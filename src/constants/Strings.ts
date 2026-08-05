@@ -117,7 +117,7 @@ export const STRINGS = {
   cllnType: 'Type: ',
   cllnLogType: 'Log Type: ',
   cllnLogTime: 'Log Time: ',
-  cllnDateFiled: 'Date Filed: ',
+  cllnDateFiled: 'Date Period: ',
   cllnSource: 'Source: ',
   cllnLoanCode: 'Loan Code: ',
   cllnDocumentNo: 'Document No.: ',
@@ -126,7 +126,7 @@ export const STRINGS = {
   cllnCancelledDate: 'Cancelled Date: ',
   cllnDateGranted: 'Date Granted: ',
   cllnFirstDueDate: 'First Due Date: ',
-  cllnReferenceNo: 'Reference No: ',
+  cllnReferenceNo: 'Reference No.: ',
   cllnLoanAmount: 'Loan Amount: ',
   cllnDisbursedAmount: 'Disbursed Amount: ',
   cllnCycle: 'Cycle: ',
@@ -139,7 +139,7 @@ export const STRINGS = {
   cllnTime: 'Time: ',
   cllnDateTransaction: 'Date Transaction: ',
   cllnOBDate: 'OB Date: ',
-  cllnOBTime: 'OB Time: ',
+  cllnOBTime: 'OB Time In and Out: ',
   cllnBranch: 'Branch: ',
   cllnOvertimeDate: 'Overtime Date: ',
   cllnMissedLogDate: 'Missed Log Date: ',
@@ -172,6 +172,11 @@ export const STRINGS = {
   OBRequestFieldVI: 'Time out',
   OBRequestFieldVII: 'OB Time In',
   OBRequestFieldVIII: 'OB Time Out',
+  OBSummaryFieldI: 'OB Period',
+  OBSummaryFieldII: 'OB Time In and Out',
+  OBSummaryFieldIII: 'Location',
+  OBSummaryFieldIV: 'Branch',
+  OBSummaryFieldV: 'Reference No.',
 
   OTRequestFieldI: 'OT Date',
   OTRequestFieldII: 'Shift',
@@ -438,7 +443,6 @@ export const STRINGS = {
     `${value === 1 ? 'Clocked In' : 'Clocked Out'}: ${DateTimeUtils.dateDefaultToWord(date)} at ${DateTimeUtils.timeSecondsToUnits(time)}`,
 
   // String Components Values
-  // errException: (val: string) => `HRDotNet.Shared.ErrorHandling.Exception.${val}`,
 
   successClocked: (status: string, address: string) =>
     `You have successfully <b>${status}</b> from${'\n'} <b>${address}</b>`,
@@ -453,18 +457,12 @@ export const STRINGS = {
 
   styledDisabled: `<t></t>`,
   tapSelectPlaceholder: (text: string) => `<t>Select ${text}</t>`,
-  requestSuccess: (
-    title: string,
-    date: string,
-    reqAction?: number,
-    documentNo?: string
-  ) =>
+  requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
     `<b><u>${title}</u></b> request ` +
     `${ARRAY.getRequestReference(reqAction, date, documentNo)}` +
     `was successfully ${ARRAY.getRequestActionMessage(reqAction)}`,
 
-  requestCancellation: (params: SchemaRequestApplications, state: any) =>
-    `${state.reason}`,
+  requestCancellation: (params: SchemaRequestApplications, state: any) => `${state.reason}`,
 
   successSingleApprovals: (action: number, value: string) =>
     `You have successfully ` +

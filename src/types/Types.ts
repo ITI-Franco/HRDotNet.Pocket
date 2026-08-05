@@ -248,7 +248,6 @@ export type TypeReqAction = {
   Cancel: number;
   Review: number;
   Approve: number;
-
 };
 
 export type TypeNavStack = {
@@ -720,6 +719,9 @@ export type StateOBRequest = {
   attachment: Attachment;
   documentNo?: string;
   referenceNo?: string;
+  cancelReason?: string;
+  approveReason?: string;
+  reviewReason?: string;
 };
 
 // OFF Request

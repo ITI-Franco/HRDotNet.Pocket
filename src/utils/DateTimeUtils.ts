@@ -7,18 +7,17 @@ import dayjs from 'dayjs';
 
 dayjs.extend(customParseFormat);
 
-
 export enum DateTimeFormat {
-  DayDate = "ddd, MMM DD, YYYY",
-  HalfMonthWord = "MMM DD, YYYY",
-  MonthDay = "MMM DD",
-  DayYear = "DD, YYYY",
-  IsoBasic = "YYYYMMDD",
-  MilitaryTime = "HH:mm",
-  StandardTime = "hh:mm A",
-  MonthDayWithName = "ddd, MMM DD",
-  Extended12TimeFormat = "hh:mm:ss",
-  Extended24TimeFormat = "HH:mm:ss",
+  DayDate = 'ddd, MMM DD, YYYY',
+  HalfMonthWord = 'MMM DD, YYYY',
+  MonthDay = 'MMM DD',
+  DayYear = 'DD, YYYY',
+  IsoBasic = 'YYYYMMDD',
+  MilitaryTime = 'HH:mm',
+  StandardTime = 'hh:mm A',
+  MonthDayWithName = 'ddd, MMM DD',
+  Extended12TimeFormat = 'hh:mm:ss',
+  Extended24TimeFormat = 'HH:mm:ss',
 }
 
 export const DateTimeUtils = {
@@ -55,9 +54,9 @@ export const DateTimeUtils = {
   dateWordToDefault: (date: string) => dayjs(date, 'MMMM DD, YYYY').format('YYYYMMDD'),
   dateDefaultToFullWord: (date: string) => dayjs(date, 'YYYYMMDD').format('MMMM DD, YYYY, dddd'),
   dateToDefaultHalfFullDate: (date: string) => dayjs(date, 'YYYYMMDD').format('MM/DD/YY, dddd'),
-  dateDefaultToWord: (date: string) => dayjs(date, 'YYYYMMDD').format('MMMM DD, YYYY'),
+  dateDefaultToWord: (date: string) => dayjs(date, 'YYYYMMDD').format('MMM DD, YYYY'),
   dateDefaultToDate: (date: string) => dayjs(date, 'YYYYMMDD').toDate(),
-  dateDefaultToHalfWord: (date: string) => dayjs(date, 'YYYYMMDD').format('MMMM DD'),
+  dateDefaultToHalfWord: (date: string) => dayjs(date, 'YYYYMMDD').format('MMM DD'),
 
   dateDashToDefault: (date: string) => dayjs(date, 'YYYY-MM-DD').format('YYYYMMDD'),
   dateDashToDefaultAddDay: (date: string) => dayjs(date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
@@ -82,7 +81,7 @@ export const DateTimeUtils = {
   dateCheckTomorrow: (date: string) => dayjs(date).isSame(dayjs().add(1, 'day'), 'day'),
   dateCheckToday: (date: string) => dayjs(date).isSame(dayjs(), 'day'),
 
-  isoToDateWord: (date: string) => dayjs(date).format('MMMM DD, YYYY'),
+  isoToDateWord: (date: string) => dayjs(date).format('MMM DD, YYYY'),
   isoToDateDash: (date: string) => dayjs(date).format('YYYY-MM-DD'),
   isoToDateDefault: (date: string) => dayjs(date).format('YYYYMMDD'),
   isoToDateSlash: (date: string) => {
@@ -100,7 +99,7 @@ export const DateTimeUtils = {
   timeToDate: (time: string) => dayjs(time, 'HH:mm:ss').toDate(),
   timeWithSeconds: (time: string) => dayjs(time).format('HH:mm:ss'),
   timeSecondsSetZeroSeconds: (time: string) => dayjs(time, 'HH:mm:ss').format('HH:mm:00'),
-  timeSecondsToUnits: (time: string) => dayjs(time, 'HH:mm:ss').format('h:mm A'),
+  timeSecondsToUnits: (time: string) => dayjs(time, 'HH:mm:ss').format('hh:mm A'),
   timeSecondsToUnitsZero: (time: string) => {
     const d = dayjs(time);
     return d.set('second', 0).set('millisecond', 0).format('HH:mm:ss');
@@ -110,7 +109,7 @@ export const DateTimeUtils = {
 
   defaultStartDate: (date: string) => dayjs(date, 'YYYYMMDD').startOf('day').toDate(),
   defaultEndDate: (date: string) => dayjs(date, 'YYYYMMDD').endOf('day').toDate(),
-  monthDayConvert: (date: string) => dayjs(date, 'YYYYMMDD').format('MMMM DD'),
+  monthDayConvert: (date: string) => dayjs(date, 'YYYYMMDD').format('MMM DD'),
   dayYearConvert: (date: string) => dayjs(date, 'YYYYMMDD').format('DD, YYYY'),
 
   dateAddWorkDayToDash: (date: string) => dayjs(date).add(1, 'day').format('MMM DD, YYYY'),
@@ -129,13 +128,12 @@ export const DateTimeUtils = {
   twoIsToTimeRangeFormat: (one: string, two: string) => {
     const firstTime = dayjs(one).format('h:mm A');
     const secondTime = dayjs(two).format('h:mm A');
-    return (firstTime + ' - ' + secondTime)
+    return firstTime + ' - ' + secondTime;
   },
 
-
   twoTimeRangeFormat: (one: string, two: string) => {
-    const first = dayjs(one, 'HH:mm:ss').format('h:mm A');
-    const second = two ? dayjs(two, 'HH:mm:ss').format('h:mm A') : '';
+    const first = dayjs(one, 'HH:mm:ss').format('hh:mm A');
+    const second = two ? dayjs(two, 'HH:mm:ss').format('hh:mm A') : '';
     return first + (two ? ' - ' + second : '');
   },
 
@@ -150,18 +148,27 @@ export const DateTimeUtils = {
 
   checkIsoNullValue: (date: string) => date === '0001-01-01T00:00:00',
 
-
   getIsoDateWord: (date: string) => dayjs(date).format(DateTimeFormat.HalfMonthWord),
-  isoToTimeSecondToPMAM: (time: string) => dayjs(time, "HH:mm:ss").format("hh:mm A"),
-  getIsoDateFull: (date: string) => dayjs(date).format("YYYYMMDD"),
-  getRemoveDash: (date: string) => date.split("T")[0].replace(/-/g, ""),
+  isoToTimeSecondToPMAM: (time: string) => dayjs(time, 'HH:mm:ss').format('hh:mm A'),
+
+  monthDayHalfWordMonthConvert: (date: string) => dayjs(date, DateTimeFormat.IsoBasic).format(DateTimeFormat.MonthDay),
+  toDateRangeHalftMonthWord: (one: string, two: string) => {
+    if (dayjs(one).isSame(dayjs(two), 'day')) {
+      return DateTimeUtils.dateDefaultToHalfMonthWord(one);
+    } else if (dayjs(one).isSame(dayjs(two), 'month')) {
+      return `${DateTimeUtils.monthDayHalfWordMonthConvert(one)} - ${DateTimeUtils.dayYearConvert(two)}`;
+    } else if (dayjs(one).isSame(dayjs(two), 'year')) {
+      return `${DateTimeUtils.monthDayHalfWordMonthConvert(one)} - ${DateTimeUtils.dateDefaultToHalfMonthWord(two)}`;
+    } else {
+      return `${DateTimeUtils.dateDefaultToHalfMonthWord(one)} - ${DateTimeUtils.dateDefaultToHalfMonthWord(two)}`;
+    }
+  },
+  getIsoDateFull: (date: string) => dayjs(date).format('YYYYMMDD'),
+  getRemoveDash: (date: string) => date.split('T')[0].replace(/-/g, ''),
 
   formatDateToMonthDayYear: (date: string): string => {
-    const parsedDate = dayjs(date, "MMMM DD, YYYY");
+    const parsedDate = dayjs(date, 'MMMM DD, YYYY');
 
-    return parsedDate.isValid()
-      ? parsedDate.format("MMM DD, YYYY")
-      : "";
+    return parsedDate.isValid() ? parsedDate.format('MMM DD, YYYY') : '';
   },
-
 };

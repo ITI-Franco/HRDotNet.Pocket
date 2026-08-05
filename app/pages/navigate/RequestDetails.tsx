@@ -179,7 +179,7 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
 
             <View style={styles.container}>
               <Shadow distance={3} offset={[1, 2]} style={styles.content}>
-                <View style={[styles.rowWrapper]} >
+                <View style={[styles.rowWrapper]}>
                   <Text style={styles.titleText}>{'Name: '}</Text>
                   <Text style={styles.valueText}>{Utils.formatEmployeeName(state.data.name)}</Text>
                 </View>

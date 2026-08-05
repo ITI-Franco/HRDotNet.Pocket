@@ -696,6 +696,10 @@ export const ValuesOBRequest = {
     reason: '',
     attachment: Attachment,
     documentNo: '',
+    cancelReason: '',
+    reviewReason: '',
+    approveReason: '',
+    referenceNo: '',
   },
 
   Handle: {
@@ -764,9 +768,9 @@ export const ValuesMLRequest = {
     reason: '',
     referenceNo: '',
     attachment: Attachment,
-    cancelReason: "",
-    reviewReason: "",
-    approveReason: "",
+    cancelReason: '',
+    reviewReason: '',
+    approveReason: '',
     documentNo: '',
   },
 
