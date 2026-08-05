@@ -87,11 +87,10 @@ export const Utils = {
 
     const timeFrom: string = DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateFrom);
 
-    const timeSched = `\n${
-      !DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
-        ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
-        : timeFrom
-    }`;
+    const timeSched = `\n${!DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
+      ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
+      : timeFrom
+      }`;
 
     if (val.source.toUpperCase().includes('L-')) {
       ((color = COLORS.lightPurple), (title = STRINGS.leave));
@@ -426,9 +425,9 @@ export const Utils = {
   amountFormat: (amount: number) => {
     return amount
       ? amount.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
       : 0;
   },
 
@@ -523,7 +522,7 @@ export const Utils = {
           ...state.clockedData,
           address: currAddress
             ? `${checkNull(currAddress?.name)} ${checkNull(currAddress?.street)} ` +
-              `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
+            `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
             : STRINGS.noAddressLocation,
         },
       });
@@ -1076,7 +1075,7 @@ export const Utils = {
                   return `${displayKey}: from "${DateTimeUtils.isoToTimeSecondToPMAM(from)}" into "${DateTimeUtils.isoToTimeSecondToPMAM(to)}"`;
 
                 case FieldKey.MLDateFiled:
-                  return `${displayKey}: from "${DateTimeUtils.getIsoDateWord(from)}" into "${DateTimeUtils.getIsoDateWord(to)}"`;
+                  return `${fieldDisplayNames.MLDateFiled}: from "${DateTimeUtils.formatDateToMonthDayYear(from)}" into "${DateTimeUtils.formatDateToMonthDayYear(to)}"`;
 
                 case FieldKey.ReferenceNo:
                   if (!from && to) {

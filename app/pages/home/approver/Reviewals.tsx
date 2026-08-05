@@ -10,12 +10,13 @@ import Toast from 'src/components/use/Toast';
 import ApprovalsPanel from 'src/components/panel/home/approver/ApprovalsPanel';
 import ConfirmationApproval from 'src/components/prompt/ConfirmationApproval';
 import PageHeader from 'src/components/header/PageHeader';
-import { COLORS, STRINGS, STYLES } from 'src';
+import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useReviewals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
 import ReviewalsPanel from 'src/components/panel/home/approver/ReviewalsPanel';
 import ConfirmmationReviewal from 'src/components/prompt/ConfirmationReviewal';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 const Reviewals: React.FC = () => {
   const styles = STYLES.Request;
@@ -34,8 +35,19 @@ const Reviewals: React.FC = () => {
     ApprovalCount,
   } = useReviewals();
 
+  const { cutOffPeriod } = useGlobalStore()
+
   useEffect(() => {
     onHandleEffectI();
+    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || "")
+    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || "")
+    setState({
+      filterType: "DateFiled",
+      filterValue: `${removeDashFrom} - ${removeDashTo}`,
+      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`
+    })
+
+
   }, [state.selectedButton]);
 
   useEffect(() => {

@@ -10,10 +10,11 @@ import Toast from 'src/components/use/Toast';
 import ApprovalsPanel from 'src/components/panel/home/approver/ApprovalsPanel';
 import ConfirmationApproval from 'src/components/prompt/ConfirmationApproval';
 import PageHeader from 'src/components/header/PageHeader';
-import { COLORS, STRINGS, STYLES } from 'src';
+import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useApprovals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 const Approvals: React.FC = () => {
   const styles = STYLES.Request;
@@ -31,9 +32,18 @@ const Approvals: React.FC = () => {
     onHandleEffectIV,
     ApprovalCount,
   } = useApprovals();
+  const { cutOffPeriod } = useGlobalStore()
 
   useEffect(() => {
     onHandleEffectI();
+    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || "")
+    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || "")
+    setState({
+      filterType: "DateFiled",
+      filterValue: `${removeDashFrom} - ${removeDashTo}`,
+      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`
+    })
+
   }, [state.selectedButton]);
 
   useEffect(() => {
@@ -91,11 +101,11 @@ const Approvals: React.FC = () => {
                     )}
                     <View>
                       <Text style={[
-                      styles.buttonText,
-                      state.selectedButton === index && styles.selectedTextButton,
-                      index == 6 && { color: COLORS.gray },
-                    ]}   >
-                           {item.title}
+                        styles.buttonText,
+                        state.selectedButton === index && styles.selectedTextButton,
+                        index == 6 && { color: COLORS.gray },
+                      ]}   >
+                        {item.title}
                       </Text>
                     </View>
                   </Text>

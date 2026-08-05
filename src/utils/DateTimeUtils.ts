@@ -153,4 +153,15 @@ export const DateTimeUtils = {
 
   getIsoDateWord: (date: string) => dayjs(date).format(DateTimeFormat.HalfMonthWord),
   isoToTimeSecondToPMAM: (time: string) => dayjs(time, "HH:mm:ss").format("hh:mm A"),
+  getIsoDateFull: (date: string) => dayjs(date).format("YYYYMMDD"),
+  getRemoveDash: (date: string) => date.split("T")[0].replace(/-/g, ""),
+
+  formatDateToMonthDayYear: (date: string): string => {
+    const parsedDate = dayjs(date, "MMMM DD, YYYY");
+
+    return parsedDate.isValid()
+      ? parsedDate.format("MMM DD, YYYY")
+      : "";
+  },
+
 };

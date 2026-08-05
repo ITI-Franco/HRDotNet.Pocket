@@ -52,8 +52,8 @@ const ApprovalsPanel: React.FC = () => {
         style={{ opacity: 1, flex: 1, backgroundColor: COLORS.clearWhite }}
       >
         <View style={{
-           marginTop: index === 0 ? 10 : 0 
-           }}>
+          marginTop: index === 0 ? 10 : 0
+        }}>
           <Line space={2} horizontalSpace={10} />
           <View style={{ flexDirection: 'row' }}>
             <Checkbox
@@ -62,7 +62,7 @@ const ApprovalsPanel: React.FC = () => {
               value={item.isChecked}
               onValueChange={(value) => onHandleCheckbox(item, value)}
             />
-  
+
             <MemoizedRequestItem item={item} />
           </View>
         </View>
@@ -103,7 +103,7 @@ const ApprovalsPanel: React.FC = () => {
         )
       ) : (
         <React.Fragment>
-          <SearchAndNew setHandle={setHandle} onlySearch={true} onPanel={state.selectedButton} />
+          <SearchAndNew setHandle={setHandle} onlySearch={true} onPanel={state.selectedButton} filterValue={`${state.displayValue}`} />
 
           <ApprovalsAction />
         </React.Fragment>

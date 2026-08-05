@@ -2,7 +2,7 @@
 // Designed by : Alex Diane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { RefreshControl, Text, View, Image } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { FlashList } from '@shopify/flash-list';
@@ -26,6 +26,14 @@ const RequestPanel: React.FC = () => {
   const navigation: TypeNavStack['navigation'] = useNavigation();
 
   const { state, setState, handle, setHandle } = useRequest();
+
+  useEffect(() => {
+    setState({
+      filterType: undefined,
+      filterValue: undefined,
+      displayValue: undefined
+    })
+  }, [state.selectedButton])
 
   const renderItem = useCallback(
     ({ item }: { item: SchemaRequestApplications }) => (
@@ -87,7 +95,7 @@ const RequestPanel: React.FC = () => {
         )
       ) : (
         <React.Fragment>
-          <SearchAndNew setHandle={setHandle} onPanel={state.selectedButton} />
+          <SearchAndNew setHandle={setHandle} onPanel={state.selectedButton} filterValue={`${state.displayValue}`} />
         </React.Fragment>
       )}
 
