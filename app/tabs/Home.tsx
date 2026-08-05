@@ -38,7 +38,12 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
     checkTeamMembers,
   } = useHome();
   const [employeeLastName, setEmployeeLastName] = useState('');
-  const { employeeName, setEmployeeName } = useGlobalStore();
+  const [employeePayrollInfo, setEmployeePayrollInfo] = useState({
+    paymentFrequencyId: 0,
+    payrollGroupId: 0,
+  });
+
+  const { setEmployeeName, setCutoffPeriod } = useGlobalStore();
 
   useEffect(() => {
     const loadProfile = async () => {
