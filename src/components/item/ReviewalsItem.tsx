@@ -4,7 +4,6 @@
 
 import React, { memo } from 'react';
 import { View, Text, Pressable } from 'react-native';
-
 import { STYLES, DateTimeUtils, STRINGS } from 'src';
 import { PropsApprovalsItem } from 'src/types/Types';
 import { Utils } from 'src/utils/Utils';
@@ -42,19 +41,19 @@ const ApprovalsItem: React.FC<PropsApprovalsItem> = ({ data, onPanel, navigation
         <Text style={styles.boldTextName}>{Utils.formatEmployeeName(data.name)}</Text>
 
         <View style={styles.rowView}>
-          <Text style={styles.boldText}>{'Transaction Date: '}</Text>
+          <Text style={styles.boldText}>{`${STRINGS.labelDateTransaction}:`}</Text>
           <Text style={styles.valueText}>{DateTimeUtils.dateDefaultToWord(data?.filing?.dateTransaction)}</Text>
         </View>
 
         <View style={styles.rowView}>
-          <Text style={styles.boldText}>{'Date Filed: '}</Text>
+          <Text style={styles.boldText}>{`${STRINGS.labelDatePeriodOB}:`}</Text>
           <Text style={styles.valueText}>
             {(data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! ||
-              (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
+            (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
               ? DateTimeUtils.twoDateRangeFormat(
-                (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
-                (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
-              )
+                  (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
+                  (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
+                )
               : data?.filing?.dateRange?.dateFrom || data?.filing?.dateRange?.dateTo
                 ? DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom, data?.filing?.dateRange?.dateTo)
                 : DateTimeUtils.dateDefaultToWord(data?.filing?.dateFiled as string)}

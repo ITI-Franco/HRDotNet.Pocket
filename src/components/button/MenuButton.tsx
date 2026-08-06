@@ -53,7 +53,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) { }
+    } catch (err) {}
   })();
 
   // This hook is reponsible for checking if the user
@@ -101,14 +101,14 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
         },
         image: onShowImage(ASSETS.iconOBRequest, ASSETS.iconTeams),
         title: onShowTitle(STRINGS.menuBtnTitleUserII, STRINGS.menuBtnTitleApproverII),
-        //disabled: state.teamMembersCount! <= 0 
-        disabled: true
+        //disabled: state.teamMembersCount! <= 0
+        disabled: true,
       },
       {
         navigate: () => (navigation as any).navigate('Contacts', { screen: 'ContactsList' }),
         image: onShowImage(ASSETS.iconOTRequest, ASSETS.iconContacts),
         title: onShowTitle(STRINGS.menuBtnTitleUserIII, STRINGS.menuBtnTitleApproverIII),
-        disabled: true
+        disabled: true,
       },
     ],
   };

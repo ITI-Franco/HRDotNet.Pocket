@@ -15,7 +15,7 @@ const RequestField: React.FC<TypeObjectValues> = ({ title, inputValue, isInputCh
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      {((isInputCheck && !inputValue) || withAsterisk) && Utils.requestFieldError()}
+      {withAsterisk && Utils.requestFieldError()}
     </View>
   );
 };

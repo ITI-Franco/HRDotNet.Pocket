@@ -107,6 +107,30 @@ export const STRINGS = {
   aboutUsTitleIII: '3. Transparency Center',
   aboutUsTitleIV: '4. Contributors',
 
+  // Field Name
+  fieldDocumentNo: 'DocumentNo',
+  fieldDateFiled: 'DateFiled',
+  fieldDateTransaction: 'DateTransaction',
+  fieldTimeInOut: 'TimeInOut',
+  fieldLocation: 'Location',
+  fieldDocStatus: 'DocStatus',
+  fieldRequested: 'Requested',
+  fieldLogType: 'logType',
+  fieldLeaveParameter: 'LeaveParameter',
+  fieldDateFrom: 'DateFrom',
+
+  // Plain strings
+  labelDocumentNo: 'Document No.',
+  labelDatePeriod: 'Date Period',
+  labelDatePeriodOB: 'OB Period',
+  labelDateTransaction: 'Date Transanction',
+  labelTimeInOutOB: 'OB Time In and Out',
+  labelLocation: 'Location',
+  labelDocStatus: 'Status',
+  labelRequestedSchedule: 'Requested Schedule',
+  labelLogType: 'Log Type',
+  labelLeaveType: 'Leave Type',
+
   // Collons Strings
   cllnRequestedSched: 'Requested Sched: ',
   cllnRestDay: 'Rest Day: ',
@@ -369,7 +393,7 @@ export const STRINGS = {
   update: 'update',
 
   // Placeholders
-  placeholderFilter: 'Select to filter.',
+  placeholderFilter: 'Select to Filter',
   placeholderUsername: 'Username',
   placeholderPassword: 'Password',
   placeholderSearch: 'Search',
