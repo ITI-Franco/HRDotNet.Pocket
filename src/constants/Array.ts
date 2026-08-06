@@ -1044,6 +1044,7 @@ export const ARRAY = {
   ],
 
   requestBodyOB: (data: SchemaRequestApplications) => [
+    ...ARRAY.reqBodyDefault(data),
     ...ARRAY.reqBodyDefaultOB(data),
     { title: 'DepartmentId', value: data?.departmentId ?? 0 },
     { title: 'LocationId', value: data?.filing?.location?.id },
@@ -1102,8 +1103,8 @@ export const ARRAY = {
   //   { label: 'Document No.', value: 'DocumentNo' },
   //   { label: 'Document Status', value: 'DocStatus' },
   //   { label: 'Date Filed (Date From)', value: 'DateFrom' },
-  //   { label: 'Date Filed (Date To)', value: 'DateTo' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   // OBFilter: () => [
@@ -1112,7 +1113,7 @@ export const ARRAY = {
   //   { label: 'Document Status', value: 'DocStatus' },
   //   { label: 'Date From', value: 'DateFrom' },
   //   { label: 'Date To', value: 'DateTo' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   // OTFilter: () => [
@@ -1120,7 +1121,7 @@ export const ARRAY = {
   //   { label: 'Document No.', value: 'DocumentNo' },
   //   { label: 'Document Status', value: 'DocStatus' },
   //   { label: 'Overtime Date', value: 'DateOT' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   // OFFFilter: () => [
@@ -1128,14 +1129,14 @@ export const ARRAY = {
   //   { label: 'Document No.', value: 'DocumentNo' },
   //   { label: 'Document Status', value: 'DocStatus' },
   //   { label: 'Offset Date', value: 'DateOffset' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   // LVFilter: () => [
   //   { label: 'Leave Type', value: 'LeaveParameter' },
   //   { label: 'Document No.', value: 'DocumentNo' },
   //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   // MLFilter: () => [
@@ -1143,55 +1144,54 @@ export const ARRAY = {
   //   { label: 'Document No.', value: 'DocumentNo' },
   //   { label: 'Document Status', value: 'DocStatus' },
   //   { label: 'Filed Date', value: 'DateFiled' },
-  //   { label: 'Transaction Date', value: 'DateTransaction' },
+  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
   // ],
 
   COSFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed (Date From)', value: 'DateFrom' },
-    { label: 'Date Filed (Date To)', value: 'DateTo' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Requested Schedule', value: 'Requested' },
-    { label: 'Status', value: 'DocStatus' },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelRequestedSchedule, value: STRINGS.fieldRequested },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   OBFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed (Date From)', value: 'DateFrom' },
-    { label: 'Date Filed (Date To)', value: 'DateTo' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Location', value: 'Location' },
-    { label: 'Status', value: 'DocStatus' },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelDatePeriodOB, value: STRINGS.fieldDateFrom },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelLocation, value: STRINGS.fieldLocation },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   OTFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed', value: 'dateFiled' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Status', value: 'DocStatus' },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   OFFFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed', value: 'dateFiled' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Status', value: 'DocStatus' },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   LVFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Filed (Date From)', value: 'DateFrom' },
-    { label: 'Date Filed (Date To)', value: 'DateTo' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Leave Type', value: 'LeaveParameter' },
-    { label: 'Status', value: 'DocStatus' },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelLeaveType, value: STRINGS.fieldLeaveParameter },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   MLFilter: () => [
-    { label: 'Transaction Date', value: 'DateTransaction' },
-    { label: 'Date Period', value: 'DateFiled' },
-    { label: 'Document Number', value: 'DocumentNo' },
-    { label: 'Log Type', value: 'logType' },
+    { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
+    { label: STRINGS.labelLogType, value: STRINGS.fieldLogType },
   ],
 
   requestFormDataUpdate: (params: SchemaRequestApplications) => [
