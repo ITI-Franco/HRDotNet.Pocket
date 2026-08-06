@@ -350,6 +350,8 @@ export const useFetch = {
     let url: unknown = UtilsFetch.panelApprovalsURL(state.selectedButton);
 
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery} `;
+
+
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -403,6 +405,8 @@ export const useFetch = {
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
 
+
+
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -438,7 +442,7 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  Teams: async () => {},
+  Teams: async () => { },
 
   RequestById: async (
     nav: StackNavigationProp<ParamListBase>,
@@ -595,10 +599,10 @@ export const useFetch = {
         undefinedUri === ''
           ? formData.append('FileAttachment', parsed?.attachment?.uri)
           : formData.append('FileAttachment', {
-              name: split[split.length - 1],
-              uri: parsed?.attachment?.uri,
-              type: type,
-            });
+            name: split[split.length - 1],
+            uri: parsed?.attachment?.uri,
+            type: type,
+          });
 
         const generateEditLog = Utils.generateHistoryItem(parsed?.reason, formatName, 'New', dateParse);
 
@@ -882,8 +886,10 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplications>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
+    employeeName?: string
   ) => {
     setHandle({ isLoading: true });
+    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchApprove
 
     let formBatchApproval: SchemaApprovalsManager = { filings: [] },
       successList: Array<TypeApprovalPromptItem> = [],
@@ -897,11 +903,15 @@ export const useFetch = {
 
     state.data.forEach((item: SchemaRequestApplications) => {
       if (item.isChecked) {
+        const dateParse = Utils.panelBatchDateParse(state.selectedButton, item);
+        const generatedEditLog = Utils.generateHistoryItem(state.batchReason || "", employeeName || "", action, dateParse);
+
         const filing = {
           recordId: item.filing.id,
           employeeId: item.id,
           companyId: item.companyId,
           documentNo: item.filing.documentNo,
+          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog)
         };
 
         handle.isAction === formBatchApproval.filings.push(filing);
@@ -920,7 +930,7 @@ export const useFetch = {
 
     const onError = async (error: TypeError) => {
       const errors = await UtilsFetch.catchErrors(error);
-
+      setState({ batchReason: undefined })
       await UtilsFetch.catchEvent({
         error: error,
         setHandle: setHandle,
@@ -935,6 +945,7 @@ export const useFetch = {
     };
 
     const onSuccess = async (data: SchemaApprovalsManager) => {
+      setState({ batchReason: undefined })
       let batchApprovalsStatus: {
         success: Array<TypeApprovalPromptItem>;
         errors: Array<TypeApprovalPromptItem>;
@@ -996,8 +1007,11 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplications>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
+    employeeName: string,
   ) => {
     setHandle({ isLoading: true });
+
+    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchReview
 
     let urlReview: string = await UtilsFetch.approvalsEndpoint(
       state.selectedButton,
@@ -1010,11 +1024,15 @@ export const useFetch = {
 
     state.data.forEach((item: SchemaRequestApplications) => {
       if (item.isChecked) {
+        const dateParse = Utils.panelBatchDateParse(state.selectedButton, item);
+        const generatedEditLog = Utils.generateHistoryItem(state.batchReason || "", employeeName || "", action, dateParse);
+
         const filing = {
           recordId: item.filing.id,
           employeeId: item.id,
           companyId: item.companyId,
           documentNo: item.filing.documentNo,
+          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog)
         };
 
         handle.isAction === formBatchReview.filings.push(filing);
@@ -1033,7 +1051,7 @@ export const useFetch = {
 
     const onError = async (error: TypeError) => {
       const errors = await UtilsFetch.catchErrors(error);
-
+      setState({ batchReason: undefined })
       await UtilsFetch.catchEvent({
         error: error,
         setHandle: setHandle,
@@ -1048,6 +1066,7 @@ export const useFetch = {
     };
 
     const onSuccess = async (data: SchemaApprovalsManager) => {
+      setState({ batchReason: undefined })
       let batchApprovalsStatus: {
         success: Array<TypeApprovalPromptItem>;
         errors: Array<TypeApprovalPromptItem>;
@@ -1126,13 +1145,13 @@ export const useFetch = {
 
         res.length > 0
           ? setState({
-              clockIn: res[0],
-              clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
-            })
+            clockIn: res[0],
+            clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
+          })
           : setState({
-              clockIn: ValuesSchemaCalendarEntries,
-              clockOut: ValuesSchemaCalendarEntries,
-            });
+            clockIn: ValuesSchemaCalendarEntries,
+            clockOut: ValuesSchemaCalendarEntries,
+          });
       })
       .catch(async (error: TypeError) => {
         await UtilsFetch.catchEvent({
@@ -1210,6 +1229,7 @@ export const useFetch = {
       const cutoffData = {
         dateFrom: response.data.dateRange.dateFrom,
         dateTo: response.data.dateRange.dateTo,
+        dayPayout: response.data.datePayoutSchedule
       };
 
       return cutoffData;

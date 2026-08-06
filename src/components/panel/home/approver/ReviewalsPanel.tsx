@@ -38,6 +38,7 @@ const ReviewalsPanel: React.FC = () => {
     onHandleRefreshControl,
     onHandleSetReachedEnd,
     onHandleClosePrompt,
+    isSelectable
   } = useReviewals();
 
   const renderItem = useCallback(
@@ -62,6 +63,7 @@ const ReviewalsPanel: React.FC = () => {
               color={COLORS.orange}
               style={styles.checkBox}
               value={item.isChecked}
+              disabled={!isSelectable(item)}
               onValueChange={(value) => onHandleCheckbox(item, value)}
             />
 

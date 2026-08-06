@@ -996,6 +996,45 @@ export const Utils = {
     return dateToParse;
   },
 
+
+  panelBatchDateParse: (panel: number, data?: SchemaRequestApplications) => {
+    let dateToParse: string | { dateFrom: string; dateTo: string } | undefined = undefined;
+
+    switch (panel) {
+      case 0:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      case 1:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      case 2:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      case 3:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      case 4:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      case 5:
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.filing?.dateFiled as string || '');
+        break;
+
+      default:
+        dateToParse = '';
+        break;
+    }
+    return dateToParse;
+  },
+
+
+
+
   parseAttachments: (attachments?: string | any[]) => {
     if (!attachments) return [];
 

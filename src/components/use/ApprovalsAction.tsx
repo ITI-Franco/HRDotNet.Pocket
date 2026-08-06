@@ -14,8 +14,7 @@ import { useApprovals } from 'src/contexts/pages';
 
 const ApprovalsAction: React.FC = () => {
   const styles = STYLES.ComponentApprovalsAction;
-  const { state, onHandleSelectAll, onHandleApprovals } = useApprovals();
-
+  const { state, onHandleSelectAll, onHandleApprovals, isSelectable } = useApprovals();
   const [values, setValues] = useState<{
     isDisabled: boolean;
     selectAll: boolean;
@@ -25,9 +24,13 @@ const ApprovalsAction: React.FC = () => {
   });
 
   useEffect(() => {
+    const selectableItems = state.data.filter(isSelectable);
+
     setValues({
-      isDisabled: state.data.every((item) => !item.isChecked),
-      selectAll: state.data.length > 0 ? state.data.every((item) => item.isChecked) : false,
+      isDisabled: selectableItems.every(item => !item.isChecked),
+      selectAll:
+        selectableItems.length > 0 &&
+        selectableItems.every(item => item.isChecked),
     });
   }, [state]);
 
