@@ -1099,54 +1099,6 @@ export const ARRAY = {
     { title: 'TimeInOut', value: data?.filing?.timeInOut },
   ],
 
-  // COSFilter: () => [
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Date Filed (Date From)', value: 'DateFrom' },
-  //
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
-  // OBFilter: () => [
-  //   { label: 'Location', value: 'Location' },
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Date From', value: 'DateFrom' },
-  //   { label: 'Date To', value: 'DateTo' },
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
-  // OTFilter: () => [
-  //   { label: 'Schedule', value: 'Schedule' },
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Overtime Date', value: 'DateOT' },
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
-  // OFFFilter: () => [
-  //   { label: 'Schedule', value: 'Schedule' },
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Offset Date', value: 'DateOffset' },
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
-  // LVFilter: () => [
-  //   { label: 'Leave Type', value: 'LeaveParameter' },
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
-  // MLFilter: () => [
-  //   { label: 'Log Time', value: 'TimeInOut' },
-  //   { label: 'Document No.', value: 'DocumentNo' },
-  //   { label: 'Document Status', value: 'DocStatus' },
-  //   { label: 'Filed Date', value: 'DateFiled' },
-  //   { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-  // ],
-
   COSFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
     { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
