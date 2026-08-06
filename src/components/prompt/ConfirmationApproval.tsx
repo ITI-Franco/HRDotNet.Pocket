@@ -3,7 +3,7 @@
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import StyledText from 'react-native-styled-text';
 
@@ -13,7 +13,7 @@ import { useApprovals } from 'src/contexts/pages';
 const ConfirmationApproval: React.FC = () => {
   const styles = STYLES.ComponentConfirmationApproval;
 
-  const { state, handle, onHandleCancelPrompt, onHandleApprovePrompt } = useApprovals();
+  const { state, setState, handle, onHandleCancelPrompt, onHandleApprovePrompt } = useApprovals();
 
   const onDisplayText = () => {
     let request: string = '';
@@ -49,6 +49,19 @@ const ConfirmationApproval: React.FC = () => {
     return STRINGS.confirmationSelectionApproval(state.count!, request, handle.isAction);
   };
 
+  const onHandleContinue = () => {
+    if (state.batchReason == undefined || state.batchReason.trim() == "") {
+      alert(STRINGS.requiredReason)
+    } else {
+      onHandleApprovePrompt()
+    }
+  }
+
+  const onHandleCancel = () => {
+    onHandleCancelPrompt()
+    setState({ batchReason: undefined })
+  }
+
   return (
     <React.Fragment>
       <Modal transparent={true} visible={handle.isVisible} animationType="fade">
@@ -56,18 +69,35 @@ const ConfirmationApproval: React.FC = () => {
           <View style={styles.modalWrapper}>
             <FontAwesome name="question-circle" size={70} color={COLORS.yellow} />
 
-            <Text style={styles.titleText}>{STRINGS.confirmation}</Text>
+            <Text style={styles.titleText}>{`${STRINGS.batch} ${handle.isAction === 0 ? STRINGS.cancel : STRINGS.approve}?`}</Text>
 
             <StyledText style={styles.subTitleText} textStyles={STYLES.StyledText}>
               {onDisplayText()}
             </StyledText>
 
+            <View>
+              <Text style={styles.textReason} >Reason <Text style={styles.required}>*</Text></Text>
+              <View style={styles.rowView}>
+                <TextInput
+                  style={styles.textArea}
+                  value={state.batchReason}
+                  onChangeText={(text) => setState({ batchReason: text })}
+                  placeholder={`${STRINGS.placeholderReason}`}
+                  placeholderTextColor="#888"
+                  multiline={true}
+                  numberOfLines={2}
+                  textAlignVertical="top"
+                />
+              </View>
+            </View>
+
+
             <View style={styles.rowView}>
-              <TouchableOpacity onPress={() => onHandleCancelPrompt()} style={[styles.button, styles.cancelButton]}>
+              <TouchableOpacity onPress={onHandleCancel} style={[styles.button, styles.cancelButton]}>
                 <Text style={[styles.buttonText, styles.cancelText]}>{STRINGS.cancel}</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => onHandleApprovePrompt()} style={styles.button}>
+              <TouchableOpacity onPress={onHandleContinue} style={styles.button}>
                 <Text style={styles.buttonText}>{STRINGS.continue}</Text>
               </TouchableOpacity>
             </View>

@@ -14,6 +14,8 @@ import {
   SchemaRequestApplications,
 } from 'src/types/Types';
 import { useFetch } from 'src/hooks/useFetch';
+import { DateTimeUtils } from 'src/utils/DateTimeUtils';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -34,6 +36,7 @@ type TypeContext = {
   onHandleEffectII: () => void;
   onHandleEffectIII: () => void;
   onHandleEffectIV: () => void;
+  isSelectable: (value: SchemaRequestApplications) => boolean;
   ApprovalCount: () => void;
 };
 
@@ -57,12 +60,14 @@ export const Context = createContext<TypeContext>({
   onHandleEffectII: () => { },
   onHandleEffectIII: () => { },
   onHandleEffectIV: () => { },
+  isSelectable: () => false,
   ApprovalCount: () => { },
 });
 
 export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
   const navigation: TypeNavStack['navigation'] = useNavigation();
   const params = useRoute().params as ParamsRequestApplication;
+  const { cutOffPeriod, employeeName } = useGlobalStore()
 
   const [state, setState] = useReducer(
     (state: StateApplications, newState: Partial<StateApplications>) => ({ ...state, ...newState }),
@@ -73,6 +78,17 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     (state: TypeHandle, newState: Partial<TypeHandle>) => ({ ...state, ...newState }),
     ValuesApprovals.Handle,
   );
+
+  const isSelectable = (record: SchemaRequestApplications): boolean => {
+    const cutOffStart = DateTimeUtils.isoToDateDefault(cutOffPeriod[0]?.toString()!);
+    const dateFiled = DateTimeUtils.isoToDateDefault(record.filing.dateFiled?.toString()!);
+    const status = record.filing.filingStatus?.name;
+
+    return (
+      ["Filed"].includes(status) &&
+      dateFiled >= cutOffStart
+    );
+  };
 
   const onHandleCheckbox = async (data: SchemaRequestApplications, value: boolean) => {
     const newData = state.data.map((item) =>
@@ -86,12 +102,15 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const onHandleSelectAll = (value?: boolean) => {
+  const onHandleSelectAll = () => {
+    const selectableItems = state.data.filter(isSelectable);
+    const shouldCheckAll = !selectableItems.every(item => item.isChecked);
+
     setState({
-      count: value ? state.data.length : 0,
-      data: state.data.map((item) => ({
+      count: shouldCheckAll ? selectableItems.length : 0,
+      data: state.data.map(item => ({
         ...item,
-        isChecked: state.data.every((item) => item.isChecked) ? false : true,
+        isChecked: isSelectable(item) ? shouldCheckAll : false,
       })),
     });
   };
@@ -118,7 +137,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
   const onHandleReviewPrompt = async () => {
     setHandle({ isVisible: false });
 
-    await useFetch.BatchReviewals(navigation, state, setState, handle, setHandle).then(() => {
+    await useFetch.BatchReviewals(navigation, state, setState, handle, setHandle, employeeName).then(() => {
       setHandle({ isLoading: false });
     });
   };
@@ -187,6 +206,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
         onHandleEffectII,
         onHandleEffectIII,
         onHandleEffectIV,
+        isSelectable,
         ApprovalCount,
       }}
     >

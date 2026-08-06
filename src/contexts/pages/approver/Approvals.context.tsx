@@ -14,6 +14,8 @@ import {
   SchemaRequestApplications,
 } from 'src/types/Types';
 import { useFetch } from 'src/hooks/useFetch';
+import { useGlobalStore } from 'src/store/GlobalStore';
+import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -35,35 +37,38 @@ type TypeContext = {
   onHandleEffectII: () => void;
   onHandleEffectIII: () => void;
   onHandleEffectIV: () => void;
+  isSelectable: (value: SchemaRequestApplications) => boolean;
   ApprovalCount: () => void;
 };
 
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => {},
+  setState: () => { },
   handle: ValuesApprovals.Handle,
-  setHandle: () => {},
+  setHandle: () => { },
 
-  onHandleCheckbox: () => {},
-  onHandleSelectAll: () => {},
-  onHandleApprovals: () => {},
-  onHandleClosePrompt: () => {},
-  onHandleCancelPrompt: () => {},
-  onHandleApprovePrompt: () => {},
-  onHandlePress: () => {},
-  onHandleRefreshControl: () => {},
-  onHandleSetReachedEnd: () => {},
-  onHandleEffectI: () => {},
-  onHandleEffectII: () => {},
-  onHandleEffectIII: () => {},
-  onHandleEffectIV: () => {},
-  ApprovalCount: () => {},
+  onHandleCheckbox: () => { },
+  onHandleSelectAll: () => { },
+  onHandleApprovals: () => { },
+  onHandleClosePrompt: () => { },
+  onHandleCancelPrompt: () => { },
+  onHandleApprovePrompt: () => { },
+  onHandlePress: () => { },
+  onHandleRefreshControl: () => { },
+  onHandleSetReachedEnd: () => { },
+  onHandleEffectI: () => { },
+  onHandleEffectII: () => { },
+  onHandleEffectIII: () => { },
+  onHandleEffectIV: () => { },
+  isSelectable: () => false,
+  ApprovalCount: () => { },
 });
 
 export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
   const navigation: TypeNavStack['navigation'] = useNavigation();
   const params = useRoute().params as ParamsRequestApplication;
+  const { cutOffPeriod, employeeName } = useGlobalStore()
 
   const [state, setState] = useReducer(
     (state: StateApplications, newState: Partial<StateApplications>) => ({ ...state, ...newState }),
@@ -74,6 +79,17 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     (state: TypeHandle, newState: Partial<TypeHandle>) => ({ ...state, ...newState }),
     ValuesApprovals.Handle,
   );
+
+  const isSelectable = (record: SchemaRequestApplications): boolean => {
+    const cutOffStart = DateTimeUtils.isoToDateDefault(cutOffPeriod[0]?.toString()!);
+    const dateFiled = DateTimeUtils.isoToDateDefault(record.filing.dateFiled?.toString()!);
+    const status = record.filing.filingStatus?.name;
+
+    return (
+      ["Reviewed", "Filed"].includes(status) &&
+      dateFiled >= cutOffStart
+    );
+  };
 
   const onHandleCheckbox = async (data: SchemaRequestApplications, value: boolean) => {
     const newData = state.data.map((item) =>
@@ -87,15 +103,19 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const onHandleSelectAll = (value?: boolean) => {
+  const onHandleSelectAll = () => {
+    const selectableItems = state.data.filter(isSelectable);
+    const shouldCheckAll = !selectableItems.every(item => item.isChecked);
+
     setState({
-      count: value ? state.data.length : 0,
-      data: state.data.map((item) => ({
+      count: shouldCheckAll ? selectableItems.length : 0,
+      data: state.data.map(item => ({
         ...item,
-        isChecked: state.data.every((item) => item.isChecked) ? false : true,
+        isChecked: isSelectable(item) ? shouldCheckAll : false,
       })),
     });
   };
+
 
   const onHandleApprovals = (action: number) => {
     setHandle({ ...handle, isVisible: true, isAction: action });
@@ -111,22 +131,22 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-          successList: [],
-          failedList: [],
-        });
+        successList: [],
+        failedList: [],
+      });
   };
 
   const onHandleApprovePrompt = async () => {
     setHandle({ isVisible: false });
 
-    await useFetch.BatchApprovals(navigation, state, setState, handle, setHandle).then(() => {
+    await useFetch.BatchApprovals(navigation, state, setState, handle, setHandle, employeeName).then(() => {
       setHandle({ isLoading: false });
     });
   };
 
   const onHandlePress = (index: number) => {
     setHandle({ isLoading: true });
-    setState({ selectedButton: index, data: [], urlQuery: `${process.env.EXPO_PUBLIC_APPROVALS_DEFAULTPARAMS}` });
+    setState({ selectedButton: index, data: [] });
   };
 
   const onHandleRefreshControl = () => {
@@ -188,6 +208,7 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
         onHandleEffectII,
         onHandleEffectIII,
         onHandleEffectIV,
+        isSelectable,
         ApprovalCount,
       }}
     >
