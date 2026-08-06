@@ -758,12 +758,12 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-            { label: STRINGS.COSRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
-            { label: STRINGS.COSRequestFieldII, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
-            { label: STRINGS.COSRequestFieldIII, value: props?.requested?.name },
-            { label: STRINGS.COSRequestFieldIV, value: props?.restDay },
-            { label: STRINGS.requestFieldReason, value: props?.reason },
-          ],
+              { label: STRINGS.COSRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
+              { label: STRINGS.COSRequestFieldII, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
+              { label: STRINGS.COSRequestFieldIII, value: props?.requested?.name },
+              { label: STRINGS.COSRequestFieldIV, value: props?.restDay },
+              { label: STRINGS.requestFieldReason, value: props?.reason },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.changeOfSchedule,
         DateTimeUtils.twoDateRangeFormat(props?.startDate!, props?.endDate!),
@@ -776,18 +776,18 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-            {
-              label: STRINGS.OBSummaryFieldI,
-              value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
-            },
-            {
-              label: STRINGS.OBSummaryFieldII,
-              value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
-            },
-            { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
-            { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
-            { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
-          ],
+              {
+                label: STRINGS.OBSummaryFieldI,
+                value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
+              },
+              {
+                label: STRINGS.OBSummaryFieldII,
+                value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
+              },
+              { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
+              { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
+              { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.officialBusiness,
         DateTimeUtils.twoDateRangeFormat(props?.OBDateFrom!, props?.OBDateTo!),
@@ -800,30 +800,30 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-            { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-            { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
-            {
-              label: STRINGS.OTRequestFieldIII,
-              value:
-                props.schedule?.isPremium! === true
-                  ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
-                    DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                    ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                    : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
-                  : props.schedule?.timeOut
-                    ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
-                    : undefined,
-            },
-            {
-              label: STRINGS.OTRequestFieldIV,
-              value: props?.timeRecord
-                ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                : null,
-            },
-            { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-            { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-            { label: STRINGS.requestFieldReason, value: props?.reason },
-          ],
+              { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+              { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
+              {
+                label: STRINGS.OTRequestFieldIII,
+                value:
+                  props.schedule?.isPremium! === true
+                    ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
+                      DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                      : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
+                    : props.schedule?.timeOut
+                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
+                      : undefined,
+              },
+              {
+                label: STRINGS.OTRequestFieldIV,
+                value: props?.timeRecord
+                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+                  : null,
+              },
+              { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+              { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+              { label: STRINGS.requestFieldReason, value: props?.reason },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.overtime,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -836,19 +836,19 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-            { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-            { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
-            { label: STRINGS.OFFRequestFieldIII, value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut) },
-            {
-              label: STRINGS.OFFRequestFieldIV,
-              value: props?.timeRecord
-                ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                : null,
-            },
-            { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-            { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-            { label: STRINGS.requestFieldReason, value: props?.reason },
-          ],
+              { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+              { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
+              { label: STRINGS.OFFRequestFieldIII, value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut) },
+              {
+                label: STRINGS.OFFRequestFieldIV,
+                value: props?.timeRecord
+                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+                  : null,
+              },
+              { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+              { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+              { label: STRINGS.requestFieldReason, value: props?.reason },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.offset,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -861,12 +861,12 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-            { label: STRINGS.LVRequestFieldI, value: props?.leaveType?.name },
-            { label: STRINGS.LVRequestFieldIII, value: props?.leaveOption?.name },
-            { label: STRINGS.LVRequestFieldIV, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
-            { label: STRINGS.LVRequestFieldV, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
-            { label: STRINGS.requestFieldReason, value: props?.reason },
-          ],
+              { label: STRINGS.LVRequestFieldI, value: props?.leaveType?.name },
+              { label: STRINGS.LVRequestFieldIII, value: props?.leaveOption?.name },
+              { label: STRINGS.LVRequestFieldIV, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
+              { label: STRINGS.LVRequestFieldV, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
+              { label: STRINGS.requestFieldReason, value: props?.reason },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.leave,
         DateTimeUtils.twoDateRangeFormat(props?.startDate!, props?.endDate!),
@@ -998,7 +998,7 @@ export const ARRAY = {
 
     { title: 'FilingStatus.Id', value: data?.filing?.filingStatus?.id },
     { title: 'FilingStatus.Name', value: data?.filing?.filingStatus?.name },
-    { title: 'ReferenceNo,', value: data?.filing?.referenceNo },
+    { title: 'ReferenceNo', value: data?.filing?.referenceNo },
     { title: 'DateTransaction', value: DateTimeUtils.isoToDateDash(data?.filing?.dateTransaction) },
     { title: 'Reason', value: data?.filing?.reason },
     { title: 'FileAttachment', value: data?.filing?.fileAttachment },
@@ -1017,7 +1017,7 @@ export const ARRAY = {
 
     { title: 'FilingStatusId', value: data?.filing?.filingStatus?.id },
     { title: 'FilingStatus', value: data?.filing?.filingStatus?.name },
-    { title: 'ReferenceNo,', value: data?.filing?.referenceNo },
+    { title: 'ReferenceNo', value: data?.filing?.referenceNo },
     { title: 'DateTransaction', value: DateTimeUtils.isoToDateDash(data?.filing?.dateTransaction) },
     { title: 'Reason', value: data?.filing?.reason },
     { title: 'FileAttachment', value: data?.filing?.fileAttachment },
@@ -1289,11 +1289,11 @@ export const ARRAY = {
       title: STRINGS.cllnDateFiled,
       value:
         (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! ||
-          (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
+        (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
           ? DateTimeUtils.twoDateRangeFormat(
-            (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
-            (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
-          )
+              (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
+              (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
+            )
           : data?.filing?.dateRange?.dateFrom || data?.filing?.dateRange?.dateTo
             ? DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom, data?.filing?.dateRange?.dateTo)
             : DateTimeUtils.dateDefaultToWord(data?.filing?.dateFiled as string),

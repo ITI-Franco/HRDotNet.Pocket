@@ -68,11 +68,11 @@ export type SchemaRequestApplications = {
     };
 
     dateFiled?:
-    | {
-      dateFrom: string;
-      dateTo: string;
-    }
-    | string;
+      | {
+          dateFrom: string;
+          dateTo: string;
+        }
+      | string;
 
     leaveParameter?: {
       // Leave
@@ -691,6 +691,7 @@ export type StateLVRequest = {
   reason: string;
   attachment: Attachment;
   documentNo?: string;
+  referenceNo?: string;
 };
 
 // ML Request
