@@ -81,7 +81,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
         navigate: () => navigation.navigate(STRINGS.pathReviewals as never),
         image: ASSETS.iconPending,
         title: STRINGS.menuBtnTitleIII,
-        disabled: reviewer,
+        disabled: !reviewer,
       },
     ],
     secondRow: [
