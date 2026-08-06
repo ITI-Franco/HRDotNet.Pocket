@@ -415,12 +415,13 @@ export const STYLES = {
       backgroundColor: COLORS.clearWhite,
       color: COLORS.orange,
       marginRight: 5,
-      fontSize: 18,
+      fontSize: 16,
       fontFamily: 'Inter_700Bold',
       paddingHorizontal: 9,
       borderRadius: 10,
       overflow: 'hidden',
     },
+    tabItem: { alignItems: 'center', flexDirection: 'row' },
   }),
 
   Notification: StyleSheet.create({
@@ -2812,7 +2813,7 @@ export const STYLES = {
       height: 150,
       borderWidth: 1,
       borderColor: '#ccc',
-      width: "100%",
+      width: '100%',
       borderRadius: 8,
       padding: 12,
       fontSize: 16,
@@ -2820,7 +2821,7 @@ export const STYLES = {
     },
 
     textReason: {
-      marginTop: 10
+      marginTop: 10,
     },
     required: {
       color: 'red',

@@ -7,8 +7,6 @@ import { View, Text, FlatList, StatusBar, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Toast from 'src/components/use/Toast';
-import ApprovalsPanel from 'src/components/panel/home/approver/ApprovalsPanel';
-import ConfirmationApproval from 'src/components/prompt/ConfirmationApproval';
 import PageHeader from 'src/components/header/PageHeader';
 import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
@@ -35,19 +33,17 @@ const Reviewals: React.FC = () => {
     ApprovalCount,
   } = useReviewals();
 
-  const { cutOffPeriod } = useGlobalStore()
+  const { cutOffPeriod } = useGlobalStore();
 
   useEffect(() => {
     onHandleEffectI();
-    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || "")
-    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || "")
+    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || '');
+    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || '');
     setState({
-      filterType: "DateFiled",
+      filterType: 'DateFiled',
       filterValue: `${removeDashFrom} - ${removeDashTo}`,
-      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`
-    })
-
-
+      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`,
+    });
   }, [state.selectedButton]);
 
   useEffect(() => {
@@ -97,20 +93,21 @@ const Reviewals: React.FC = () => {
                   onPress={() => onHandlePress(index)}
                   disabled={state.selectedButton === index ? true : false}
                 >
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      state.selectedButton === index && styles.selectedTextButton,
-                      index == 6 && { color: COLORS.gray },
-                    ]}
-                  >
+                  <View style={styles.tabItem}>
                     {state.selectedButton === index && (
-                      <View>
-                        <Text style={[styles.approvalCountButton]}>{state.totalCount ?? 0}</Text>
-                      </View>
+                      <Text style={styles.approvalCountButton}>{state.totalCount ?? 0}</Text>
                     )}
-                    {item.title}
-                  </Text>
+
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        state.selectedButton === index && styles.selectedTextButton,
+                        index === 6 && { color: COLORS.gray },
+                      ]}
+                    >
+                      {item.title}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               )}
               style={styles.buttonList}
