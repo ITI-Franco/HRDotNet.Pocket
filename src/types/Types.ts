@@ -860,6 +860,9 @@ export type StateApplications = {
   filterValue?: string;
   filterType?: string;
   displayValue?: string;
+
+  batchReason?: string;
+  batchEmployeeName?: string; //
 };
 
 // Components

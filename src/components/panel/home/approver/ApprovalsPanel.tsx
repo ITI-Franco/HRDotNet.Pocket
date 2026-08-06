@@ -38,6 +38,7 @@ const ApprovalsPanel: React.FC = () => {
     onHandleRefreshControl,
     onHandleSetReachedEnd,
     onHandleClosePrompt,
+    isSelectable
   } = useApprovals();
 
   const renderItem = useCallback(
@@ -60,6 +61,7 @@ const ApprovalsPanel: React.FC = () => {
               color={COLORS.orange}
               style={styles.checkBox}
               value={item.isChecked}
+              disabled={!isSelectable(item)}
               onValueChange={(value) => onHandleCheckbox(item, value)}
             />
 

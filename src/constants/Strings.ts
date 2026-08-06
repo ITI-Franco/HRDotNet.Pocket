@@ -276,6 +276,10 @@ export const STRINGS = {
   all: 'All',
   review: 'Review',
   approve: 'Approve',
+  batch: 'Batch',
+  batchCancel: 'BatchCancel',
+  batchApprove: 'BatchApprove',
+  batchReview: 'BatchEndorse',
   no: 'No',
   yes: 'Yes',
   event: 'Event',
@@ -389,6 +393,9 @@ export const STRINGS = {
   dash: '----------',
   blankLine: '──────────',
 
+  //required
+  requiredReason: "Reason is required",
+
   // Values
   sizeValue: 10000000,
 
@@ -436,9 +443,9 @@ export const STRINGS = {
   cancellation: 'THIS DOCUMENT IS CANCELLED BY',
   geoPattern: 'U2FsdGVkX1+bk1A634FvhHo2WebCEdehGv3K3UTSbSApglAG2BFiwY9sClfOMEoDd95JH4yIX15PKrUCAfXmcw==',
   approvalsPromptNote: (action: number) =>
-    ` are selected for <sm_u>${action === PromptAction.Cancel ? 'cancellation' : 'approval'}</sm_u>\nContinue?`,
+    ` are selected for <sm_u>${action === PromptAction.Cancel ? 'cancellation' : 'approval'}</sm_u>`,
   reviewalsPrompNote: (action: number) =>
-    ` are selected for <sm_u>${action === PromptAction.Cancel ? 'cancellation' : 'reviewal'}</sm_u>\nContinue?`,
+    ` are selected for <sm_u>${action === PromptAction.Cancel ? 'cancellation' : 'reviewal'}</sm_u>`,
   clockedStatus: (value: number, date: string, time: string) =>
     `${value === 1 ? 'Clocked In' : 'Clocked Out'}: ${DateTimeUtils.dateDefaultToWord(date)} at ${DateTimeUtils.timeSecondsToUnits(time)}`,
 
@@ -455,12 +462,38 @@ export const STRINGS = {
     `The system detected the following overtime hours on the ensuing dates for the ` +
     `<b><u>${value} half</u></b> of <b><u>${text}</u></b>`,
 
+  getRequestActionMessage: (reqAction?: number): string => {
+    switch (reqAction) {
+      case 1:
+        return "submitted. We will get back to you soon.";
+      case 2:
+        return "updated.";
+      case 4:
+        return "reviewed.";
+      case 5:
+        return "approved.";
+      default:
+        return "cancelled.";
+    }
+  },
+
+  getRequestReference: (
+    reqAction?: number,
+    date?: string,
+    documentNo?: string
+  ): string => {
+    return reqAction === 1
+      ? `for <b><u>${date}</u></b> `
+      : `<b><u>Document No ${documentNo}</u></b> `;
+  },
+
+
   styledDisabled: `<t></t>`,
   tapSelectPlaceholder: (text: string) => `<t>Select ${text}</t>`,
   requestSuccess: (title: string, date: string, reqAction?: number, documentNo?: string) =>
     `<b><u>${title}</u></b> request ` +
-    `${ARRAY.getRequestReference(reqAction, date, documentNo)}` +
-    `was successfully ${ARRAY.getRequestActionMessage(reqAction)}`,
+    `${STRINGS.getRequestReference(reqAction, date, documentNo)}` +
+    `was successfully ${STRINGS.getRequestActionMessage(reqAction)}`,
 
   requestCancellation: (params: SchemaRequestApplications, state: any) => `${state.reason}`,
 

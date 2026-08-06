@@ -70,7 +70,7 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
           employeePayrollInfo.paymentFrequencyId,
           employeePayrollInfo.payrollGroupId,
         );
-        setCutoffPeriod([data?.dateFrom, data?.dateTo]);
+        setCutoffPeriod([data?.dateFrom, data?.dayPayout]);
       } catch (error) {
         console.error(error);
       }
@@ -113,7 +113,7 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) {}
+    } catch (err) { }
   })();
   return (
     <React.Fragment>

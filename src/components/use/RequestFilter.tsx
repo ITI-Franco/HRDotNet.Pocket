@@ -65,7 +65,19 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
   const onHandleSearchSubmit = () => {
     handle[1]({ isLoading: true });
     const exit = () => {
-      alert(ERRORS.blankSearchFields);
+
+      state[1]({
+        filterType: undefined,
+        filterValue: undefined,
+        displayValue: undefined,
+        urlQuery: ''
+      })
+      setComponentState({
+        search: "",
+        searchDates: { from: "", to: "" }
+      })
+      // alert(ERRORS.blankSearchFields);
+
       return;
     };
 
@@ -73,6 +85,21 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
       if (!componentState.searchDates?.from || !componentState.searchDates?.to) {
         exit();
       } else {
+
+        if (value === "DateFiled") {
+          state[1]({
+            displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+            filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
+            filterType: value
+          })
+        } else if (value === "DateTransaction") {
+          state[1]({
+            displayValue: `Transaction Date: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+            filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
+            filterType: value
+          })
+        }
+
         state[1]({
           urlQuery:
             `&DateField=${value}&DateFrom=${componentState.searchDates?.from}` + `&DateTo=${componentState.searchDates?.to}&sortBy=-DocumentNo`,
@@ -83,6 +110,13 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     else {
       // log filter
       if (value == 'logType') {
+
+        state[1]({
+          displayValue: `Log Type: ${logTypeItems.find((e) => e.value == String(logTypeValue))?.label}`,
+          filterValue: `${String(logTypeValue)}`,
+          filterType: value
+        })
+
         state[1]({ urlQuery: `&LogTypeId=${logTypeValue}&sortBy=-DocumentNo` })
       }
       else if (value == 'Requested') {
@@ -96,6 +130,11 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
       }
       // search filter
       else {
+
+        if (value === "DocumentNo") {
+          state[1]({ displayValue: `Document No: ${componentState.search}`, filterValue: componentState.search, filterType: value })
+        }
+
         state[1]({
           urlQuery: `&${value}=${componentState.search}&sortBy=-DocumentNo`,
         });
@@ -103,27 +142,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     }
 
 
-    if (value === "DocumentNo") {
-      state[1]({ displayValue: `Document No: ${componentState.search}`, filterValue: componentState.search, filterType: value })
-    } else if (value === "DateFiled") {
-      state[1]({
-        displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
-        filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
-        filterType: value
-      })
-    } else if (value === "DateTransaction") {
-      state[1]({
-        displayValue: `Transaction Date: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
-        filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
-        filterType: value
-      })
-    } else if (value === "logType") {
-      state[1]({
-        displayValue: `Log Type: ${logTypeItems.find((e) => e.value == String(logTypeValue))?.label}`,
-        filterValue: `${String(logTypeValue)}`,
-        filterType: value
-      })
-    }
+
 
     actionState();
   };
@@ -177,7 +196,6 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
 
   useEffect(() => {
 
-
     const type = state[0].filterType || ""
     const value = state[0].filterValue || ""
     setValue(type)
@@ -186,6 +204,10 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
       setComponentState({ search: state[0].filterValue })
     } else if (type === "DateFiled" || type === "DateTransaction") {
       const [from, to] = value.split(" - ");
+      state[1]({
+        urlQuery:
+          `&DateField=${type}&DateFrom=${from}` + `&DateTo=${to}&sortBy=-DocumentNo`,
+      });
       setComponentState({
         searchDates: {
           from,
@@ -193,9 +215,6 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         },
       });
     }
-    console.log("VALL", type)
-
-
   }, [componentState.isVisibleFilter, state[0].filterType])
 
   return (
@@ -367,9 +386,25 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
               : new Date(),
           )}
 
-          <TouchableOpacity onPress={onHandleSearchSubmit} style={styles.button}>
-            <Text style={styles.buttonText}>{STRINGS.filter}</Text>
-          </TouchableOpacity>
+          <View style={styles.row}>
+
+            <TouchableOpacity
+              onPress={() => {
+                setComponentState({
+                  search: "",
+                  searchDates: { from: "", to: "" }
+                })
+                setValue('')
+              }}
+              style={styles.borderButton}
+            >
+              <Text style={styles.borderButtonText}>Clear</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onHandleSearchSubmit} style={styles.button}>
+              <Text style={styles.buttonText}>{STRINGS.filter}</Text>
+            </TouchableOpacity>
+          </View>
+
         </View>
       </View>
     </Modal>

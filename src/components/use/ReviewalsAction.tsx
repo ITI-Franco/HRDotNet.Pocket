@@ -10,11 +10,12 @@ import Checkbox from 'expo-checkbox';
 
 import { COLORS, STRINGS, STYLES } from 'src';
 import { ApprovalsAction as ValuesAction } from 'src/constants/Values';
-import { useApprovals, useReviewals } from 'src/contexts/pages';
+import { useReviewals } from 'src/contexts/pages';
+;
 
 const ReviewalsAction: React.FC = () => {
   const styles = STYLES.ComponentApprovalsAction;
-  const { state, onHandleSelectAll, onHandleApprovals } = useReviewals();
+  const { state, onHandleSelectAll, onHandleApprovals, isSelectable } = useReviewals();
 
   const [values, setValues] = useState<{
     isDisabled: boolean;
@@ -25,9 +26,13 @@ const ReviewalsAction: React.FC = () => {
   });
 
   useEffect(() => {
+    const selectableItems = state.data.filter(isSelectable);
+
     setValues({
-      isDisabled: state.data.every((item) => !item.isChecked),
-      selectAll: state.data.length > 0 ? state.data.every((item) => item.isChecked) : false,
+      isDisabled: selectableItems.every(item => !item.isChecked),
+      selectAll:
+        selectableItems.length > 0 &&
+        selectableItems.every(item => item.isChecked),
     });
   }, [state]);
 
@@ -38,7 +43,7 @@ const ReviewalsAction: React.FC = () => {
           color={COLORS.orange}
           style={styles.checkBox}
           value={values.selectAll}
-          disabled={state.data.length <= 0 ? true : false}
+          disabled={!state.data.some(isSelectable)}
           onValueChange={(value: boolean) => onHandleSelectAll(value)}
         />
 

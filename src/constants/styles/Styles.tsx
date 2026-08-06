@@ -2808,6 +2808,24 @@ export const STYLES = {
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 
+    textArea: {
+      height: 150,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      width: "100%",
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      backgroundColor: '#fff',
+    },
+
+    textReason: {
+      marginTop: 10
+    },
+    required: {
+      color: 'red',
+    },
+
     modalWrapper: {
       backgroundColor: COLORS.clearWhite,
       padding: 30,
