@@ -1230,6 +1230,7 @@ export const ARRAY = {
     },
     OBTimeIn: params?.filing?.timeRange?.timeIn,
     OBTimeOut: params?.filing?.timeRange?.timeOut,
+    referenceNo: params?.filing.referenceNo,
   }),
 
   // OT Request Data Filing
@@ -1265,6 +1266,7 @@ export const ARRAY = {
     },
     startDate: (params?.filing?.dateFiled as { dateFrom: string })?.dateFrom,
     endDate: (params?.filing?.dateFiled as { dateTo: string })?.dateTo,
+    referenceNo: params?.filing.referenceNo,
   }),
 
   // ML Request Data Filing

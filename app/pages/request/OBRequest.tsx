@@ -270,7 +270,7 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                   UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
                     STRINGS.requrestFieldReferenceNo,
-                    state?.referenceNo ?? '',
+                    state.referenceNo || '',
                     true,
                     (text: string) => setState({ referenceNo: text }),
                     true,

@@ -111,7 +111,6 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
               backgroundColor: COLORS.purple,
             },
           ]}
-
           onPress={() => onRequestHandle(onReqAction.Review)}
         >
           <FontAwesome name="search" size={24} color={COLORS.clearWhite} />
@@ -176,6 +175,12 @@ const ReviewalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
                 )}
 
                 {DisplayContent()}
+
+                <View style={[styles.rowWrapper, { marginTop: 20, marginBottom: 10 }]}>
+                  <Text style={styles.titleText}>{STRINGS.cllnReferenceNo}</Text>
+
+                  <Text style={styles.valueText}>{state.data?.filing?.referenceNo || STRINGS.blankLine}</Text>
+                </View>
 
                 <View style={[styles.rowWrapper, { marginTop: 20, marginBottom: 10 }]}>
                   <Text style={styles.titleText}>{STRINGS.cllnReason}</Text>
