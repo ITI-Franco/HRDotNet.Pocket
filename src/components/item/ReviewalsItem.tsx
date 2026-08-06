@@ -46,7 +46,7 @@ const ApprovalsItem: React.FC<PropsApprovalsItem> = ({ data, onPanel, navigation
         </View>
 
         <View style={styles.rowView}>
-          <Text style={styles.boldText}>{`${STRINGS.labelDatePeriodOB}:`}</Text>
+          <Text style={styles.boldText}>{`${STRINGS.labelDatePeriod}:`}</Text>
           <Text style={styles.valueText}>
             {(data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! ||
             (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
