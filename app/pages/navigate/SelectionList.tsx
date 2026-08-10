@@ -42,9 +42,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
-            ID: item.id,
-            name: item.name,
-            code: item.name,
+            ID: item?.id ?? '',
+            name: item?.name ?? '',
+            code: item?.name ?? '',
           }));
 
           setState({ data: mappedData });
@@ -59,9 +59,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
+              ID: item?.id,
+              name: item?.name ?? '',
+              code: item?.name ?? '',
             }));
 
             setState({ data: mappedData });
@@ -72,14 +72,14 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
           APIMethods.GET,
           ContentTypes.JSON,
           `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/branches?Location=${encodeURIComponent(
-            (params as any).currParams.location.name,
+            (params as any).currParams.location?.name ?? '',
           )}&Name=${search}`,
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
+              ID: item?.id,
+              name: item?.name ?? '',
+              code: item?.name ?? '',
             }));
 
             setState({ data: mappedData });
@@ -94,9 +94,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
-            ID: item.id,
-            name: item.name,
-            code: item.code,
+            ID: item?.id,
+            name: item?.name ?? '',
+            code: item?.code ?? '',
           }));
 
           setState({ data: mappedData });
@@ -117,9 +117,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     <MemoizedRequestItem item={item} index={index} />
   );
 
-  const MemoizedRequestItem = React.memo(({ item, index }: { item: TypeSelectionList; index: number }) => (
+  const MemoizedRequestItem = React.memo(({ item }: { item: TypeSelectionList; index: number }) => (
     <TouchableOpacity style={styles.button} onPress={() => Utils.setSelectionNavigate(params, navigation, item)}>
-      <Text style={styles.titleText}>{item.name}</Text>
+      <Text style={styles.titleText}>{item?.name ?? ''}</Text>
     </TouchableOpacity>
   ));
 
