@@ -351,7 +351,6 @@ export const useFetch = {
 
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery} `;
 
-
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -376,7 +375,7 @@ export const useFetch = {
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
-            onRefresh: () => useFetch.Refresh(nav, () => useFetch.Request(nav, state, setState, handle, setHandle)),
+            onRefresh: () => useFetch.Refresh(nav, () => useFetch.Approvals(nav, state, setState, handle, setHandle)),
             toastMessage: ERRORS.connFailed,
             moreHandle: () =>
               setHandle({
@@ -405,8 +404,6 @@ export const useFetch = {
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
 
-
-
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -430,7 +427,7 @@ export const useFetch = {
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
-            onRefresh: () => useFetch.Refresh(nav, () => useFetch.Request(nav, state, setState, handle, setHandle)),
+            onRefresh: () => useFetch.Refresh(nav, () => useFetch.Reviewals(nav, state, setState, handle, setHandle)),
             toastMessage: ERRORS.connFailed,
             moreHandle: () =>
               setHandle({
@@ -544,6 +541,8 @@ export const useFetch = {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
 
+        console.log("Nn", newFields, oldFields)
+
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
         const originalAttachments = Utils.parseAttachments(updateData.filing.fileAttachment);
@@ -551,7 +550,7 @@ export const useFetch = {
 
         const attachmentChanges = Utils.getAttachmentHistory(originalAttachments, newAttachment, formatName || '');
 
-        const readableChanges = Utils.panelReadableChanges(panel, changedFields, attachmentChanges);
+        const readableChanges = Utils.panelReadableChanges(panel, changedFields, attachmentChanges, updateData);
 
         const generateEditLog = Utils.generateHistoryItem(
           readableChanges || 'No changes detected',
@@ -564,6 +563,7 @@ export const useFetch = {
 
         formData.append('EditLog', editLog);
       } else if (reqAction === onReqAction.Cancel) {
+
         const generateEditLog = Utils.generateHistoryItem(parsed.cancelReason, formatName, 'Cancelled', dateParse);
         const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
 
@@ -571,12 +571,7 @@ export const useFetch = {
       }
 
       let dataSetUpdate;
-
-      if (panel === FilingPanel.OB) {
-        dataSetUpdate = ARRAY.requestFormDataOB(reqAction, parsedUpdate);
-      } else {
-        dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate);
-      }
+      dataSetUpdate = ARRAY.requestFormData(reqAction, parsedUpdate);
 
       dataSetUpdate.forEach(({ title, value }) => {
         if (title && value !== undefined && value !== null) {
@@ -841,7 +836,10 @@ export const useFetch = {
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
     const parsed: PropsRequestSummary = await JSON.parse(data);
 
+
+
     const dateParse = Utils.panelDateToParse(state.panel, parsed);
+
     const generateEditLog = Utils.generateHistoryItem(parsed.reviewReason, formatName, 'Reviewed', dateParse);
 
     const updatedData = {
@@ -863,6 +861,9 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
+
+          console.log("Errr", errors)
+
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -1235,6 +1236,7 @@ export const useFetch = {
       return cutoffData;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   },
   Profile: async () => {

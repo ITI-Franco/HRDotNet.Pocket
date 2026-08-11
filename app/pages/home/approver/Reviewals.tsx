@@ -16,7 +16,6 @@ import { useReviewals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
 import ReviewalsPanel from 'src/components/panel/home/approver/ReviewalsPanel';
 import ConfirmmationReviewal from 'src/components/prompt/ConfirmationReviewal';
-import { useGlobalStore } from 'src/store/GlobalStore';
 
 const Reviewals: React.FC = () => {
   const styles = STYLES.Request;
@@ -28,39 +27,18 @@ const Reviewals: React.FC = () => {
     handle,
     setHandle,
     onHandlePress,
-    onHandleEffectI,
-    onHandleEffectII,
-    onHandleEffectIII,
-    onHandleEffectIV,
+    onHandleSetURLReviewal,
+    onHandleFetchReviewal,
     ApprovalCount,
   } = useReviewals();
 
-  const { cutOffPeriod } = useGlobalStore()
-
   useEffect(() => {
-    onHandleEffectI();
-    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || "")
-    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || "")
-    setState({
-      filterType: "DateFiled",
-      filterValue: `${removeDashFrom} - ${removeDashTo}`,
-      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`
-    })
-
-
-  }, [state.selectedButton]);
-
-  useEffect(() => {
-    onHandleEffectII();
+    onHandleSetURLReviewal();
   }, [state.selectedButton, handle.refreshing]);
 
   useEffect(() => {
-    onHandleEffectIII();
-  }, [state.selectedButton, state.urlQuery, handle.refreshing, params]);
-
-  useEffect(() => {
-    onHandleEffectIV();
-  }, [state.selectedButton, handle.refreshing, state.urlQuery, state.page, params]);
+    onHandleFetchReviewal();
+  }, [handle.refreshing, state.urlQuery, state.page, params]);
 
   useEffect(() => {
     ApprovalCount();

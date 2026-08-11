@@ -62,6 +62,23 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     { label: 'Vacation Leave', value: 'Vacation Leave' },
   ]);
 
+  const [isDocStatusDropDownOpen, setDocStatusDropdownOpen] = useState(false);
+  const [docStatusValue, setDocStatusValue] = useState(null);
+  const [docStatusItems, setDocStatusItems] = useState([
+    { label: 'Filed', value: 'Filed' },
+    { label: 'Reviewed', value: 'Reviewed' },
+    { label: 'Approved', value: 'Approved' },
+    { label: 'Cancelled', value: 'Cancelled' },
+    { label: 'Posted', value: 'Posted' },
+  ]);
+
+  const handleClearSelect = () => {
+    setDocStatusValue(null)
+    setLeaveTypeValue(null)
+    setScheduleValue(null)
+    setLogTypeValue(null)
+  }
+
   const onHandleSearchSubmit = () => {
     handle[1]({ isLoading: true });
     const exit = () => {
@@ -86,7 +103,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         exit();
       } else {
 
-        if (value === "DateFiled") {
+        if (value === "DateFiled" || value === "DateFrom") {
           state[1]({
             displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
             filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
@@ -99,6 +116,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
             filterType: value
           })
         }
+        handleClearSelect()
 
         state[1]({
           urlQuery:
@@ -118,12 +136,29 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         })
 
         state[1]({ urlQuery: `&LogTypeId=${logTypeValue}&sortBy=-DocumentNo` })
+        setDocStatusValue(null)
       }
       else if (value == 'Requested') {
-        state[1]({ urlQuery: `&Requested=${scheduleValue}&sortBy=-DocumentNo` })
+        state[1]({
+          displayValue: `Schedule: ${scheduleValue}`,
+          filterValue: scheduleValue || "",
+          filterType: value,
+          urlQuery: `&RequestedSchedule=${scheduleValue}&sortBy=-DocumentNo`
+        })
+        setDocStatusValue(null)
       }
       else if (value == 'LeaveParameter') {
         state[1]({ urlQuery: `&LeaveParameter=${leaveTypeValue}&sortBy=-DocumentNo` })
+      } else if (value == 'DocStatus') {
+        state[1]({
+          displayValue: `Status: ${docStatusValue}`,
+          filterValue: docStatusValue || "",
+          filterType: value,
+          urlQuery: `&DocStatus=${docStatusValue}&sortBy=-DocumentNo`
+        })
+        setLeaveTypeValue(null)
+        setScheduleValue(null)
+        setLogTypeValue(null)
       }
       else if (!value || !componentState.search) {
         exit();
@@ -138,6 +173,8 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         state[1]({
           urlQuery: `&${value}=${componentState.search}&sortBy=-DocumentNo`,
         });
+
+        handleClearSelect()
       }
     }
 
@@ -195,19 +232,14 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
   }, [handle]);
 
   useEffect(() => {
-
     const type = state[0].filterType || ""
     const value = state[0].filterValue || ""
-    setValue(type)
 
+    setValue(type)
     if (type === "DocumentNo") {
       setComponentState({ search: state[0].filterValue })
-    } else if (type === "DateFiled" || type === "DateTransaction") {
+    } else if (type === "DateFiled" || type === "DateTransaction" || type === "DateFrom") {
       const [from, to] = value.split(" - ");
-      state[1]({
-        urlQuery:
-          `&DateField=${type}&DateFrom=${from}` + `&DateTo=${to}&sortBy=-DocumentNo`,
-      });
       setComponentState({
         searchDates: {
           from,
@@ -215,8 +247,20 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         },
       });
     }
+
   }, [componentState.isVisibleFilter, state[0].filterType])
 
+
+
+  const handleClear = () => {
+    setComponentState({
+      search: "",
+      searchDates: { from: "", to: "" }
+    })
+    setValue('')
+    handleClearSelect()
+
+  }
   return (
     <Modal
       transparent={true}
@@ -292,7 +336,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
                 setValue={setLogTypeValue}
                 setItems={setLogTypeItems}
                 style={{ marginVertical: 10 }}
-                zIndex={0}
+                zIndex={10}
               />
             ) : value.includes('LeaveParameter') ? (
               <DropDownPicker
@@ -303,7 +347,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
                 setValue={setLeaveTypeValue}
                 setItems={setLeaveTypeItems}
                 style={{ marginVertical: 10 }}
-                zIndex={0}
+                zIndex={10}
               />
             ) : value.includes('Requested') ? (
               <DropDownPicker
@@ -314,23 +358,36 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
                 setValue={setScheduleValue}
                 setItems={setScheduleItems}
                 style={{ marginVertical: 10 }}
-                zIndex={0}
+                zIndex={10}
               />
-            ) : (
-              <View style={styles.row}>
-                <FontAwesome name="search" size={20} color={COLORS.orange} />
+            ) : value.includes('DocStatus') ? (
+              <DropDownPicker
+                open={isDocStatusDropDownOpen}
+                value={docStatusValue}
+                items={docStatusItems}
+                setOpen={setDocStatusDropdownOpen}
+                setValue={setDocStatusValue}
+                setItems={setDocStatusItems}
+                style={{ marginVertical: 10, }}
+                zIndex={10}
+              />
+            )
 
-                <TextInput
-                  value={componentState.search}
-                  autoCorrect={false}
-                  cursorColor={COLORS.lighterGray}
-                  onChangeText={(text) => setComponentState({ search: text })}
-                  placeholder={STRINGS.placeholderSearch}
-                  placeholderTextColor={COLORS.lighterGray}
-                  style={styles.search}
-                />
-              </View>
-            ))}
+              : (
+                <View style={styles.row}>
+                  <FontAwesome name="search" size={20} color={COLORS.orange} />
+
+                  <TextInput
+                    value={componentState.search}
+                    autoCorrect={false}
+                    cursorColor={COLORS.lighterGray}
+                    onChangeText={(text) => setComponentState({ search: text })}
+                    placeholder={STRINGS.placeholderSearch}
+                    placeholderTextColor={COLORS.lighterGray}
+                    style={styles.search}
+                  />
+                </View>
+              ))}
 
           {/* {UtilsDisplay.DisplayDateTimePicker(
             componentState.timePicker,
@@ -386,16 +443,10 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
               : new Date(),
           )}
 
-          <View style={styles.row}>
+          <View style={styles.rowBtn}>
 
             <TouchableOpacity
-              onPress={() => {
-                setComponentState({
-                  search: "",
-                  searchDates: { from: "", to: "" }
-                })
-                setValue('')
-              }}
+              onPress={handleClear}
               style={styles.borderButton}
             >
               <Text style={styles.borderButtonText}>Clear</Text>
