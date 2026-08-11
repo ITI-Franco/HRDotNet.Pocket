@@ -81,7 +81,7 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     await Utils.checkHaveValueRequest(
       onPanel.ML,
       currParams.onReqAction,
-      state,
+      Utils.trimData(state),
       currParams.data,
       setHandle,
       navigation,
@@ -146,91 +146,101 @@ const MLRequest: React.FC<TypeNavProp> = ({ navigation }) => {
         <ScrollView>
           <View style={styles.container}>
             {currParams.onReqAction === onReqAction.Cancel ||
-            currParams.onReqAction === onReqAction.Review ||
-            currParams.onReqAction === onReqAction.Approve
+              currParams.onReqAction === onReqAction.Review ||
+              currParams.onReqAction === onReqAction.Approve
               ? [
-                  UtilsDisplay.DisplayFieldTextInput(
-                    handle.isInputCheck!,
-                    STRINGS.requestFieldDocumentNo,
-                    state.documentNo!,
-                    true,
-                    () => ({}),
-                    false,
-                  ),
+                UtilsDisplay.DisplayFieldTextInput(
+                  handle.isInputCheck!,
+                  STRINGS.requestFieldDocumentNo,
+                  state.documentNo!,
+                  true,
+                  () => ({}),
+                  false,
+                ),
 
-                  UtilsDisplay.DisplayFieldTextInput(
-                    handle.isInputCheck!,
-                    reasonLabel,
-                    stateToUse || '',
-                    true,
-                    setStateToUse,
-                    true,
-                  ),
-                ]
+                UtilsDisplay.DisplayFieldTextInput(
+                  handle.isInputCheck!,
+                  reasonLabel,
+                  stateToUse || '',
+                  true,
+                  setStateToUse,
+                  true,
+                  FieldLimit.reason.maxLength,
+                  STRINGS.placeholderReason,
+                  true,
+                ),
+              ]
               : [
-                  UtilsDisplay.DisplayFieldWithIcon(
-                    handle.isInputCheck!,
-                    STRINGS.MLRequestFieldI,
-                    state.dateFiled,
-                    true,
-                    DateTimeUtils.dateDefaultToWord(state.dateFiled),
-                    STRINGS.styledPlaceholderDate,
-                    () => setHandle({ isDatePicker: true }),
-                    'calendar',
-                  ),
+                UtilsDisplay.DisplayFieldWithIcon(
+                  handle.isInputCheck!,
+                  STRINGS.MLRequestFieldI,
+                  state.dateFiled,
+                  true,
+                  DateTimeUtils.dateDefaultToWord(state.dateFiled),
+                  STRINGS.styledPlaceholderMissedLogDate,
+                  () => setHandle({ isDatePicker: true }),
+                  'calendar',
+                  true,
+                ),
 
-                  UtilsDisplay.DisplayFieldCheckbox(
-                    checkboxData,
-                    true,
-                    handle.isInputCheck!,
-                    handle.checkSelect!,
-                    state.logType.name!,
-                    STRINGS.MLRequestFieldII,
-                    (item, index) => onHandleCheck(item as CheckboxData, index as number),
-                    true,
-                  ),
+                UtilsDisplay.DisplayFieldCheckbox(
+                  checkboxData,
+                  true,
+                  handle.isInputCheck!,
+                  handle.checkSelect!,
+                  state.logType.name!,
+                  STRINGS.MLRequestFieldII,
+                  (item, index) => onHandleCheck(item as CheckboxData, index as number),
+                  true,
+                  true,
+                ),
 
-                  UtilsDisplay.DisplayFieldWithIcon(
-                    handle.isInputCheck!,
-                    STRINGS.MLRequestFieldIII,
-                    state.logTime,
-                    true,
-                    DateTimeUtils.timeSecondsToUnits(state.logTime),
-                    STRINGS.styledPlaceholderTime,
-                    () => setHandle({ isTimePicker: true }),
-                    'time',
-                  ),
+                UtilsDisplay.DisplayFieldWithIcon(
+                  handle.isInputCheck!,
+                  STRINGS.MLRequestFieldIII,
+                  state.logTime,
+                  true,
+                  DateTimeUtils.timeSecondsToUnits(state.logTime),
+                  STRINGS.styledPlaceholderTime,
+                  () => setHandle({ isTimePicker: true }),
+                  'time',
+                  true,
+                ),
 
-                  UtilsDisplay.DisplayFieldTextInput(
-                    handle.isInputCheck!,
-                    STRINGS.requrestFieldReferenceNo,
-                    state.referenceNo || '',
-                    true,
-                    (text: string) => setState({ referenceNo: text }),
-                    true,
-                    14,
-                  ),
+                UtilsDisplay.DisplayFieldTextInput(
+                  handle.isInputCheck!,
+                  STRINGS.requrestFieldReferenceNo,
+                  state.referenceNo || '',
+                  true,
+                  (text: string) => setState({ referenceNo: text }),
+                  true,
+                  14,
+                  STRINGS.placeholderReferenceNo
+                ),
 
-                  UtilsDisplay.DisplayFieldTextInput(
-                    handle.isInputCheck!,
-                    STRINGS.requestFieldReason,
-                    state.reason,
-                    true,
-                    (text: string) => setState({ reason: text }),
-                    true,
-                    FieldLimit.reason.maxLength,
-                  ),
+                UtilsDisplay.DisplayFieldTextInput(
+                  handle.isInputCheck!,
+                  STRINGS.requestFieldReason,
+                  state.reason,
+                  true,
+                  (text: string) => setState({ reason: text }),
+                  true,
+                  FieldLimit.reason.maxLength,
+                  STRINGS.placeholderReason,
+                  true,
+                ),
 
-                  UtilsDisplay.DisplayFieldAttachment(
-                    handle.isInputCheck!,
-                    STRINGS.fileAttachment,
-                    state.attachment.uri || state.attachment.url!,
-                    true,
-                    () => navigation.navigate(STRINGS.pathCamera, currParams),
-                    () => Utils.fileAttach(setState),
-                    () => currParams,
-                  ),
-                ]}
+                UtilsDisplay.DisplayFieldAttachment(
+                  handle.isInputCheck!,
+                  STRINGS.fileAttachment,
+                  state.attachment.uri || state.attachment.url!,
+                  true,
+                  () => navigation.navigate(STRINGS.pathCamera, currParams),
+                  () => Utils.fileAttach(setState),
+                  () => currParams,
+                  true,
+                ),
+              ]}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

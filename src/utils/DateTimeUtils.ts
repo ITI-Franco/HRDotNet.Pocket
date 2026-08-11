@@ -171,4 +171,30 @@ export const DateTimeUtils = {
 
     return parsedDate.isValid() ? parsedDate.format('MMM DD, YYYY') : '';
   },
+  abbreviatedMonthDateRange: (fromDateStr: string, toDateStr: string): string => {
+    const from = dayjs(fromDateStr);
+    const to = dayjs(toDateStr);
+
+    const sameDay = from.date() === to.date() && from.month() === to.month() && from.year() === to.year();
+
+    const sameMonth = from.month() === to.month() && from.year() === to.year();
+
+    const sameYear = from.year() === to.year();
+
+    if (sameDay) {
+      return from.format(DateTimeFormat.HalfMonthWord);
+    }
+
+    if (!sameYear) {
+      return `${from.format("MMM D, YYYY")} - ${to.format("MMM D, YYYY")}`;
+    }
+
+    return sameMonth
+      ? `${from.format(DateTimeFormat.MonthDay)} - ${to.format(DateTimeFormat.DayYear)}`
+      : `${from.format(DateTimeFormat.MonthDay)} - ${to.format(DateTimeFormat.HalfMonthWord)}`;
+  },
+
+  // From Jul 12, 2028 to 2028-07-12
+  formatToDash: (date: string) => dayjs(date, "MMM D, YYYY").format("YYYY-MM-DD")
+
 };

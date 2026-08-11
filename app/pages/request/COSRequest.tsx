@@ -52,7 +52,7 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     const handleFilingData = setHandle({ checkSelect: params?.data?.filing?.requested?.isRestDay === true ? 1 : 0 });
 
     (currParams.onReqAction !== onReqAction.Update
-      ? (setState({ reason: '' }), stateFilingData, handleFilingData)
+      ? (setState({}), stateFilingData, handleFilingData)
       : stateFilingData,
       handleFilingData);
   }, []);
@@ -86,106 +86,183 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     await Utils.checkHaveValueRequest(
       onPanel.COS,
       currParams.onReqAction,
-      state,
+      Utils.trimData(state),
       currParams.data,
       setHandle,
       navigation,
     );
   };
 
+  const stateToUse = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return state.cancelReason;
+
+      case onReqAction.Review:
+        return state.reviewReason;
+
+      case onReqAction.Approve:
+        return state.approveReason;
+
+      default:
+        return '';
+    }
+  })();
+
+  const setStateToUse = (text: string) => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        setState({ cancelReason: text });
+        break;
+
+      case onReqAction.Review:
+        setState({ reviewReason: text });
+        break;
+
+      case onReqAction.Approve:
+        setState({ approveReason: text });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const reasonLabel = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return STRINGS.requestFieldCancellationReason;
+
+      case onReqAction.Review:
+        return STRINGS.requestFieldReviewReason;
+
+      case onReqAction.Approve:
+        return STRINGS.requestFieldApproveReason;
+
+      default:
+        return STRINGS.requestFieldReason;
+    }
+  })();
+
+  useEffect(() => {
+    console.log("Sss", state.startDate)
+  }, [state.startDate])
   return (
     <View style={styles.mainView}>
       <PageHeader name={Utils.panelPageHeaderTitle(currParams.onPanel, currParams.onReqAction)} />
 
       <ScrollView style={styles.container}>
-        {currParams.onReqAction === onReqAction.Cancel
+        {currParams.onReqAction === onReqAction.Cancel ||
+          currParams.onReqAction === onReqAction.Review ||
+          currParams.onReqAction === onReqAction.Approve
           ? [
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requestFieldDocumentNo,
-                state.documentNo!,
-                true,
-                () => ({}),
-                false,
-              ),
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requestFieldDocumentNo,
+              state.documentNo!,
+              true,
+              () => ({}),
+              false,
+            ),
 
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requestFieldCancellationReason,
-                state.reason,
-                true,
-                (text: string) => setState({ reason: text }),
-                true,
-              ),
-            ]
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              reasonLabel,
+              stateToUse || '',
+              true,
+              setStateToUse,
+              true,
+              FieldLimit.reason.maxLength,
+              STRINGS.placeholderReason,
+              true,
+            ),
+          ]
           : [
-              UtilsDisplay.DisplayFieldWithIcon(
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldI,
-                state.startDate,
-                true,
-                DateTimeUtils.dateDefaultToWord(state.startDate),
-                STRINGS.styledPlaceholderDate,
-                () => setHandle({ isDateFromPicker: true }),
-                'calendar',
-              ),
+            UtilsDisplay.DisplayFieldWithIcon(
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldI,
+              state.startDate,
+              true,
+              DateTimeUtils.dateDefaultToWord(state.startDate),
+              STRINGS.styledPlaceholderDateRange.startDate,
+              () => setHandle({ isDateFromPicker: true }),
+              'calendar',
+              true
+            ),
 
-              UtilsDisplay.DisplayFieldWithIcon(
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldII,
-                state.endDate,
-                true,
-                DateTimeUtils.dateDefaultToWord(state.endDate),
-                STRINGS.styledPlaceholderDate,
-                () => setHandle({ isDateToPicker: true }),
-                'calendar',
-              ),
+            UtilsDisplay.DisplayFieldWithIcon(
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldII,
+              state.endDate,
+              true,
+              DateTimeUtils.dateDefaultToWord(state.endDate),
+              STRINGS.styledPlaceholderDateRange.endDate,
+              () => setHandle({ isDateToPicker: true }),
+              'calendar',
+              true
+            ),
 
-              UtilsDisplay.DisplayButtonField(
-                true,
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldIII,
-                state.requested.name || '',
-                state.requested?.name,
-                STRINGS.tapSelectPlaceholder('Schedule'),
-                () =>
-                  navigation.navigate(STRINGS.pathSelectionList, {
-                    currParams,
-                    action: STRINGS.selectionListCOSRequest,
-                  }),
-              ),
+            UtilsDisplay.DisplayButtonField(
+              true,
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldIII,
+              state.requested.name || '',
+              state.requested?.name,
+              STRINGS.tapSelectPlaceholder('Schedule'),
+              () =>
+                navigation.navigate(STRINGS.pathSelectionList, {
+                  currParams,
+                  action: STRINGS.selectionListCOSRequest,
+                }),
+              false,
+              true
+            ),
 
-              UtilsDisplay.DisplayFieldCheckbox(
-                state.checkbox,
-                true,
-                handle.isInputCheck!,
-                handle.checkSelect!,
-                state.requested.name || '',
-                STRINGS.COSRequestFieldIIV,
-                (item, index) => onHandleCheck(item as string, index as number),
-                false,
-              ),
+            UtilsDisplay.DisplayFieldCheckbox(
+              state.checkbox,
+              true,
+              handle.isInputCheck!,
+              handle.checkSelect!,
+              state.requested.name || '',
+              STRINGS.COSRequestFieldIIV,
+              (item, index) => onHandleCheck(item as string, index as number),
+              false,
+            ),
 
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requestFieldReason,
-                state.reason,
-                true,
-                (text: string) => setState({ reason: text }),
-                true,
-                FieldLimit.reason.maxLength,
-              ),
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requrestFieldReferenceNo,
+              state.referenceNo || '',
+              true,
+              (text: string) => setState({ referenceNo: text }),
+              true,
+              14,
+              STRINGS.placeholderReferenceNo
+            ),
 
-              UtilsDisplay.DisplayFieldAttachment(
-                handle.isInputCheck!,
-                STRINGS.fileAttachment,
-                state.attachment.uri || state.attachment.url!,
-                true,
-                () => navigation.navigate(STRINGS.pathCamera, currParams),
-                () => Utils.fileAttach(setState),
-                () => currParams,
-              ),
-            ]}
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requestFieldReason,
+              state.reason,
+              true,
+              (text: string) => setState({ reason: text }),
+              true,
+              FieldLimit.reason.maxLength,
+              STRINGS.placeholderReason,
+              true,
+            ),
+
+            UtilsDisplay.DisplayFieldAttachment(
+              handle.isInputCheck!,
+              STRINGS.fileAttachment,
+              state.attachment.uri || state.attachment.url!,
+              true,
+              () => navigation.navigate(STRINGS.pathCamera, currParams),
+              () => Utils.fileAttach(setState),
+              () => currParams,
+              true
+            ),
+          ]}
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={onNextHandler}>
@@ -197,7 +274,7 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
         'date',
         (date: string) => onStartDateChange(date),
         () => setHandle({ isDateFromPicker: false }),
-        DateTimeUtils.dayToDate(),
+        state.startDate ? DateTimeUtils.dateDefaultToDate(state.startDate) : DateTimeUtils.dayToDate(),
       )}
 
       {UtilsDisplay.DisplayDateTimePicker(
@@ -206,7 +283,7 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
         (date: string) => onEndDateChange(date),
         () => setHandle({ isDateToPicker: false }),
         undefined,
-        state.startDate ? DateTimeUtils.dateDefaultToDate(state.startDate) : DateTimeUtils.dayToDate(),
+        state.endDate ? DateTimeUtils.dateDefaultToDate(state.endDate) : DateTimeUtils.dayToDate(),
       )}
     </View>
   );
