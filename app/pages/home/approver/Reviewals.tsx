@@ -7,8 +7,6 @@ import { View, Text, FlatList, StatusBar, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Toast from 'src/components/use/Toast';
-import ApprovalsPanel from 'src/components/panel/home/approver/ApprovalsPanel';
-import ConfirmationApproval from 'src/components/prompt/ConfirmationApproval';
 import PageHeader from 'src/components/header/PageHeader';
 import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
@@ -41,8 +39,10 @@ const Reviewals: React.FC = () => {
   }, [handle.refreshing, state.urlQuery, state.page, params]);
 
   useEffect(() => {
-    ApprovalCount();
-  }, [state.totalCount]);
+    if (state.urlQuery) {
+      ApprovalCount();
+    }
+  }, [state.urlQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -69,28 +69,48 @@ const Reviewals: React.FC = () => {
           <View style={styles.wrapper}>
             <FlatList
               data={state.buttons}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  style={[styles.button, state.selectedButton === index && styles.selectedButton]}
-                  onPress={() => onHandlePress(index)}
-                  disabled={state.selectedButton === index ? true : false}
-                >
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      state.selectedButton === index && styles.selectedTextButton,
-                      index == 6 && { color: COLORS.gray },
-                    ]}
+              renderItem={({ item, index }) => {
+                const count = state.approvalCounts?.[index] ?? 0;
+                console.log('count', count);
+
+                return (
+                  <TouchableOpacity
+                    style={[styles.button, state.selectedButton === index && styles.selectedButton]}
+                    onPress={() => onHandlePress(index)}
+                    disabled={state.selectedButton === index}
                   >
-                    {state.selectedButton === index && (
-                      <View>
-                        <Text style={[styles.approvalCountButton]}>{state.totalCount ?? 0}</Text>
-                      </View>
-                    )}
-                    {item.title}
-                  </Text>
-                </TouchableOpacity>
-              )}
+                    <View style={styles.tabItem}>
+                      {count > 0 && (
+                        <Text
+                          style={[
+                            styles.approvalCountButton,
+                            state.selectedButton === index
+                              ? {
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
+                              : {
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
+                          ]}
+                        >
+                          {count}
+                        </Text>
+                      )}
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          state.selectedButton === index && styles.selectedTextButton,
+                          index === 6 && { color: COLORS.gray },
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
               style={styles.buttonList}
               horizontal
               showsHorizontalScrollIndicator={false}

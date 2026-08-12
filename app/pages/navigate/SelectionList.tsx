@@ -33,13 +33,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     ValuesSelectionList(params).Handle,
   );
 
-
-  const processData = (mappedData: { ID: number, name: string, code: string }[]) => {
-    setHandle({ isLoading: false })
-    if (
-      mappedData.length === 0 &&
-      state.data.length > 0
-    ) {
+  const processData = (mappedData: { ID: number; name: string; code: string }[]) => {
+    setHandle({ isLoading: false });
+    if (mappedData.length === 0 && state.data.length > 0) {
       setHandle({
         isLoadMore: false,
         isWaiting: false,
@@ -49,21 +45,17 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     }
 
     setState({
-      data:
-        state.page || 1 > 1 && handle.isLoadMore
-          ? [...state.data, ...mappedData]
-          : mappedData,
+      data: state.page || (1 > 1 && handle.isLoadMore) ? [...state.data, ...mappedData] : mappedData,
     });
 
     setHandle({
       isWaiting: false,
     });
-  }
+  };
   const fetchData = (keyword: string) => {
     const search = encodeURIComponent(keyword);
 
     if ((params as any).currParams.onPanel == 0) {
-
       UtilsFetch.connect(
         APIMethods.GET,
         ContentTypes.JSON,
@@ -71,17 +63,17 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
-            ID: item.id,
-            name: item.name,
-            code: item.name,
+            ID: item?.id ?? '',
+            name: item?.name ?? '',
+            code: item?.name ?? '',
           }));
-          processData(mappedData)
+          processData(mappedData);
         })
         .catch((err) => {
           console.error(err);
-          setHandle({ isLoading: false, isWaiting: false })
-        }).finally(() => setHandle({ isLoading: false, isWaiting: false }));;
-
+          setHandle({ isLoading: false, isWaiting: false });
+        })
+        .finally(() => setHandle({ isLoading: false, isWaiting: false }));
     } else if ((params as any).currParams.onPanel == 1) {
       if ((params as any).action === 'OBRequest-Location') {
         UtilsFetch.connect(
@@ -91,12 +83,12 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
+              ID: item?.id,
+              name: item?.name ?? '',
+              code: item?.name ?? '',
             }));
 
-            processData(mappedData)
+            processData(mappedData);
           })
           .catch(console.error);
       } else if ((params as any).action === 'OBRequest-Branch') {
@@ -109,12 +101,12 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
-              ID: item.id,
-              name: item.name,
-              code: item.name,
+              ID: item?.id,
+              name: item?.name ?? '',
+              code: item?.name ?? '',
             }));
 
-            processData(mappedData)
+            processData(mappedData);
           })
           .catch(console.error);
       }
@@ -126,12 +118,12 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
-            ID: item.id,
-            name: item.name,
-            code: item.code,
+            ID: item?.id,
+            name: item?.name ?? '',
+            code: item?.code ?? '',
           }));
 
-          processData(mappedData)
+          processData(mappedData);
         })
         .catch(console.error);
     }
@@ -149,9 +141,9 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     <MemoizedRequestItem item={item} index={index} />
   );
 
-  const MemoizedRequestItem = React.memo(({ item, index }: { item: TypeSelectionList; index: number }) => (
+  const MemoizedRequestItem = React.memo(({ item }: { item: TypeSelectionList; index: number }) => (
     <TouchableOpacity style={styles.button} onPress={() => Utils.setSelectionNavigate(params, navigation, item)}>
-      <Text style={styles.titleText}>{item.name}</Text>
+      <Text style={styles.titleText}>{item?.name ?? ''}</Text>
     </TouchableOpacity>
   ));
 

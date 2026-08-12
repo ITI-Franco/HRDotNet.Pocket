@@ -64,15 +64,24 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    if (employeePayrollInfo.paymentFrequencyId === 0 || employeePayrollInfo.payrollGroupId === 0) {
+      return;
+    }
+
     const loadCurrentCutoff = async () => {
       try {
         const data = await useFetch.CurrentCutoff(
           employeePayrollInfo.paymentFrequencyId,
           employeePayrollInfo.payrollGroupId,
         );
-        setCutoffPeriod([data?.dateFrom, data?.dayPayout]);
+
+        console.log('CURRENT CUTOFF:', data);
+
+        if (data) {
+          setCutoffPeriod([data?.dateFrom, data?.dayPayout]);
+        }
       } catch (error) {
-        console.error(error);
+        console.error('Current cutoff error:', error);
       }
     };
 
@@ -108,12 +117,13 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       const token = await AsyncStorage.getItem('AT');
       if (token) {
         const { EmployeeName } = jwtDecode<{ EmployeeName: string }>(token);
-        const lastName = EmployeeName.split(',');
-        setEmployeeLastName(lastName[0]);
+        console.log('lastName', EmployeeName);
+        const lastName = EmployeeName?.split(',');
+        setEmployeeLastName(lastName?.[0] ?? '');
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) { }
+    } catch (err) {}
   })();
   return (
     <React.Fragment>

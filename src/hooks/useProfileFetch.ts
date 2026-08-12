@@ -23,19 +23,19 @@ export const useProfileFetch = {
 
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, `${process.env.EXPO_PUBLIC_PAYROLL_PAYSLIP}`)
       .then((response: { data: PayslipData }) => {
-        const totalEarnings = response.data.items.reduce((acc, item) => {
+        const totalEarnings = response.data.items?.reduce((acc, item) => {
           return (
             acc +
-            item.employees.reduce((empAcc, emp) => {
+            item.employees?.reduce((empAcc, emp) => {
               const totalAllowances =
                 emp.payrollDetails
                   ?.filter((pd) => pd.payrollItem.code.startsWith('AL'))
-                  .reduce((acc, pd) => acc + pd.amount, 0) ?? 0;
+                  ?.reduce((acc, pd) => acc + pd.amount, 0) ?? 0;
 
               const totalOvertime =
                 emp.payrollDetails
                   ?.filter((pd) => pd.payrollItem.code === 'OT')
-                  .reduce((acc, pd) => acc + pd.amount, 0) ?? 0;
+                  ?.reduce((acc, pd) => acc + pd.amount, 0) ?? 0;
 
               const totalEarning = totalAllowances + totalOvertime + emp.basicPay;
               return empAcc + totalEarning;
@@ -77,11 +77,11 @@ export const useProfileFetch = {
     )
       .then((response: { data: PayslipDetailsItems }) => {
         const sss = response.data.employees.map((emp) => {
-          emp.payrollDetails.filter((pd) => pd.payrollItem.code === 'SSSES').reduce((acc, pd) => acc + pd.amount, 0);
+          emp.payrollDetails.filter((pd) => pd.payrollItem.code === 'SSSES')?.reduce((acc, pd) => acc + pd.amount, 0);
         });
 
         const philHealth = response.data.employees.map((emp) => {
-          emp.payrollDetails.filter((pd) => pd.payrollItem.code === 'PHES').reduce((acc, pd) => acc + pd.amount, 0);
+          emp.payrollDetails.filter((pd) => pd.payrollItem.code === 'PHES')?.reduce((acc, pd) => acc + pd.amount, 0);
         });
 
         setPayslip({

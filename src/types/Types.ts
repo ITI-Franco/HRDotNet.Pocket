@@ -709,6 +709,7 @@ export type StateLVRequest = {
   reason: string;
   attachment: Attachment;
   documentNo?: string;
+  referenceNo?: string;
 };
 
 // ML Request
@@ -885,6 +886,7 @@ export type StateApplications = {
 
   batchReason?: string;
   batchEmployeeName?: string; //
+  approvalCounts?: Record<number, number>;
 };
 
 // Components

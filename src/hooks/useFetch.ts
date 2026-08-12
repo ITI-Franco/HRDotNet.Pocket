@@ -61,6 +61,7 @@ import { jwtDecode } from 'jwt-decode';
 import { PersonalStates } from 'src/types/Profile';
 import { TeamSchema, TeamsStates } from 'src/types/Teams';
 import { FilingPanel } from 'src/constants/Enum';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 export const useFetch = {
   Refresh: async (nav: StackNavigationProp<ParamListBase>, callback?: () => void) => {
@@ -135,7 +136,6 @@ export const useFetch = {
     if (state.date == undefined) {
       return;
     }
-
     await UtilsFetch.connect(
       APIMethods.GET,
       ContentTypes.JSON,
@@ -404,6 +404,7 @@ export const useFetch = {
     let result = [];
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
+
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -437,6 +438,36 @@ export const useFetch = {
         }
       })
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
+  },
+
+  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, number>> => {
+    const counts: Record<number, number> = {};
+    const { cutOffPeriod } = useGlobalStore();
+
+    await Promise.all(
+      state.buttons.map(async (_, index) => {
+        const url = UtilsFetch.panelReviewalsURL(index);
+
+        const endPoint = `${url}?${state.urlQuery}`;
+
+        try {
+          const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
+
+          const items = response.data?.items ?? [];
+
+          counts[index] = items.filter(
+            (item: SchemaRequestApplications) =>
+              item.filing?.filingStatus?.name === 'Filed' &&
+              item.filing.dateRange?.dateFrom === cutOffPeriod[0] &&
+              item.filing.dateRange?.dateTo === cutOffPeriod[1],
+          ).length;
+        } catch (error) {
+          counts[index] = 0;
+        }
+      }),
+    );
+
+    return counts;
   },
 
   Teams: async () => {},
@@ -540,6 +571,8 @@ export const useFetch = {
     if (reqAction === onReqAction.Update || onReqAction.Cancel) {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
+
+        console.log('Nn', newFields, oldFields);
 
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
@@ -841,7 +874,9 @@ export const useFetch = {
       ...state.data,
       editLog: Utils.appendHistoryItem(state.data.editLog, generateEditLog),
     };
+
     formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
+
     await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
       .then(() => {
         setHandle({ isSuccess: true });
@@ -854,6 +889,8 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
+          console.log('Errr', errors);
+
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -1187,22 +1224,22 @@ export const useFetch = {
         ContentTypes.JSON,
         `${process.env.EXPO_PUBLIC_PROFILE_PERSONAL}`,
       );
-      const photoString = response.data.personalInformation.photo; // This is the stringified object
+      const photoString = response.data.personalInformation?.photo; // This is the stringified object
       if (!!photoString) {
         const photo = JSON.parse(photoString); // Parse the string into an object
         const pic = `${process.env.EXPO_PUBLIC_REQUEST}/Uploads/Profile/` + photo.path;
         setState({ uri: pic });
       }
       let personalData = {
-        FullName: response.data.personalInformation.name.normalName,
-        Name_Department: response.data.recordInformation.workInformation.company.department.name,
-        Code: response.data.code,
-        Name_Company: response.data.recordInformation.workInformation.company.name,
-        Name_Branch: response.data.recordInformation.workInformation.company.branch.name,
-        Name_Division: response.data.recordInformation.workInformation.company.division.name,
-        Name_Section: response.data.recordInformation.workInformation.company.section.name,
-        MobileNo: response.data.contact.contactNo,
-        EmailAdd: response.data.recordInformation.workInformation.company.email,
+        FullName: response.data.personalInformation?.name?.normalName ?? '',
+        Name_Department: response.data.recordInformation?.workInformation?.company?.department?.name ?? '',
+        Code: response.data.code ?? '',
+        Name_Company: response.data.recordInformation?.workInformation?.company?.name ?? '',
+        Name_Branch: response.data.recordInformation?.workInformation?.company?.branch?.name ?? '',
+        Name_Division: response.data.recordInformation?.workInformation?.company?.division?.name ?? '',
+        Name_Section: response.data.recordInformation?.workInformation?.company?.section?.name ?? '',
+        MobileNo: response.data.contact?.contactNo ?? '',
+        EmailAdd: response.data.recordInformation?.workInformation?.company?.email ?? '',
       };
 
       setState({
@@ -1240,6 +1277,8 @@ export const useFetch = {
     }
   },
   Profile: async () => {
+    console.log('REQUEST:', process.env.EXPO_PUBLIC_REQUEST);
+    console.log('PROFILE:', process.env.EXPO_PUBLIC_PROFILE);
     try {
       const response = await UtilsFetch.connect(
         APIMethods.GET,
@@ -1247,16 +1286,17 @@ export const useFetch = {
         `${process.env.EXPO_PUBLIC_PROFILE}`,
       );
 
+      console.log('response', response.data);
       let personalData = {
-        FullName: response.data.personalInformation.name.concatName,
-        Name_Department: response.data.recordInformation.workInformation.company.department.name,
-        Code: response.data.code,
-        Name_Company: response.data.recordInformation.workInformation.company.name,
-        Name_Branch: response.data.recordInformation.workInformation.company.branch.name,
-        Name_Division: response.data.recordInformation.workInformation.company.division.name,
-        Name_Section: response.data.recordInformation.workInformation.company.section.name,
-        MobileNo: response.data.personalInformation.contact.mobileNo,
-        EmailAdd: response.data.personalInformation.contact.email,
+        FullName: response.data.personalInformation?.name?.normalName ?? '',
+        Name_Department: response.data.recordInformation?.workInformation?.company?.department?.name ?? '',
+        Code: response.data.code ?? '',
+        Name_Company: response.data.recordInformation?.workInformation?.company?.name ?? '',
+        Name_Branch: response.data.recordInformation?.workInformation?.company?.branch?.name ?? '',
+        Name_Division: response.data.recordInformation?.workInformation?.company?.division?.name ?? '',
+        Name_Section: response.data.recordInformation?.workInformation?.company?.section?.name ?? '',
+        MobileNo: response.data.contact?.contactNo ?? '',
+        EmailAdd: response.data.recordInformation?.workInformation?.company?.email ?? '',
         paymentFrequecyId: response.data.recordInformation?.payrollInformation.paymentFrequency.id,
         payrollGroupId: response.data.recordInformation?.payrollInformation.payrollGroup.id,
       };

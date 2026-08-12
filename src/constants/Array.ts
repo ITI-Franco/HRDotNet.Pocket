@@ -802,35 +802,34 @@ export const ARRAY = {
       ),
     },
     {
-      details: ARRAY.getRequestDetails(
-        [
-          { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-          { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
-          {
-            label: STRINGS.OTRequestFieldIII,
-            value:
-              props.schedule?.isPremium! === true
-                ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
-                  DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                  : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
-                : props.schedule?.timeOut
-                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
-                  : undefined,
-          },
-          {
-            label: STRINGS.OTRequestFieldIV,
-            value: props?.timeRecord
-              ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-              : null,
-          },
-          { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-          { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-          { label: STRINGS.requestFieldReason, value: props?.reason },
-        ],
-        props,
-        reqAction,
-      ),
+      details:
+        reqAction === ARRAY.reqAction[0].Cancel
+          ? [...ARRAY.requestCancellation(props)]
+          : [
+              { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+              { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
+              {
+                label: STRINGS.OTRequestFieldIII,
+                value:
+                  props.schedule?.isPremium! === true
+                    ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
+                      DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                      : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
+                    : props.schedule?.timeOut
+                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
+                      : undefined,
+              },
+              {
+                label: STRINGS.OTRequestFieldIV,
+                value: props?.timeRecord
+                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+                  : null,
+              },
+              { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+              { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+              { label: STRINGS.requestFieldReason, value: props?.reason },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.overtime,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -1112,7 +1111,7 @@ export const ARRAY = {
 
   COSFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFrom },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.filterDateFrom },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelRequestedSchedule, value: STRINGS.fieldRequested },
     { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
@@ -1120,7 +1119,7 @@ export const ARRAY = {
 
   OBFilter: () => [
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
-    { label: STRINGS.labelDatePeriodOB, value: STRINGS.fieldDateFrom },
+    { label: STRINGS.labelDatePeriodOB, value: STRINGS.filterDateFrom },
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelLocation, value: STRINGS.fieldLocation },
@@ -1151,7 +1150,7 @@ export const ARRAY = {
 
   MLFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.filterDateFiled },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelLogType, value: STRINGS.fieldLogType },
     { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },

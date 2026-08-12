@@ -8,7 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import StyledText from 'react-native-styled-text';
 
 import { COLORS, STYLES, STRINGS } from 'src';
-import { useApprovals, useReviewals } from 'src/contexts/pages';
+import { useReviewals } from 'src/contexts/pages';
 
 const ConfirmmationReviewal: React.FC = () => {
   const styles = STYLES.ComponentConfirmationApproval;
@@ -51,17 +51,17 @@ const ConfirmmationReviewal: React.FC = () => {
   };
 
   const onHandleContinue = () => {
-    if (state.batchReason == undefined || state.batchReason.trim() == "") {
-      alert(STRINGS.requiredReason)
+    if (state.batchReason == undefined || state.batchReason.trim() == '') {
+      alert(STRINGS.requiredReason);
     } else {
-      onHandleReviewPrompt()
+      onHandleReviewPrompt();
     }
-  }
+  };
 
   const onHandleCancel = () => {
-    onHandleCancelPrompt()
-    setState({ batchReason: undefined })
-  }
+    onHandleCancelPrompt();
+    setState({ batchReason: undefined });
+  };
 
   return (
     <React.Fragment>
@@ -70,14 +70,18 @@ const ConfirmmationReviewal: React.FC = () => {
           <View style={styles.modalWrapper}>
             <FontAwesome name="question-circle" size={70} color={COLORS.yellow} />
 
-            <Text style={styles.titleText}>{`${STRINGS.batch} ${handle.isAction === 0 ? STRINGS.cancel : STRINGS.review}?`}</Text>
+            <Text
+              style={styles.titleText}
+            >{`${STRINGS.batch} ${handle.isAction === 0 ? STRINGS.cancel : STRINGS.review}?`}</Text>
 
             <StyledText style={styles.subTitleText} textStyles={STYLES.StyledText}>
               {onDisplayText()}
             </StyledText>
 
             <View>
-              <Text style={styles.textReason} >Reason <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.textReason}>
+                Reason <Text style={styles.required}>*</Text>
+              </Text>
               <View style={styles.rowView}>
                 <TextInput
                   style={styles.textArea}
@@ -91,7 +95,6 @@ const ConfirmmationReviewal: React.FC = () => {
                 />
               </View>
             </View>
-
 
             <View style={styles.rowView}>
               <TouchableOpacity onPress={onHandleCancel} style={[styles.button, styles.cancelButton]}>

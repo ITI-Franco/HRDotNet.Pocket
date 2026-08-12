@@ -528,6 +528,7 @@ export const ValuesApprovals = {
     urlQuery: ``,
     successList: [],
     failedList: [],
+    approvalCounts: {},
   } satisfies StateApplications,
 
   Handle: {

@@ -9,16 +9,14 @@ import * as Animatable from 'react-native-animatable';
 import { Skeleton } from 'moti/skeleton';
 
 import LoaderPage from '../../loader/LoaderPage';
-import { STYLES, STRINGS, ASSETS, COLORS } from 'src';
+import { STYLES, STRINGS, ASSETS } from 'src';
 import { useFetch } from 'src/hooks/useFetch';
 import { ValuesPersonal, ValuesSchemaPersonal } from 'src/constants/Values';
-import { StatePersonal, TypeHandle, TypeNavStack } from 'src/types/Types';
+import { TypeHandle, TypeNavStack } from 'src/types/Types';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import BottomSheetOption from 'src/components/bottom-sheet/BottomSheetOptionProfile';
 import { useProfile } from 'src/contexts/tabs';
-import { useRoute } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { FontAwesome5 } from '@expo/vector-icons';
+
 import BottomSheetProfileUpdate from 'src/components/bottom-sheet/BottomSheetProfileUpdate';
 
 const Personal: React.FC<TypeNavStack> = ({ navigation }) => {
@@ -29,7 +27,6 @@ const Personal: React.FC<TypeNavStack> = ({ navigation }) => {
   );
 
   const { state, setState } = useProfile();
-  const params = useRoute().params as any;
   const animation = new Animated.Value(100);
 
   useEffect(() => {
@@ -59,7 +56,7 @@ const Personal: React.FC<TypeNavStack> = ({ navigation }) => {
         useNativeDriver: true,
       }).start();
     }
-  }, [state.isUpdatingProfile])
+  }, [state.isUpdatingProfile]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -97,16 +94,15 @@ const Personal: React.FC<TypeNavStack> = ({ navigation }) => {
                       />
                     </View>
                   )}
-
                 </Skeleton>
               </View>
-              <View style={{ position: 'absolute', bottom: 0, right: 10, backgroundColor: 'gray', borderRadius: 90, }} onTouchStart={() => { setState({ bottomSheetOption: true }) }}>
-                <AntDesign
-                  name="camera"
-                  size={26}
-                  color="black"
-                  style={{ padding: 10 }}
-                />
+              <View
+                style={{ position: 'absolute', bottom: 0, right: 10, backgroundColor: 'gray', borderRadius: 90 }}
+                onTouchStart={() => {
+                  setState({ bottomSheetOption: true });
+                }}
+              >
+                <AntDesign name="camera" size={26} color="black" style={{ padding: 10 }} />
               </View>
             </View>
 

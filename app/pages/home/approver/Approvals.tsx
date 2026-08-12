@@ -69,26 +69,25 @@ const Approvals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => (
                 <TouchableOpacity
-                  style={[styles.button, state.selectedButton === index && styles.selectedButton,]}
+                  style={[styles.button, state.selectedButton === index && styles.selectedButton]}
                   onPress={() => onHandlePress(index)}
                   disabled={state.selectedButton === index ? true : false}
                 >
-                  <Text >
+                  <View style={styles.tabItem}>
                     {state.selectedButton === index && (
-                      <View>
-                        <Text style={[styles.approvalCountButton]}>{state.totalCount ?? 0}</Text>
-                      </View>
+                      <Text style={styles.approvalCountButton}>{state.totalCount ?? 0}</Text>
                     )}
-                    <View>
-                      <Text style={[
+
+                    <Text
+                      style={[
                         styles.buttonText,
                         state.selectedButton === index && styles.selectedTextButton,
-                        index == 6 && { color: COLORS.gray },
-                      ]}   >
-                        {item.title}
-                      </Text>
-                    </View>
-                  </Text>
+                        index === 6 && { color: COLORS.gray },
+                      ]}
+                    >
+                      {item.title}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               )}
               style={styles.buttonList}
