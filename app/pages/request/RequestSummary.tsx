@@ -55,8 +55,6 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
     navigation.navigate(STRINGS.pathTabStack, { screen: STRINGS.tabTitleRequest, params: { refresh: true } });
   };
 
-  // console.log("Curr", currProps)
-  // console.log("FF", currUpdateProps)
   const onHandleSubmit = () => {
     (async () => {
       try {
@@ -111,10 +109,7 @@ const RequestSummary: React.FC<TypeNavStack> = ({ navigation }) => {
 
   return (
     <React.Fragment>
-      <PageHeader
-        name={`${STRINGS.pageTitleReqSummary} ${requestActionTitle[currOnReqAction] || ''
-          }`}
-      />
+      <PageHeader name={`${STRINGS.pageTitleReqSummary} ${requestActionTitle[currOnReqAction] || ''}`} />
       {handle.isToast!.show && <Toast handle={handle.isToast!} setHandle={setHandle} />}
 
       <SummaryPanel

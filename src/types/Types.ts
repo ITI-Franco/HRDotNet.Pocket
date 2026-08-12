@@ -68,11 +68,11 @@ export type SchemaRequestApplications = {
     };
 
     dateFiled?:
-    | {
-      dateFrom: string;
-      dateTo: string;
-    }
-    | string;
+      | {
+          dateFrom: string;
+          dateTo: string;
+        }
+      | string;
 
     leaveParameter?: {
       // Leave
@@ -122,7 +122,15 @@ export type SchemaRequestApplications = {
       breakTimeIn: string;
       breakTimeOut: string;
       isPremium: boolean;
+      shiftType?:
+        | {
+            shiftTypeId: number;
+            shiftType: string;
+          }
+        | string;
+      shiftTypeId: number;
     };
+
     actual?: {
       dateFrom: string;
       dateTo: string;
@@ -282,6 +290,8 @@ export type Schedules = {
   timeOut: string;
   breakTimeIn: string;
   breakTimeOut: string;
+  shiftTypeId: number;
+  shiftType: string;
   isPremium: boolean;
 };
 
@@ -668,7 +678,9 @@ export type StateLoanDetails = {
 
 // Selection List
 export type StateSelectionList = {
-  data: Array<TypeSelectionList>; name?: string, page?: number;
+  data: Array<TypeSelectionList>;
+  name?: string;
+  page?: number;
 };
 
 // COS Request
@@ -1135,4 +1147,4 @@ export type Badge = {
   // isLoading?: boolean;
 };
 
-export type AllApplicationState = StateCOSRequest | StateMLRequest | StateOBRequest | StateOTOFFRequest
+export type AllApplicationState = StateCOSRequest | StateMLRequest | StateOBRequest | StateOTOFFRequest;

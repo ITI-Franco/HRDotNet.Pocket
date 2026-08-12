@@ -135,6 +135,7 @@ export const useFetch = {
     if (state.date == undefined) {
       return;
     }
+
     await UtilsFetch.connect(
       APIMethods.GET,
       ContentTypes.JSON,
@@ -403,7 +404,6 @@ export const useFetch = {
     let result = [];
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
-
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -439,7 +439,7 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  Teams: async () => { },
+  Teams: async () => {},
 
   RequestById: async (
     nav: StackNavigationProp<ParamListBase>,
@@ -541,8 +541,6 @@ export const useFetch = {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
 
-        console.log("Nn", newFields, oldFields)
-
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
         const originalAttachments = Utils.parseAttachments(updateData.filing.fileAttachment);
@@ -563,7 +561,6 @@ export const useFetch = {
 
         formData.append('EditLog', editLog);
       } else if (reqAction === onReqAction.Cancel) {
-
         const generateEditLog = Utils.generateHistoryItem(parsed.cancelReason, formatName, 'Cancelled', dateParse);
         const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
 
@@ -594,10 +591,10 @@ export const useFetch = {
         undefinedUri === ''
           ? formData.append('FileAttachment', parsed?.attachment?.uri)
           : formData.append('FileAttachment', {
-            name: split[split.length - 1],
-            uri: parsed?.attachment?.uri,
-            type: type,
-          });
+              name: split[split.length - 1],
+              uri: parsed?.attachment?.uri,
+              type: type,
+            });
 
         const generateEditLog = Utils.generateHistoryItem(parsed?.reason, formatName, 'New', dateParse);
 
@@ -836,8 +833,6 @@ export const useFetch = {
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
     const parsed: PropsRequestSummary = await JSON.parse(data);
 
-
-
     const dateParse = Utils.panelDateToParse(state.panel, parsed);
 
     const generateEditLog = Utils.generateHistoryItem(parsed.reviewReason, formatName, 'Reviewed', dateParse);
@@ -846,9 +841,7 @@ export const useFetch = {
       ...state.data,
       editLog: Utils.appendHistoryItem(state.data.editLog, generateEditLog),
     };
-
     formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
-
     await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
       .then(() => {
         setHandle({ isSuccess: true });
@@ -861,9 +854,6 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
-
-          console.log("Errr", errors)
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -887,10 +877,10 @@ export const useFetch = {
     setState: React.Dispatch<Partial<StateApplications>>,
     handle: TypeHandle,
     setHandle: React.Dispatch<Partial<TypeHandle>>,
-    employeeName?: string
+    employeeName?: string,
   ) => {
     setHandle({ isLoading: true });
-    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchApprove
+    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchApprove;
 
     let formBatchApproval: SchemaApprovalsManager = { filings: [] },
       successList: Array<TypeApprovalPromptItem> = [],
@@ -905,14 +895,19 @@ export const useFetch = {
     state.data.forEach((item: SchemaRequestApplications) => {
       if (item.isChecked) {
         const dateParse = Utils.panelBatchDateParse(state.selectedButton, item);
-        const generatedEditLog = Utils.generateHistoryItem(state.batchReason || "", employeeName || "", action, dateParse);
+        const generatedEditLog = Utils.generateHistoryItem(
+          state.batchReason || '',
+          employeeName || '',
+          action,
+          dateParse,
+        );
 
         const filing = {
           recordId: item.filing.id,
           employeeId: item.id,
           companyId: item.companyId,
           documentNo: item.filing.documentNo,
-          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog)
+          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog),
         };
 
         handle.isAction === formBatchApproval.filings.push(filing);
@@ -931,7 +926,7 @@ export const useFetch = {
 
     const onError = async (error: TypeError) => {
       const errors = await UtilsFetch.catchErrors(error);
-      setState({ batchReason: undefined })
+      setState({ batchReason: undefined });
       await UtilsFetch.catchEvent({
         error: error,
         setHandle: setHandle,
@@ -946,7 +941,7 @@ export const useFetch = {
     };
 
     const onSuccess = async (data: SchemaApprovalsManager) => {
-      setState({ batchReason: undefined })
+      setState({ batchReason: undefined });
       let batchApprovalsStatus: {
         success: Array<TypeApprovalPromptItem>;
         errors: Array<TypeApprovalPromptItem>;
@@ -1012,7 +1007,7 @@ export const useFetch = {
   ) => {
     setHandle({ isLoading: true });
 
-    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchReview
+    const action = handle.isAction == 0 ? STRINGS.batchCancel : STRINGS.batchReview;
 
     let urlReview: string = await UtilsFetch.approvalsEndpoint(
       state.selectedButton,
@@ -1026,14 +1021,19 @@ export const useFetch = {
     state.data.forEach((item: SchemaRequestApplications) => {
       if (item.isChecked) {
         const dateParse = Utils.panelBatchDateParse(state.selectedButton, item);
-        const generatedEditLog = Utils.generateHistoryItem(state.batchReason || "", employeeName || "", action, dateParse);
+        const generatedEditLog = Utils.generateHistoryItem(
+          state.batchReason || '',
+          employeeName || '',
+          action,
+          dateParse,
+        );
 
         const filing = {
           recordId: item.filing.id,
           employeeId: item.id,
           companyId: item.companyId,
           documentNo: item.filing.documentNo,
-          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog)
+          editLog: Utils.appendHistoryItem(item.editLog, generatedEditLog),
         };
 
         handle.isAction === formBatchReview.filings.push(filing);
@@ -1052,7 +1052,7 @@ export const useFetch = {
 
     const onError = async (error: TypeError) => {
       const errors = await UtilsFetch.catchErrors(error);
-      setState({ batchReason: undefined })
+      setState({ batchReason: undefined });
       await UtilsFetch.catchEvent({
         error: error,
         setHandle: setHandle,
@@ -1067,7 +1067,7 @@ export const useFetch = {
     };
 
     const onSuccess = async (data: SchemaApprovalsManager) => {
-      setState({ batchReason: undefined })
+      setState({ batchReason: undefined });
       let batchApprovalsStatus: {
         success: Array<TypeApprovalPromptItem>;
         errors: Array<TypeApprovalPromptItem>;
@@ -1146,13 +1146,13 @@ export const useFetch = {
 
         res.length > 0
           ? setState({
-            clockIn: res[0],
-            clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
-          })
+              clockIn: res[0],
+              clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
+            })
           : setState({
-            clockIn: ValuesSchemaCalendarEntries,
-            clockOut: ValuesSchemaCalendarEntries,
-          });
+              clockIn: ValuesSchemaCalendarEntries,
+              clockOut: ValuesSchemaCalendarEntries,
+            });
       })
       .catch(async (error: TypeError) => {
         await UtilsFetch.catchEvent({
@@ -1230,7 +1230,7 @@ export const useFetch = {
       const cutoffData = {
         dateFrom: response.data.dateRange.dateFrom,
         dateTo: response.data.dateRange.dateTo,
-        dayPayout: response.data.datePayoutSchedule
+        dayPayout: response.data.datePayoutSchedule,
       };
 
       return cutoffData;
