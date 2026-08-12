@@ -177,10 +177,11 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const ApprovalCount = () => {
+  const ApprovalCount = async () => {
+    const counts = await useFetch.ApprovalsCounts(state);
+
     setState({
-      count: state.totalCount ?? 0,
-      data: [...state.data],
+      approvalCounts: counts,
     });
   };
 

@@ -10,13 +10,18 @@ import Toast from 'src/components/use/Toast';
 import ApprovalsPanel from 'src/components/panel/home/approver/ApprovalsPanel';
 import ConfirmationApproval from 'src/components/prompt/ConfirmationApproval';
 import PageHeader from 'src/components/header/PageHeader';
-import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
+import { COLORS, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useApprovals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
+import { SchemaRequestApplications } from 'src/types/Types';
+import { useGlobalStore } from 'src/store/GlobalStore';
+import { FilingPanel } from 'src/constants/Enum';
 
 const Approvals: React.FC = () => {
   const styles = STYLES.Request;
+
+  const { cutOffPeriod } = useGlobalStore();
 
   const {
     params,
@@ -40,7 +45,7 @@ const Approvals: React.FC = () => {
 
   useEffect(() => {
     ApprovalCount();
-  }, [state.totalCount]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -67,29 +72,67 @@ const Approvals: React.FC = () => {
           <View style={styles.wrapper}>
             <FlatList
               data={state.buttons}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  style={[styles.button, state.selectedButton === index && styles.selectedButton]}
-                  onPress={() => onHandlePress(index)}
-                  disabled={state.selectedButton === index ? true : false}
-                >
-                  <View style={styles.tabItem}>
-                    {state.selectedButton === index && (
-                      <Text style={styles.approvalCountButton}>{state.totalCount ?? 0}</Text>
-                    )}
+              renderItem={({ item, index }) => {
+                const filteredItems =
+                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
+                    if (index === FilingPanel.OB) {
+                      return (
+                        (item.filing?.filingStatus?.name === STRINGS.filed ||
+                          item.filing?.filingStatus?.name === STRINGS.reviewed) &&
+                        item.filing.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
+                        item.filing.dateRange?.dateTo! <= cutOffPeriod?.[1]!
+                      );
+                    }
 
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        state.selectedButton === index && styles.selectedTextButton,
-                        index === 6 && { color: COLORS.gray },
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
+                    return (
+                      (item.filing?.filingStatus?.name === STRINGS.filed ||
+                        item.filing?.filingStatus?.name === STRINGS.reviewed) &&
+                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! &&
+                      item.filing?.dateFiled! <= cutOffPeriod?.[1]!
+                    );
+                  }) ?? [];
+
+                const count = filteredItems.length;
+
+                return (
+                  <TouchableOpacity
+                    style={[styles.button, state.selectedButton === index && styles.selectedButton]}
+                    onPress={() => onHandlePress(index)}
+                    disabled={state.selectedButton === index}
+                  >
+                    <View style={styles.tabItem}>
+                      {count !== 0 && (
+                        <Text
+                          style={[
+                            styles.approvalCountButton,
+                            state.selectedButton === index
+                              ? {
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
+                              : {
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
+                          ]}
+                        >
+                          {count}
+                        </Text>
+                      )}
+
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          state.selectedButton === index && styles.selectedTextButton,
+                          index === FilingPanel.CTO && { color: COLORS.gray },
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
               style={styles.buttonList}
               horizontal
               showsHorizontalScrollIndicator={false}

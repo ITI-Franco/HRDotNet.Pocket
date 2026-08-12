@@ -14,9 +14,14 @@ import { useReviewals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
 import ReviewalsPanel from 'src/components/panel/home/approver/ReviewalsPanel';
 import ConfirmmationReviewal from 'src/components/prompt/ConfirmationReviewal';
+import { useGlobalStore } from 'src/store/GlobalStore';
+import { SchemaRequestApplications } from 'src/types/Types';
+import { FilingPanel } from 'src/constants/Enum';
 
 const Reviewals: React.FC = () => {
   const styles = STYLES.Request;
+
+  const { cutOffPeriod } = useGlobalStore();
 
   const {
     params,
@@ -39,10 +44,8 @@ const Reviewals: React.FC = () => {
   }, [handle.refreshing, state.urlQuery, state.page, params]);
 
   useEffect(() => {
-    if (state.urlQuery) {
-      ApprovalCount();
-    }
-  }, [state.urlQuery]);
+    ApprovalCount();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -70,8 +73,24 @@ const Reviewals: React.FC = () => {
             <FlatList
               data={state.buttons}
               renderItem={({ item, index }) => {
-                const count = state.approvalCounts?.[index] ?? 0;
-                console.log('count', count);
+                const filteredItems =
+                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
+                    if (index === FilingPanel.OB) {
+                      return (
+                        item.filing?.filingStatus?.name === STRINGS.filed &&
+                        item.filing.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
+                        item.filing.dateRange?.dateTo! <= cutOffPeriod?.[1]!
+                      );
+                    }
+
+                    return (
+                      item.filing?.filingStatus?.name === STRINGS.filed &&
+                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! &&
+                      item.filing?.dateFiled! <= cutOffPeriod?.[1]!
+                    );
+                  }) ?? [];
+
+                const count = filteredItems.length;
 
                 return (
                   <TouchableOpacity
@@ -80,7 +99,7 @@ const Reviewals: React.FC = () => {
                     disabled={state.selectedButton === index}
                   >
                     <View style={styles.tabItem}>
-                      {count > 0 && (
+                      {count !== 0 && (
                         <Text
                           style={[
                             styles.approvalCountButton,
@@ -98,11 +117,12 @@ const Reviewals: React.FC = () => {
                           {count}
                         </Text>
                       )}
+
                       <Text
                         style={[
                           styles.buttonText,
                           state.selectedButton === index && styles.selectedTextButton,
-                          index === 6 && { color: COLORS.gray },
+                          index === FilingPanel.CTO && { color: COLORS.gray },
                         ]}
                       >
                         {item.title}
