@@ -956,7 +956,12 @@ export const ARRAY = {
     { title: 'Schedule.TimeOut', value: parsed?.schedule?.timeOut },
     { title: 'Schedule.BreakTimeIn', value: parsed?.schedule?.breakTimeIn },
     { title: 'Schedule.BreakTimeOut', value: parsed?.schedule?.breakTimeOut },
+    { title: 'Schedule.ShiftTypeId', value: Object(parsed?.schedule?.shiftType).shiftTypeId! },
+    { title: 'Schedule.ShiftType', value: Object(parsed?.schedule?.shiftType).shiftType! },
+    { title: 'ShiftType.ShiftTypeId', value: Object(parsed?.schedule?.shiftType).shiftTypeId! },
+    { title: 'ShiftType.ShiftType', value: Object(parsed?.schedule?.shiftType).shiftType! },
     { title: 'Schedule.IsPremium', value: parsed?.schedule?.isPremium },
+    { title: 'ReferenceNo', value: parsed?.referenceNo },
     {
       title: 'Actual.TimeIn',
       value: (() => {
@@ -1181,7 +1186,7 @@ export const ARRAY = {
     { title: 'EmployeeName', value: params?.name },
     { title: 'CompanyId', value: params?.companyId },
     { title: 'BranchId', value: params?.branchId },
-    { title: 'DepartmentId', value: params?.departmentId || 0 },
+    // { title: 'DepartmentId', value: params?.departmentId || 0 },
     { title: 'Id', value: params?.filing?.id },
     { title: 'Guid', value: params?.filing?.guid },
     { title: 'DocumentNo', value: params?.filing?.documentNo },
@@ -1241,8 +1246,21 @@ export const ARRAY = {
       timeOut: params?.filing?.shiftSchedule?.timeOut,
       breakTimeIn: params?.filing?.shiftSchedule?.breakTimeIn,
       breakTimeOut: params?.filing?.shiftSchedule?.breakTimeOut,
+
+      shiftType:
+        typeof params?.filing?.shiftSchedule?.shiftType === 'string'
+          ? {
+              shiftType: params?.filing?.shiftSchedule?.shiftType,
+              shiftTypeId: params?.filing?.shiftSchedule?.shiftTypeId,
+            }
+          : {
+              shiftType: params?.filing?.shiftSchedule?.shiftType?.shiftType,
+              shiftTypeId: params?.filing?.shiftSchedule?.shiftType?.shiftTypeId,
+            },
+
       isPremium: params?.filing?.shiftSchedule?.isPremium,
     },
+    referenceNo: params?.filing.referenceNo,
     // comment out code below to not have an initial value
     reqTimeIn: DateTimeUtils.timeWithSeconds((params?.filing?.requested as { dateFrom: string })?.dateFrom),
     reqTimeOut: DateTimeUtils.timeWithSeconds((params?.filing?.requested as { dateTo: string })?.dateTo),

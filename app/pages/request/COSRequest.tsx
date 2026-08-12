@@ -144,125 +144,122 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
     }
   })();
 
-  useEffect(() => {
-    console.log("Sss", state.startDate)
-  }, [state.startDate])
   return (
     <View style={styles.mainView}>
       <PageHeader name={Utils.panelPageHeaderTitle(currParams.onPanel, currParams.onReqAction)} />
 
       <ScrollView style={styles.container}>
         {currParams.onReqAction === onReqAction.Cancel ||
-          currParams.onReqAction === onReqAction.Review ||
-          currParams.onReqAction === onReqAction.Approve
+        currParams.onReqAction === onReqAction.Review ||
+        currParams.onReqAction === onReqAction.Approve
           ? [
-            UtilsDisplay.DisplayFieldTextInput(
-              handle.isInputCheck!,
-              STRINGS.requestFieldDocumentNo,
-              state.documentNo!,
-              true,
-              () => ({}),
-              false,
-            ),
+              UtilsDisplay.DisplayFieldTextInput(
+                handle.isInputCheck!,
+                STRINGS.requestFieldDocumentNo,
+                state.documentNo!,
+                true,
+                () => ({}),
+                false,
+              ),
 
-            UtilsDisplay.DisplayFieldTextInput(
-              handle.isInputCheck!,
-              reasonLabel,
-              stateToUse || '',
-              true,
-              setStateToUse,
-              true,
-              FieldLimit.reason.maxLength,
-              STRINGS.placeholderReason,
-              true,
-            ),
-          ]
+              UtilsDisplay.DisplayFieldTextInput(
+                handle.isInputCheck!,
+                reasonLabel,
+                stateToUse || '',
+                true,
+                setStateToUse,
+                true,
+                FieldLimit.reason.maxLength,
+                STRINGS.placeholderReason,
+                true,
+              ),
+            ]
           : [
-            UtilsDisplay.DisplayFieldWithIcon(
-              handle.isInputCheck!,
-              STRINGS.COSRequestFieldI,
-              state.startDate,
-              true,
-              DateTimeUtils.dateDefaultToWord(state.startDate),
-              STRINGS.styledPlaceholderDateRange.startDate,
-              () => setHandle({ isDateFromPicker: true }),
-              'calendar',
-              true
-            ),
+              UtilsDisplay.DisplayFieldWithIcon(
+                handle.isInputCheck!,
+                STRINGS.COSRequestFieldI,
+                state.startDate,
+                true,
+                DateTimeUtils.dateDefaultToWord(state.startDate),
+                STRINGS.styledPlaceholderDateRange.startDate,
+                () => setHandle({ isDateFromPicker: true }),
+                'calendar',
+                true,
+              ),
 
-            UtilsDisplay.DisplayFieldWithIcon(
-              handle.isInputCheck!,
-              STRINGS.COSRequestFieldII,
-              state.endDate,
-              true,
-              DateTimeUtils.dateDefaultToWord(state.endDate),
-              STRINGS.styledPlaceholderDateRange.endDate,
-              () => setHandle({ isDateToPicker: true }),
-              'calendar',
-              true
-            ),
+              UtilsDisplay.DisplayFieldWithIcon(
+                handle.isInputCheck!,
+                STRINGS.COSRequestFieldII,
+                state.endDate,
+                true,
+                DateTimeUtils.dateDefaultToWord(state.endDate),
+                STRINGS.styledPlaceholderDateRange.endDate,
+                () => setHandle({ isDateToPicker: true }),
+                'calendar',
+                true,
+              ),
 
-            UtilsDisplay.DisplayButtonField(
-              true,
-              handle.isInputCheck!,
-              STRINGS.COSRequestFieldIII,
-              state.requested.name || '',
-              state.requested?.name,
-              STRINGS.tapSelectPlaceholder('Schedule'),
-              () =>
-                navigation.navigate(STRINGS.pathSelectionList, {
-                  currParams,
-                  action: STRINGS.selectionListCOSRequest,
-                }),
-              false,
-              true
-            ),
+              UtilsDisplay.DisplayButtonField(
+                true,
+                handle.isInputCheck!,
+                STRINGS.COSRequestFieldIII,
+                state.requested.name || '',
+                state.requested?.name,
+                STRINGS.tapSelectPlaceholder('Schedule'),
+                () =>
+                  navigation.navigate(STRINGS.pathSelectionList, {
+                    currParams,
+                    action: STRINGS.selectionListCOSRequest,
+                  }),
+                false,
+                true,
+              ),
 
-            UtilsDisplay.DisplayFieldCheckbox(
-              state.checkbox,
-              true,
-              handle.isInputCheck!,
-              handle.checkSelect!,
-              state.requested.name || '',
-              STRINGS.COSRequestFieldIIV,
-              (item, index) => onHandleCheck(item as string, index as number),
-              false,
-            ),
+              UtilsDisplay.DisplayFieldCheckbox(
+                state.checkbox,
+                true,
+                handle.isInputCheck!,
+                handle.checkSelect!,
+                state.requested.name || '',
+                STRINGS.COSRequestFieldIIV,
+                (item, index) => onHandleCheck(item as string, index as number),
+                false,
+              ),
 
-            UtilsDisplay.DisplayFieldTextInput(
-              handle.isInputCheck!,
-              STRINGS.requrestFieldReferenceNo,
-              state.referenceNo || '',
-              true,
-              (text: string) => setState({ referenceNo: text }),
-              true,
-              14,
-              STRINGS.placeholderReferenceNo
-            ),
+              UtilsDisplay.DisplayFieldTextInput(
+                handle.isInputCheck!,
+                STRINGS.requrestFieldReferenceNo,
+                state.referenceNo || '',
+                true,
+                (text: string) => setState({ referenceNo: text }),
+                true,
+                14,
+                STRINGS.placeholderReferenceNo,
+              ),
 
-            UtilsDisplay.DisplayFieldTextInput(
-              handle.isInputCheck!,
-              STRINGS.requestFieldReason,
-              state.reason,
-              true,
-              (text: string) => setState({ reason: text }),
-              true,
-              FieldLimit.reason.maxLength,
-              STRINGS.placeholderReason,
-              true,
-            ),
+              UtilsDisplay.DisplayFieldTextInput(
+                handle.isInputCheck!,
+                STRINGS.requestFieldReason,
+                state.reason,
+                true,
+                (text: string) => setState({ reason: text }),
+                true,
+                FieldLimit.reason.maxLength,
+                STRINGS.placeholderReason,
+                true,
+              ),
 
-            UtilsDisplay.DisplayFieldAttachment(
-              handle.isInputCheck!,
-              STRINGS.fileAttachment,
-              state.attachment.uri || state.attachment.url!,
-              true,
-              () => navigation.navigate(STRINGS.pathCamera, currParams),
-              () => Utils.fileAttach(setState),
-              () => currParams,
-              true
-            ),
-          ]}
+              UtilsDisplay.DisplayFieldAttachment(
+                handle.isInputCheck!,
+                STRINGS.fileAttachment,
+                state.attachment.uri || state.attachment.url!,
+                true,
+                () => navigation.navigate(STRINGS.pathCamera, currParams),
+                () => Utils.fileAttach(setState),
+                () => currParams,
+                true,
+              ),
+            ]}
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={onNextHandler}>

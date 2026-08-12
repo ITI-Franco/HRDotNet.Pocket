@@ -71,7 +71,6 @@ const Reviewals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const count = state.approvalCounts?.[index] ?? 0;
-                console.log('count', count);
 
                 return (
                   <TouchableOpacity

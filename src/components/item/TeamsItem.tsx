@@ -20,26 +20,26 @@ const TeamsItem: React.FC<InitialDate> = ({ initialDate }) => {
   const { state, handle, setState } = useTeams();
 
   const renderItem = ({ item }: { item: TeamSchema }) => (
-  <Pressable
-    onPress={() => {
-      (navigation as any).navigate('TeamMembers', { screen: 'TeamsInformation' });
-    }}
-  >
-    <View
-      onTouchEnd={() => {
-        itemPress(item);
+    <Pressable
+      onPress={() => {
+        (navigation as any).navigate('TeamMembers', { screen: 'TeamsInformation' });
       }}
     >
-      <View style={style.activeContainer}>
-        <Image source={ASSETS.mina} style={style.image} />
-        <View style={{ flexShrink: 1 }}>
-          <Text style={style.activeName}>{item.name}</Text>
-          <Text>{item.department.name}</Text>
+      <View
+        onTouchEnd={() => {
+          itemPress(item);
+        }}
+      >
+        <View style={style.activeContainer}>
+          <Image source={ASSETS.mina} style={style.image} />
+          <View style={{ flexShrink: 1 }}>
+            <Text style={style.activeName}>{item.name}</Text>
+            <Text>{item.department.name}</Text>
+          </View>
         </View>
       </View>
-    </View>
-  </Pressable>
-);
+    </Pressable>
+  );
 
   const ListFooterComponent = () => {
     return (
@@ -49,12 +49,8 @@ const TeamsItem: React.FC<InitialDate> = ({ initialDate }) => {
     );
   };
 
- 
-  useEffect(()=> {
-    console.log("State", state.teamsData)
-  }, [state])
   const itemPress = (item: TeamSchema) => {
-    setState({selectedMember: item});
+    setState({ selectedMember: item });
   };
 
   return (
@@ -65,16 +61,16 @@ const TeamsItem: React.FC<InitialDate> = ({ initialDate }) => {
         ) : state.count === 0 ? (
           <Note text={`No data found for ${initialDate}`} icon="magnifying-glass" />
         ) : (
-         <FlatList
-          data={state.teamsData}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          style={{
-            maxHeight: '100%',
-            marginTop: 20,
-          }}
-          ListFooterComponent={ListFooterComponent}
-      />
+          <FlatList
+            data={state.teamsData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            style={{
+              maxHeight: '100%',
+              marginTop: 20,
+            }}
+            ListFooterComponent={ListFooterComponent}
+          />
         )}
       </Animatable.View>
     </React.Fragment>

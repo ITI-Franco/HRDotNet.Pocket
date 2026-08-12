@@ -554,7 +554,6 @@ export const useFetch = {
       formData.append('LocationBranchId', parsed?.branch?.ID);
       formData.append('LocationBranch', parsed?.branch?.name);
     }
-
     let dataSet = (await UtilsFetch.panelNewRequestFormData(panel, parsed)) as Array<{
       title: string;
       value: string | number | boolean;
@@ -562,17 +561,15 @@ export const useFetch = {
 
     dataSet.map((data) => {
       const typedData = data as { title: string; value: string | number | boolean };
+
       formData.append(typedData.title, typedData.value);
     });
-
     // Iba iba per applications yung date
     const dateParse = Utils.panelDateToParse(panel, parsed);
 
     if (reqAction === onReqAction.Update || onReqAction.Cancel) {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
-
-        console.log('Nn', newFields, oldFields);
 
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
@@ -662,7 +659,6 @@ export const useFetch = {
           );
         } else {
           const errors = await UtilsFetch.catchErrors(error);
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -889,8 +885,6 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
-          console.log('Errr', errors);
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -1247,7 +1241,7 @@ export const useFetch = {
         details: ARRAY.personalDetails(personalData),
       });
     } catch (error) {
-      console.log('Error profile response', error);
+      console.error('Error profile response', error);
       throw error;
     }
   },
@@ -1272,13 +1266,11 @@ export const useFetch = {
 
       return cutoffData;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     }
   },
   Profile: async () => {
-    console.log('REQUEST:', process.env.EXPO_PUBLIC_REQUEST);
-    console.log('PROFILE:', process.env.EXPO_PUBLIC_PROFILE);
     try {
       const response = await UtilsFetch.connect(
         APIMethods.GET,
@@ -1286,7 +1278,6 @@ export const useFetch = {
         `${process.env.EXPO_PUBLIC_PROFILE}`,
       );
 
-      console.log('response', response.data);
       let personalData = {
         FullName: response.data.personalInformation?.name?.normalName ?? '',
         Name_Department: response.data.recordInformation?.workInformation?.company?.department?.name ?? '',
@@ -1303,7 +1294,7 @@ export const useFetch = {
 
       return personalData;
     } catch (error) {
-      console.log('Error profile response', error);
+      console.error('Error profile response', error);
       throw error;
     }
   },

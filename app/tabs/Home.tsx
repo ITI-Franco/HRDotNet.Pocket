@@ -75,8 +75,6 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
           employeePayrollInfo.payrollGroupId,
         );
 
-        console.log('CURRENT CUTOFF:', data);
-
         if (data) {
           setCutoffPeriod([data?.dateFrom, data?.dayPayout]);
         }
@@ -117,7 +115,6 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       const token = await AsyncStorage.getItem('AT');
       if (token) {
         const { EmployeeName } = jwtDecode<{ EmployeeName: string }>(token);
-        console.log('lastName', EmployeeName);
         const lastName = EmployeeName?.split(',');
         setEmployeeLastName(lastName?.[0] ?? '');
       } else {
