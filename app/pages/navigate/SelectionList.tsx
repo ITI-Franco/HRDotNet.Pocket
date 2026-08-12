@@ -17,6 +17,7 @@ import { UtilsDisplay } from 'src/utils/UtilsDisplay';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import EndListNote from 'src/components/note/EndListNote';
+import { ValidateError } from 'src/constants/Enum';
 
 const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
   const styles = STYLES.ComponentSelectionList;
@@ -35,7 +36,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
 
   const processData = (mappedData: { ID: number; name: string; code: string }[]) => {
     setHandle({ isLoading: false });
-    if (mappedData.length === 0 && state.data.length > 0) {
+    if (mappedData.length === ValidateError.IsZero && state.data.length > 0) {
       setHandle({
         isLoadMore: false,
         isWaiting: false,

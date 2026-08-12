@@ -388,6 +388,29 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
+  ApprovalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+    const counts: Record<number, SchemaRequestApplications[]> = {};
+
+    await Promise.all(
+      state.buttons.map(async (_, index) => {
+        const url = UtilsFetch.panelApprovalsURL(index);
+        const endPoint = `${url}?${state.urlQuery}`;
+
+        try {
+          const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
+
+          const items: SchemaRequestApplications[] = response.data?.items ?? [];
+
+          counts[index] = items;
+        } catch (error) {
+          counts[index] = [];
+        }
+      }),
+    );
+
+    return counts;
+  },
+
   Reviewals: async (
     nav: StackNavigationProp<ParamListBase>,
     state: StateApplications,
@@ -440,29 +463,22 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, number>> => {
-    const counts: Record<number, number> = {};
-    const { cutOffPeriod } = useGlobalStore();
+  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+    const counts: Record<number, SchemaRequestApplications[]> = {};
 
     await Promise.all(
       state.buttons.map(async (_, index) => {
         const url = UtilsFetch.panelReviewalsURL(index);
-
         const endPoint = `${url}?${state.urlQuery}`;
 
         try {
           const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
 
-          const items = response.data?.items ?? [];
+          const items: SchemaRequestApplications[] = response.data?.items ?? [];
 
-          counts[index] = items.filter(
-            (item: SchemaRequestApplications) =>
-              item.filing?.filingStatus?.name === 'Filed' &&
-              item.filing.dateRange?.dateFrom === cutOffPeriod[0] &&
-              item.filing.dateRange?.dateTo === cutOffPeriod[1],
-          ).length;
+          counts[index] = items;
         } catch (error) {
-          counts[index] = 0;
+          counts[index] = [];
         }
       }),
     );
@@ -571,8 +587,6 @@ export const useFetch = {
     if (reqAction === onReqAction.Update || onReqAction.Cancel) {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
-
-        console.log('Nn', newFields, oldFields);
 
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
@@ -889,8 +903,6 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
-          console.log('Errr', errors);
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -1247,7 +1259,6 @@ export const useFetch = {
         details: ARRAY.personalDetails(personalData),
       });
     } catch (error) {
-      console.log('Error profile response', error);
       throw error;
     }
   },
@@ -1272,13 +1283,10 @@ export const useFetch = {
 
       return cutoffData;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   },
   Profile: async () => {
-    console.log('REQUEST:', process.env.EXPO_PUBLIC_REQUEST);
-    console.log('PROFILE:', process.env.EXPO_PUBLIC_PROFILE);
     try {
       const response = await UtilsFetch.connect(
         APIMethods.GET,
@@ -1286,7 +1294,6 @@ export const useFetch = {
         `${process.env.EXPO_PUBLIC_PROFILE}`,
       );
 
-      console.log('response', response.data);
       let personalData = {
         FullName: response.data.personalInformation?.name?.normalName ?? '',
         Name_Department: response.data.recordInformation?.workInformation?.company?.department?.name ?? '',
@@ -1303,7 +1310,6 @@ export const useFetch = {
 
       return personalData;
     } catch (error) {
-      console.log('Error profile response', error);
       throw error;
     }
   },

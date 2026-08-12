@@ -7,6 +7,13 @@ export enum FilingPanel {
   OFF = 3,
   LV = 4,
   ML = 5,
+  CTO = 6,
+}
+
+export enum ValidateError {
+  IsUndefined = 'undefined',
+  IsZero = 0,
+  IsEmpty = '',
 }
 
 export enum FilingAbbreviations {

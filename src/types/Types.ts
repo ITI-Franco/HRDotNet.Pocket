@@ -862,6 +862,8 @@ export type StateHome = {
   teamMembers: TeamMember[];
   teamsData: Array<TeamSchema>;
   teamMembersCount?: number;
+
+  approvalCounts?: Record<number, SchemaRequestApplications[]>;
 };
 
 // Request
@@ -886,7 +888,7 @@ export type StateApplications = {
 
   batchReason?: string;
   batchEmployeeName?: string; //
-  approvalCounts?: Record<number, number>;
+  approvalCounts?: Record<number, SchemaRequestApplications[]>;
 };
 
 // Components

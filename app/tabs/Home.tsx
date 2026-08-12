@@ -23,6 +23,7 @@ import { jwtDecode } from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFetch } from 'src/hooks/useFetch';
 import { useGlobalStore } from 'src/store/GlobalStore';
+import { ValidateError } from 'src/constants/Enum';
 
 const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   const {
@@ -64,7 +65,10 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (employeePayrollInfo.paymentFrequencyId === 0 || employeePayrollInfo.payrollGroupId === 0) {
+    if (
+      employeePayrollInfo.paymentFrequencyId === ValidateError.IsZero ||
+      employeePayrollInfo.payrollGroupId === ValidateError.IsZero
+    ) {
       return;
     }
 
@@ -74,8 +78,6 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
           employeePayrollInfo.paymentFrequencyId,
           employeePayrollInfo.payrollGroupId,
         );
-
-        console.log('CURRENT CUTOFF:', data);
 
         if (data) {
           setCutoffPeriod([data?.dateFrom, data?.dayPayout]);
@@ -117,7 +119,6 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       const token = await AsyncStorage.getItem('AT');
       if (token) {
         const { EmployeeName } = jwtDecode<{ EmployeeName: string }>(token);
-        console.log('lastName', EmployeeName);
         const lastName = EmployeeName?.split(',');
         setEmployeeLastName(lastName?.[0] ?? '');
       } else {

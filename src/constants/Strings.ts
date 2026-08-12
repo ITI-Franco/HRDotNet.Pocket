@@ -339,6 +339,7 @@ export const STRINGS = {
   confirmation: 'Confirmation',
   continue: 'Continue',
 
+  filed: 'Filed',
   reviewed: 'Reviewed',
   approved: 'Approved',
   cancelled: 'Cancelled',
