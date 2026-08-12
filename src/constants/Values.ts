@@ -526,6 +526,7 @@ export const ValuesApprovals = {
     urlQuery: `${process.env.EXPO_PUBLIC_APPROVALS_DEFAULTPARAMS}`,
     successList: [],
     failedList: [],
+    approvalCounts: {},
   } satisfies StateApplications,
 
   Handle: {

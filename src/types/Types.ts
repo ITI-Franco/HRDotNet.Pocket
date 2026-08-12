@@ -864,6 +864,7 @@ export type StateApplications = {
 
   batchReason?: string;
   batchEmployeeName?: string; //
+  approvalCounts?: Record<number, number>;
 };
 
 // Components

@@ -19,7 +19,8 @@ import { useGlobalStore } from 'src/store/GlobalStore';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
-  state: StateApplications; setState: React.Dispatch<Partial<StateApplications>>;
+  state: StateApplications;
+  setState: React.Dispatch<Partial<StateApplications>>;
   handle: TypeHandle;
   setHandle: React.Dispatch<Partial<TypeHandle>>;
 
@@ -43,31 +44,31 @@ type TypeContext = {
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => { },
+  setState: () => {},
   handle: ValuesApprovals.Handle,
-  setHandle: () => { },
+  setHandle: () => {},
 
-  onHandleCheckbox: () => { },
-  onHandleSelectAll: () => { },
-  onHandleApprovals: () => { },
-  onHandleClosePrompt: () => { },
-  onHandleCancelPrompt: () => { },
-  onHandleReviewPrompt: () => { },
-  onHandlePress: () => { },
-  onHandleRefreshControl: () => { },
-  onHandleSetReachedEnd: () => { },
-  onHandleEffectI: () => { },
-  onHandleEffectII: () => { },
-  onHandleEffectIII: () => { },
-  onHandleEffectIV: () => { },
+  onHandleCheckbox: () => {},
+  onHandleSelectAll: () => {},
+  onHandleApprovals: () => {},
+  onHandleClosePrompt: () => {},
+  onHandleCancelPrompt: () => {},
+  onHandleReviewPrompt: () => {},
+  onHandlePress: () => {},
+  onHandleRefreshControl: () => {},
+  onHandleSetReachedEnd: () => {},
+  onHandleEffectI: () => {},
+  onHandleEffectII: () => {},
+  onHandleEffectIII: () => {},
+  onHandleEffectIV: () => {},
   isSelectable: () => false,
-  ApprovalCount: () => { },
+  ApprovalCount: () => {},
 });
 
 export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
   const navigation: TypeNavStack['navigation'] = useNavigation();
   const params = useRoute().params as ParamsRequestApplication;
-  const { cutOffPeriod, employeeName } = useGlobalStore()
+  const { cutOffPeriod, employeeName } = useGlobalStore();
 
   const [state, setState] = useReducer(
     (state: StateApplications, newState: Partial<StateApplications>) => ({ ...state, ...newState }),
@@ -84,10 +85,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     const dateFiled = DateTimeUtils.isoToDateDefault(record.filing.dateFiled?.toString()!);
     const status = record.filing.filingStatus?.name;
 
-    return (
-      ["Filed"].includes(status) &&
-      dateFiled >= cutOffStart
-    );
+    return ['Filed'].includes(status) && dateFiled >= cutOffStart;
   };
 
   const onHandleCheckbox = async (data: SchemaRequestApplications, value: boolean) => {
@@ -104,11 +102,11 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
 
   const onHandleSelectAll = () => {
     const selectableItems = state.data.filter(isSelectable);
-    const shouldCheckAll = !selectableItems.every(item => item.isChecked);
+    const shouldCheckAll = !selectableItems.every((item) => item.isChecked);
 
     setState({
       count: shouldCheckAll ? selectableItems.length : 0,
-      data: state.data.map(item => ({
+      data: state.data.map((item) => ({
         ...item,
         isChecked: isSelectable(item) ? shouldCheckAll : false,
       })),
@@ -129,9 +127,9 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-        successList: [],
-        failedList: [],
-      });
+          successList: [],
+          failedList: [],
+        });
   };
 
   const onHandleReviewPrompt = async () => {
@@ -177,10 +175,11 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     return () => clearTimeout(interval);
   };
 
-  const ApprovalCount = () => {
+  const ApprovalCount = async () => {
+    const counts = await useFetch.ReviewalsCounts(state);
+
     setState({
-      count: state.totalCount ?? 0,
-      data: [...state.data],
+      approvalCounts: counts,
     });
   };
 

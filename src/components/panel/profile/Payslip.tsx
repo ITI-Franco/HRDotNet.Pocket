@@ -59,7 +59,7 @@ const Payslip: React.FC<PayslipStack> = ({ navigation, item }) => {
             </Pressable>
           </View>
 
-          {item.items.length > 0 && (
+          {item.items?.length > 0 && (
             <RecentPayItem
               data={item.items[0]}
               onHandleMore={() => {

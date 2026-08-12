@@ -86,8 +86,8 @@ export const CtxHome = ({ children }: { children: React.ReactNode }) => {
         ContentTypes.JSON,
         `${process.env.EXPO_PUBLIC_PROFILE_PERSONAL}`,
       );
-      const profile_uri = response.data.personalInformation.photo;
-      const firstName = response.data.personalInformation.name.firstName;
+      const profile_uri = response.data.personalInformation?.photo;
+      const firstName = response.data.personalInformation?.name?.firstName ?? '';
       const userDetails = state.userDetails;
       let updated_pic_uri = '';
       if (!!profile_uri) {

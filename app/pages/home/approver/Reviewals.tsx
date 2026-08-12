@@ -60,7 +60,7 @@ const Reviewals: React.FC = () => {
 
   useEffect(() => {
     ApprovalCount();
-  }, [state.totalCount]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -87,29 +87,47 @@ const Reviewals: React.FC = () => {
           <View style={styles.wrapper}>
             <FlatList
               data={state.buttons}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  style={[styles.button, state.selectedButton === index && styles.selectedButton]}
-                  onPress={() => onHandlePress(index)}
-                  disabled={state.selectedButton === index ? true : false}
-                >
-                  <View style={styles.tabItem}>
-                    {state.selectedButton === index && (
-                      <Text style={styles.approvalCountButton}>{state.totalCount ?? 0}</Text>
-                    )}
+              renderItem={({ item, index }) => {
+                const count = state.approvalCounts?.[index] ?? 0;
 
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        state.selectedButton === index && styles.selectedTextButton,
-                        index === 6 && { color: COLORS.gray },
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
+                return (
+                  <TouchableOpacity
+                    style={[styles.button, state.selectedButton === index && styles.selectedButton]}
+                    onPress={() => onHandlePress(index)}
+                    disabled={state.selectedButton === index}
+                  >
+                    <View style={styles.tabItem}>
+                      {count !== 0 && (
+                        <Text
+                          style={[
+                            styles.approvalCountButton,
+                            state.selectedButton === index
+                              ? {
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
+                              : {
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
+                          ]}
+                        >
+                          {count}
+                        </Text>
+                      )}
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          state.selectedButton === index && styles.selectedTextButton,
+                          index === 6 && { color: COLORS.gray },
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
               style={styles.buttonList}
               horizontal
               showsHorizontalScrollIndicator={false}
