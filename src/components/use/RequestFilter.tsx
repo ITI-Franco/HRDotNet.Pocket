@@ -47,7 +47,6 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     { label: 'Time Out', value: '2' },
   ]);
 
-
   const [isScheduleDropdownOpen, setScheduleeDropdownOpen] = useState(false);
   const [scheduleValue, setScheduleValue] = useState(null);
   const [scheduleItems, setScheduleItems] = useState([
@@ -73,26 +72,25 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
   ]);
 
   const handleClearSelect = () => {
-    setDocStatusValue(null)
-    setLeaveTypeValue(null)
-    setScheduleValue(null)
-    setLogTypeValue(null)
-  }
+    setDocStatusValue(null);
+    setLeaveTypeValue(null);
+    setScheduleValue(null);
+    setLogTypeValue(null);
+  };
 
   const onHandleSearchSubmit = () => {
     handle[1]({ isLoading: true });
     const exit = () => {
-
       state[1]({
         filterType: undefined,
         filterValue: undefined,
         displayValue: undefined,
-        urlQuery: ''
-      })
+        urlQuery: '',
+      });
       setComponentState({
-        search: "",
-        searchDates: { from: "", to: "" }
-      })
+        search: '',
+        searchDates: { from: '', to: '' },
+      });
       // alert(ERRORS.blankSearchFields);
 
       return;
@@ -102,25 +100,25 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
       if (!componentState.searchDates?.from || !componentState.searchDates?.to) {
         exit();
       } else {
-
-        if (value === "DateFiled" || value === "DateFrom") {
+        if (value === STRINGS.filterDateFiled || value === STRINGS.filterDateFrom) {
           state[1]({
-            displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+            displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || '')} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || '')}`,
             filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
-            filterType: value
-          })
-        } else if (value === "DateTransaction") {
+            filterType: value,
+          });
+        } else if (value === 'DateTransaction') {
           state[1]({
-            displayValue: `Transaction Date: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || "")} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || "")}`,
+            displayValue: `Transaction Date: ${DateTimeUtils.getIsoDateWord(componentState.searchDates.from || '')} - ${DateTimeUtils.getIsoDateWord(componentState.searchDates.to || '')}`,
             filterValue: `${componentState.searchDates.from} - ${componentState.searchDates.to}`,
-            filterType: value
-          })
+            filterType: value,
+          });
         }
-        handleClearSelect()
+        handleClearSelect();
 
         state[1]({
           urlQuery:
-            `&DateField=${value}&DateFrom=${componentState.searchDates?.from}` + `&DateTo=${componentState.searchDates?.to}&sortBy=-DocumentNo`,
+            `&DateField=${value}&DateFrom=${componentState.searchDates?.from}` +
+            `&DateTo=${componentState.searchDates?.to}&sortBy=-DocumentNo`,
         });
       }
     }
@@ -128,58 +126,54 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     else {
       // log filter
       if (value == 'logType') {
-
         state[1]({
           displayValue: `Log Type: ${logTypeItems.find((e) => e.value == String(logTypeValue))?.label}`,
           filterValue: `${String(logTypeValue)}`,
-          filterType: value
-        })
+          filterType: value,
+        });
 
-        state[1]({ urlQuery: `&LogTypeId=${logTypeValue}&sortBy=-DocumentNo` })
-        setDocStatusValue(null)
-      }
-      else if (value == 'Requested') {
+        state[1]({ urlQuery: `&LogTypeId=${logTypeValue}&sortBy=-DocumentNo` });
+        setDocStatusValue(null);
+      } else if (value == 'Requested') {
         state[1]({
           displayValue: `Schedule: ${scheduleValue}`,
-          filterValue: scheduleValue || "",
+          filterValue: scheduleValue || '',
           filterType: value,
-          urlQuery: `&RequestedSchedule=${scheduleValue}&sortBy=-DocumentNo`
-        })
-        setDocStatusValue(null)
-      }
-      else if (value == 'LeaveParameter') {
-        state[1]({ urlQuery: `&LeaveParameter=${leaveTypeValue}&sortBy=-DocumentNo` })
+          urlQuery: `&RequestedSchedule=${scheduleValue}&sortBy=-DocumentNo`,
+        });
+        setDocStatusValue(null);
+      } else if (value == 'LeaveParameter') {
+        state[1]({ urlQuery: `&LeaveParameter=${leaveTypeValue}&sortBy=-DocumentNo` });
       } else if (value == 'DocStatus') {
         state[1]({
           displayValue: `Status: ${docStatusValue}`,
-          filterValue: docStatusValue || "",
+          filterValue: docStatusValue || '',
           filterType: value,
-          urlQuery: `&DocStatus=${docStatusValue}&sortBy=-DocumentNo`
-        })
-        setLeaveTypeValue(null)
-        setScheduleValue(null)
-        setLogTypeValue(null)
-      }
-      else if (!value || !componentState.search) {
+          urlQuery: `&DocStatus=${docStatusValue}&sortBy=-DocumentNo`,
+        });
+        setLeaveTypeValue(null);
+        setScheduleValue(null);
+        setLogTypeValue(null);
+      } else if (!value || !componentState.search) {
         exit();
       }
       // search filter
       else {
-
-        if (value === "DocumentNo") {
-          state[1]({ displayValue: `Document No: ${componentState.search}`, filterValue: componentState.search, filterType: value })
+        if (value === 'DocumentNo') {
+          state[1]({
+            displayValue: `Document No: ${componentState.search}`,
+            filterValue: componentState.search,
+            filterType: value,
+          });
         }
 
         state[1]({
           urlQuery: `&${value}=${componentState.search}&sortBy=-DocumentNo`,
         });
 
-        handleClearSelect()
+        handleClearSelect();
       }
     }
-
-
-
 
     actionState();
   };
@@ -211,7 +205,11 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
     setComponentState({ isVisibleFilter: handle[0].isVisibleFilter });
 
     if (state[0]?.selectedButton == 0) {
-      UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules`)
+      UtilsFetch.connect(
+        APIMethods.GET,
+        ContentTypes.JSON,
+        `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules?pageSize=100`,
+      )
         .then((response) => {
           if (Array.isArray(response.data.items)) {
             const mappedData = response.data.items.map((item: any, index: number) => ({
@@ -219,27 +217,29 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
               value: item.name,
             }));
             setScheduleItems(mappedData);
-          }
-          else {
-            console.error("response.data.items is not an array");
+          } else {
+            console.error('response.data.items is not an array');
           }
         })
         .catch((error) => {
           console.error(error);
         });
     }
-
   }, [handle]);
 
   useEffect(() => {
-    const type = state[0].filterType || ""
-    const value = state[0].filterValue || ""
+    const type = state[0].filterType || '';
+    const value = state[0].filterValue || '';
 
-    setValue(type)
-    if (type === "DocumentNo") {
-      setComponentState({ search: state[0].filterValue })
-    } else if (type === "DateFiled" || type === "DateTransaction" || type === "DateFrom") {
-      const [from, to] = value.split(" - ");
+    setValue(type);
+    if (type === 'DocumentNo') {
+      setComponentState({ search: state[0].filterValue });
+    } else if (
+      type === STRINGS.filterDateFiled ||
+      type === STRINGS.filterDateTransaction ||
+      type === STRINGS.filterDateFrom
+    ) {
+      const [from, to] = value.split(' - ');
       setComponentState({
         searchDates: {
           from,
@@ -247,20 +247,16 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
         },
       });
     }
-
-  }, [componentState.isVisibleFilter, state[0].filterType])
-
-
+  }, [componentState.isVisibleFilter, state[0].filterType]);
 
   const handleClear = () => {
     setComponentState({
-      search: "",
-      searchDates: { from: "", to: "" }
-    })
-    setValue('')
-    handleClearSelect()
-
-  }
+      search: '',
+      searchDates: { from: '', to: '' },
+    });
+    setValue('');
+    handleClearSelect();
+  };
   return (
     <Modal
       transparent={true}
@@ -368,40 +364,24 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
                 setOpen={setDocStatusDropdownOpen}
                 setValue={setDocStatusValue}
                 setItems={setDocStatusItems}
-                style={{ marginVertical: 10, }}
+                style={{ marginVertical: 10 }}
                 zIndex={10}
               />
-            )
+            ) : (
+              <View style={styles.row}>
+                <FontAwesome name="search" size={20} color={COLORS.orange} />
 
-              : (
-                <View style={styles.row}>
-                  <FontAwesome name="search" size={20} color={COLORS.orange} />
-
-                  <TextInput
-                    value={componentState.search}
-                    autoCorrect={false}
-                    cursorColor={COLORS.lighterGray}
-                    onChangeText={(text) => setComponentState({ search: text })}
-                    placeholder={STRINGS.placeholderSearch}
-                    placeholderTextColor={COLORS.lighterGray}
-                    style={styles.search}
-                  />
-                </View>
-              ))}
-
-          {/* {UtilsDisplay.DisplayDateTimePicker(
-            componentState.timePicker,
-            'time',
-            (time: string) => {
-                console.log("Timee")
-
-              setComponentState({
-                timePicker: false,
-                search: DateTimeUtils.timeSecondsSetZeroSeconds(time),
-              });
-            },
-            () => setComponentState({ timePicker: false }),
-          )} */}
+                <TextInput
+                  value={componentState.search}
+                  autoCorrect={false}
+                  cursorColor={COLORS.lighterGray}
+                  onChangeText={(text) => setComponentState({ search: text })}
+                  placeholder={STRINGS.placeholderSearch}
+                  placeholderTextColor={COLORS.lighterGray}
+                  style={styles.search}
+                />
+              </View>
+            ))}
 
           {UtilsDisplay.DisplayDateTimePicker(
             componentState.fromPicker,
@@ -444,18 +424,13 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
           )}
 
           <View style={styles.rowBtn}>
-
-            <TouchableOpacity
-              onPress={handleClear}
-              style={styles.borderButton}
-            >
+            <TouchableOpacity onPress={handleClear} style={styles.borderButton}>
               <Text style={styles.borderButtonText}>Clear</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onHandleSearchSubmit} style={styles.button}>
               <Text style={styles.buttonText}>{STRINGS.filter}</Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </View>
     </Modal>

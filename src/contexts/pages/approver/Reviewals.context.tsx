@@ -16,6 +16,7 @@ import {
 import { useFetch } from 'src/hooks/useFetch';
 import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 import { useGlobalStore } from 'src/store/GlobalStore';
+import { STRINGS } from 'src/constants/Strings';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -55,19 +56,6 @@ export const Context = createContext<TypeContext>({
   onHandlePress: () => {},
   onHandleRefreshControl: () => {},
   onHandleSetReachedEnd: () => {},
-  onHandleEffectI: () => {},
-  onHandleEffectII: () => {},
-  onHandleEffectIII: () => {},
-  onHandleEffectIV: () => {},
-  onHandleCheckbox: () => {},
-  onHandleSelectAll: () => {},
-  onHandleApprovals: () => {},
-  onHandleClosePrompt: () => {},
-  onHandleCancelPrompt: () => {},
-  onHandleReviewPrompt: () => {},
-  onHandlePress: () => {},
-  onHandleRefreshControl: () => {},
-  onHandleSetReachedEnd: () => {},
   onHandleSetURLReviewal: () => {},
   onHandleFetchReviewal: () => {},
   isSelectable: () => false,
@@ -78,6 +66,9 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
   const navigation: TypeNavStack['navigation'] = useNavigation();
   const params = useRoute().params as ParamsRequestApplication;
   const { cutOffPeriod, employeeName } = useGlobalStore();
+
+  const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || '');
+  const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || '');
 
   const [state, setState] = useReducer(
     (state: StateApplications, newState: Partial<StateApplications>) => ({ ...state, ...newState }),
@@ -164,7 +155,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
   };
 
   const onHandleSetURLReviewal = () => {
-    const field = [2, 3, 5].includes(state.selectedButton) ? 'DateFiled' : 'DateFrom';
+    const field = [2, 3, 5].includes(state.selectedButton) ? STRINGS.filterDateFiled : STRINGS.filterDateFrom;
     setHandle({ isLoading: true, isLoadMore: true, isWaiting: true });
     setState({
       filterType: field,
@@ -182,7 +173,11 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
       const interval = setTimeout(async () => {
         await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
       }, 50);
-      return () => clearTimeout(interval);
+
+      return () => {
+        setHandle({ isLoading: false });
+        clearTimeout(interval);
+      };
     }
   };
 

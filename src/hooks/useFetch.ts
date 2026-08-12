@@ -456,10 +456,7 @@ export const useFetch = {
           const items = response.data?.items ?? [];
 
           counts[index] = items.filter(
-            (item: SchemaRequestApplications) =>
-              item.filing?.filingStatus?.name === 'Filed' &&
-              item.filing.dateRange?.dateFrom === cutOffPeriod[0] &&
-              item.filing.dateRange?.dateTo === cutOffPeriod[1],
+            (item: SchemaRequestApplications) => item.filing?.filingStatus?.name === 'Filed',
           ).length;
         } catch (error) {
           counts[index] = 0;
@@ -572,7 +569,7 @@ export const useFetch = {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
 
-        console.log("Nn", newFields, oldFields)
+        console.log('Nn', newFields, oldFields);
 
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
@@ -594,7 +591,6 @@ export const useFetch = {
 
         formData.append('EditLog', editLog);
       } else if (reqAction === onReqAction.Cancel) {
-
         const generateEditLog = Utils.generateHistoryItem(parsed.cancelReason, formatName, 'Cancelled', dateParse);
         const editLog = Utils.appendHistoryItem(updateData.editLog, generateEditLog);
 
@@ -867,8 +863,6 @@ export const useFetch = {
     let url: string = await UtilsFetch.singleReviews(state.panel, state.data.filing.filingStatus.id);
     const parsed: PropsRequestSummary = await JSON.parse(data);
 
-
-
     const dateParse = Utils.panelDateToParse(state.panel, parsed);
 
     const generateEditLog = Utils.generateHistoryItem(parsed.reviewReason, formatName, 'Reviewed', dateParse);
@@ -892,8 +886,7 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
-
-          console.log("Errr", errors)
+          console.log('Errr', errors);
 
           await UtilsFetch.catchEvent({
             error: error,

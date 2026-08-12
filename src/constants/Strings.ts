@@ -119,6 +119,11 @@ export const STRINGS = {
   fieldLeaveParameter: 'LeaveParameter',
   fieldDateFrom: 'DateFrom',
 
+  //Filter
+  filterDateFiled: 'dateFiled',
+  filterDateTransaction: 'dateTransaction',
+  filterDateFrom: 'dateFrom',
+
   // Plain strings
   labelDocumentNo: 'Document No.',
   labelDatePeriod: 'Date Period',
@@ -407,7 +412,7 @@ export const STRINGS = {
     startDate: '<t>Select Start Date</t>',
     endDate: '<t>Select End Date</t>',
   },
-  styledPlaceholderMissedLogDate: "<t>Select Missed Log Date</t>",
+  styledPlaceholderMissedLogDate: '<t>Select Missed Log Date</t>',
   styledPlaceholderTime: '<t>Select Time</t>',
   placeholderTimeRange: {
     startTime: 'Select Start Time',
@@ -424,7 +429,7 @@ export const STRINGS = {
   blankLine: '──────────',
 
   //required
-  requiredReason: "Reason is required",
+  requiredReason: 'Reason is required',
 
   // Values
   sizeValue: 10000000,
@@ -495,28 +500,21 @@ export const STRINGS = {
   getRequestActionMessage: (reqAction?: number): string => {
     switch (reqAction) {
       case 1:
-        return "submitted. We will get back to you soon.";
+        return 'submitted. We will get back to you soon.';
       case 2:
-        return "updated.";
+        return 'updated.';
       case 4:
-        return "reviewed.";
+        return 'reviewed.';
       case 5:
-        return "approved.";
+        return 'approved.';
       default:
-        return "cancelled.";
+        return 'cancelled.';
     }
   },
 
-  getRequestReference: (
-    reqAction?: number,
-    date?: string,
-    documentNo?: string
-  ): string => {
-    return reqAction === 1
-      ? `for <b><u>${date}</u></b> `
-      : `<b><u>Document No ${documentNo}</u></b> `;
+  getRequestReference: (reqAction?: number, date?: string, documentNo?: string): string => {
+    return reqAction === 1 ? `for <b><u>${date}</u></b> ` : `<b><u>Document No ${documentNo}</u></b> `;
   },
-
 
   styledDisabled: `<t></t>`,
   tapSelectPlaceholder: (text: string) => `<t>Select ${text}</t>`,

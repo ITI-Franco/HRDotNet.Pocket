@@ -766,7 +766,6 @@ export const ARRAY = {
             value: props?.referenceNo,
           },
           { label: STRINGS.requestFieldReason, value: props?.reason },
-
         ],
         props,
         reqAction,
@@ -1090,7 +1089,7 @@ export const ARRAY = {
 
   COSFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFrom },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.filterDateFrom },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelRequestedSchedule, value: STRINGS.fieldRequested },
     { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
@@ -1098,7 +1097,7 @@ export const ARRAY = {
 
   OBFilter: () => [
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
-    { label: STRINGS.labelDatePeriodOB, value: STRINGS.fieldDateFrom },
+    { label: STRINGS.labelDatePeriodOB, value: STRINGS.filterDateFrom },
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelLocation, value: STRINGS.fieldLocation },
@@ -1129,7 +1128,7 @@ export const ARRAY = {
 
   MLFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
+    { label: STRINGS.labelDatePeriod, value: STRINGS.filterDateFiled },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelLogType, value: STRINGS.fieldLogType },
     { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },

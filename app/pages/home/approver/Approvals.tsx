@@ -29,22 +29,9 @@ const Approvals: React.FC = () => {
     onHandleFetchApproval,
     ApprovalCount,
   } = useApprovals();
-  const { cutOffPeriod } = useGlobalStore();
 
   useEffect(() => {
     onHandleSetURLApproval();
-    onHandleEffectI();
-    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || '');
-    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || '');
-    setState({
-      filterType: 'DateFiled',
-      filterValue: `${removeDashFrom} - ${removeDashTo}`,
-      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`,
-    });
-  }, [state.selectedButton]);
-
-  useEffect(() => {
-    onHandleEffectII();
   }, [state.selectedButton, handle.refreshing]);
 
   useEffect(() => {

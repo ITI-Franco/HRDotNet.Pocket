@@ -30,21 +30,8 @@ const Reviewals: React.FC = () => {
     ApprovalCount,
   } = useReviewals();
 
-  const { cutOffPeriod } = useGlobalStore();
-
   useEffect(() => {
-    onHandleEffectI();
-    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || '');
-    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || '');
-    setState({
-      filterType: 'DateFiled',
-      filterValue: `${removeDashFrom} - ${removeDashTo}`,
-      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`,
-    });
-  }, [state.selectedButton]);
-
-  useEffect(() => {
-    onHandleEffectII();
+    onHandleSetURLReviewal();
   }, [state.selectedButton, handle.refreshing]);
 
   useEffect(() => {
@@ -52,8 +39,10 @@ const Reviewals: React.FC = () => {
   }, [handle.refreshing, state.urlQuery, state.page, params]);
 
   useEffect(() => {
-    ApprovalCount();
-  }, []);
+    if (state.urlQuery) {
+      ApprovalCount();
+    }
+  }, [state.urlQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,6 +71,7 @@ const Reviewals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const count = state.approvalCounts?.[index] ?? 0;
+                console.log('count', count);
 
                 return (
                   <TouchableOpacity
@@ -90,7 +80,7 @@ const Reviewals: React.FC = () => {
                     disabled={state.selectedButton === index}
                   >
                     <View style={styles.tabItem}>
-                      {count !== 0 && (
+                      {count > 0 && (
                         <Text
                           style={[
                             styles.approvalCountButton,

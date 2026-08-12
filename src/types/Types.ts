@@ -668,7 +668,9 @@ export type StateLoanDetails = {
 
 // Selection List
 export type StateSelectionList = {
-  data: Array<TypeSelectionList>; name?: string, page?: number;
+  data: Array<TypeSelectionList>;
+  name?: string;
+  page?: number;
 };
 
 // COS Request
@@ -1137,4 +1139,4 @@ export type Badge = {
   // isLoading?: boolean;
 };
 
-export type AllApplicationState = StateCOSRequest | StateMLRequest | StateOBRequest | StateOTOFFRequest
+export type AllApplicationState = StateCOSRequest | StateMLRequest | StateOBRequest | StateOTOFFRequest;
