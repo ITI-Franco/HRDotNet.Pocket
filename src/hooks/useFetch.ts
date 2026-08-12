@@ -136,6 +136,7 @@ export const useFetch = {
     if (state.date == undefined) {
       return;
     }
+
     await UtilsFetch.connect(
       APIMethods.GET,
       ContentTypes.JSON,
@@ -404,7 +405,6 @@ export const useFetch = {
     let result = [];
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
-
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
         result = response.data?.items;
@@ -569,8 +569,6 @@ export const useFetch = {
       if (reqAction === onReqAction.Update) {
         const { newFields, oldFields } = Utils.panelCompareFields(panel, parsed, updateData);
 
-        console.log('Nn', newFields, oldFields);
-
         const changedFields = Utils.getChangedFields(newFields, oldFields, ['ReferenceNo']);
 
         const originalAttachments = Utils.parseAttachments(updateData.filing.fileAttachment);
@@ -621,6 +619,10 @@ export const useFetch = {
         undefinedUri === ''
           ? formData.append('FileAttachment', parsed?.attachment?.uri)
           : formData.append('FileAttachment', {
+              name: split[split.length - 1],
+              uri: parsed?.attachment?.uri,
+              type: type,
+            });
               name: split[split.length - 1],
               uri: parsed?.attachment?.uri,
               type: type,
@@ -871,9 +873,7 @@ export const useFetch = {
       ...state.data,
       editLog: Utils.appendHistoryItem(state.data.editLog, generateEditLog),
     };
-
     formSingle = await UtilsFetch.panelApprovalsFormData(state.panel, updatedData);
-
     await UtilsFetch.connect(APIMethods.POST, ContentTypes.Multipart, url + `/${state.data.filing.id}`, formSingle)
       .then(() => {
         setHandle({ isSuccess: true });
@@ -886,8 +886,6 @@ export const useFetch = {
             nav.goBack();
           });
         } else {
-          console.log('Errr', errors);
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,

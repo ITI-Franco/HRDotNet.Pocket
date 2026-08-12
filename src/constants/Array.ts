@@ -794,6 +794,18 @@ export const ARRAY = {
               { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
               { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
             ],
+              {
+                label: STRINGS.OBSummaryFieldI,
+                value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
+              },
+              {
+                label: STRINGS.OBSummaryFieldII,
+                value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
+              },
+              { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
+              { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
+              { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
+            ],
       subText: STRINGS.requestSuccess(
         STRINGS.officialBusiness,
         DateTimeUtils.twoDateRangeFormat(props?.OBDateFrom!, props?.OBDateTo!),
@@ -802,34 +814,35 @@ export const ARRAY = {
       ),
     },
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : [
-              { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-              { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
-              {
-                label: STRINGS.OTRequestFieldIII,
-                value:
-                  props.schedule?.isPremium! === true
-                    ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
-                      DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                      : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
-                    : props.schedule?.timeOut
-                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
-                      : undefined,
-              },
-              {
-                label: STRINGS.OTRequestFieldIV,
-                value: props?.timeRecord
-                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                  : null,
-              },
-              { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-              { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-              { label: STRINGS.requestFieldReason, value: props?.reason },
-            ],
+      details: ARRAY.getRequestDetails(
+        [
+          { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+          { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
+          {
+            label: STRINGS.OTRequestFieldIII,
+            value:
+              props.schedule?.isPremium! === true
+                ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
+                  DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                  : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
+                : props.schedule?.timeOut
+                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
+                  : undefined,
+          },
+          {
+            label: STRINGS.OTRequestFieldIV,
+            value: props?.timeRecord
+              ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+              : null,
+          },
+          { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+          { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+          { label: STRINGS.requestFieldReason, value: props?.reason },
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.overtime,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -841,20 +854,27 @@ export const ARRAY = {
       details:
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
-          : [
-              { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-              { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
-              { label: STRINGS.OFFRequestFieldIII, value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut) },
-              {
-                label: STRINGS.OFFRequestFieldIV,
-                value: props?.timeRecord
-                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                  : null,
-              },
-              { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-              { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-              { label: STRINGS.requestFieldReason, value: props?.reason },
-            ],
+          : ARRAY.getRequestDetails(
+              [
+                { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+                { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
+                {
+                  label: STRINGS.OFFRequestFieldIII,
+                  value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut),
+                },
+                {
+                  label: STRINGS.OFFRequestFieldIV,
+                  value: props?.timeRecord
+                    ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+                    : null,
+                },
+                { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+                { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+                { label: STRINGS.requestFieldReason, value: props?.reason },
+              ],
+              props,
+              reqAction,
+            ),
       subText: STRINGS.requestSuccess(
         STRINGS.offset,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -1056,6 +1076,21 @@ export const ARRAY = {
     { title: 'Schedule.BreakTimeIn', value: data?.filing?.shiftSchedule?.breakTimeIn },
     { title: 'Schedule.BreakTimeOut', value: data?.filing?.shiftSchedule?.breakTimeOut },
     { title: 'Schedule.IsPremium', value: data?.filing?.shiftSchedule?.isPremium },
+
+    ...(typeof data?.filing.shiftSchedule?.shiftType! === 'string'
+      ? [
+          { title: 'Schedule.ShiftTypeId', value: data?.filing.shiftSchedule?.shiftTypeId },
+          { title: 'Schedule.ShiftType', value: String(data?.filing.shiftSchedule?.shiftType!) },
+        ]
+      : [
+          { title: 'Schedule.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
+          { title: 'Schedule.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
+          { title: 'ShiftType.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
+          { title: 'ShiftType.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
+        ]),
+    ,
+    { title: 'FilingStatusId', value: data?.filing?.filingStatus.id },
+    { title: 'FilingStatus', value: data?.filing?.filingStatus.name },
     { title: 'Actual.TimeIn', value: DateTimeUtils.extractTime(data?.filing?.actual?.dateFrom!) },
     { title: 'Actual.TimeOut', value: DateTimeUtils.extractTime(data?.filing?.actual?.dateTo!) },
     { title: 'Requested.TimeIn', value: DateTimeUtils.extractTime(data?.filing?.requested?.dateFrom!) },

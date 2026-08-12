@@ -122,7 +122,15 @@ export type SchemaRequestApplications = {
       breakTimeIn: string;
       breakTimeOut: string;
       isPremium: boolean;
+      shiftType?:
+        | {
+            shiftTypeId: number;
+            shiftType: string;
+          }
+        | string;
+      shiftTypeId: number;
     };
+
     actual?: {
       dateFrom: string;
       dateTo: string;
@@ -282,6 +290,8 @@ export type Schedules = {
   timeOut: string;
   breakTimeIn: string;
   breakTimeOut: string;
+  shiftTypeId: number;
+  shiftType: string;
   isPremium: boolean;
 };
 

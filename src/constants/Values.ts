@@ -75,6 +75,8 @@ export const Schedules = {
   timeOut: '',
   breakTimeIn: '',
   breakTimeOut: '',
+  shiftTypeId: 0,
+  shiftType: '',
   isPremium: false,
 };
 
