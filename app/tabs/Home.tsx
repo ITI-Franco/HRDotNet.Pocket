@@ -23,6 +23,7 @@ import { jwtDecode } from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFetch } from 'src/hooks/useFetch';
 import { useGlobalStore } from 'src/store/GlobalStore';
+import { ValidateError } from 'src/constants/Enum';
 
 const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   const {
@@ -64,7 +65,10 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (employeePayrollInfo.paymentFrequencyId === 0 || employeePayrollInfo.payrollGroupId === 0) {
+    if (
+      employeePayrollInfo.paymentFrequencyId === ValidateError.IsZero ||
+      employeePayrollInfo.payrollGroupId === ValidateError.IsZero
+    ) {
       return;
     }
 

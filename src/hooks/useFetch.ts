@@ -388,6 +388,29 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
+  ApprovalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+    const counts: Record<number, SchemaRequestApplications[]> = {};
+
+    await Promise.all(
+      state.buttons.map(async (_, index) => {
+        const url = UtilsFetch.panelApprovalsURL(index);
+        const endPoint = `${url}?${state.urlQuery}`;
+
+        try {
+          const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
+
+          const items: SchemaRequestApplications[] = response.data?.items ?? [];
+
+          counts[index] = items;
+        } catch (error) {
+          counts[index] = [];
+        }
+      }),
+    );
+
+    return counts;
+  },
+
   Reviewals: async (
     nav: StackNavigationProp<ParamListBase>,
     state: StateApplications,
@@ -440,29 +463,22 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, number>> => {
-    const counts: Record<number, number> = {};
-    const { cutOffPeriod } = useGlobalStore();
+  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+    const counts: Record<number, SchemaRequestApplications[]> = {};
 
     await Promise.all(
       state.buttons.map(async (_, index) => {
         const url = UtilsFetch.panelReviewalsURL(index);
-
         const endPoint = `${url}?${state.urlQuery}`;
 
         try {
           const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
 
-          const items = response.data?.items ?? [];
+          const items: SchemaRequestApplications[] = response.data?.items ?? [];
 
-          counts[index] = items.filter(
-            (item: SchemaRequestApplications) =>
-              item.filing?.filingStatus?.name === 'Filed' &&
-              item.filing.dateRange?.dateFrom === cutOffPeriod[0] &&
-              item.filing.dateRange?.dateTo === cutOffPeriod[1],
-          ).length;
+          counts[index] = items;
         } catch (error) {
-          counts[index] = 0;
+          counts[index] = [];
         }
       }),
     );
