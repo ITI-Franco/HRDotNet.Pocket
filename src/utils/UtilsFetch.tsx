@@ -446,7 +446,6 @@ export const UtilsFetch = {
         url = undefined;
         break;
     }
-
     return url;
   },
 

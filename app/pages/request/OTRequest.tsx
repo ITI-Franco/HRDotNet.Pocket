@@ -23,6 +23,7 @@ import {
   TypePanel,
   TypeReqAction,
 } from 'src/types/Types';
+import { stackRouterOverride } from 'expo-router/build/layouts/StackClient';
 
 const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
   const styles = STYLES.NewRequest;
@@ -50,12 +51,13 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
   useEffect(() => {
     if (currParams.onReqAction === onReqAction.Update) {
       setState(UtilsFetch.panelUpdateRequestFormData(currParams.onPanel, currParams.data) as StateOTOFFRequest);
-    } else if (currParams.onReqAction === onReqAction.Cancel) {
+    } else if (
+      currParams.onReqAction === onReqAction.Cancel ||
+      currParams.onReqAction === onReqAction.Review ||
+      currParams.onReqAction === onReqAction.Approve
+    ) {
       setState({
         ...(UtilsFetch.panelUpdateRequestFormData(currParams.onPanel, currParams.data) as Record<string, any>),
-        // reqTimeIn: DateTimeUtils.timeWithSeconds(currParams.data?.filing.actual?.dateFrom as string),
-        // reqTimeOut: DateTimeUtils.timeWithSeconds(currParams.data?.filing.actual?.dateTo as string),
-        reason: '',
         timeRecord: [{ date: '2025-01-14T00:00:00', source: 'etr' }],
       });
     }
@@ -88,7 +90,11 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
 
   const onHandleOTDate = (date: string) => {
     setHandle({ isDatePicker: false });
-    setState({ date: DateTimeUtils.isoToDateDash(date) });
+    if (date === DateTimeUtils.dateToDefault(state.date)) {
+      setState({ date: DateTimeUtils.isoToDateDash(date) });
+    } else {
+      setState({ date: DateTimeUtils.isoToDateDash(date) });
+    }
   };
 
   const onHandleOTFrom = (time: string) => {
@@ -113,10 +119,12 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
       scheduleToUse = state.schedule?.timeOut ? state.schedule.timeOut : undefined;
     }
 
-    if (state.reqTimeIn < scheduleToUse!) {
-      return Alert.alert('', 'Requested Time In is greater than Actual OT In');
-    } else if (state.timeRecord[state?.timeRecord?.length - 1]?.date < state.reqTimeOut) {
-      return Alert.alert('', 'Requested Time Out is greater than Actual OT Out');
+    if (currParams.onReqAction === onReqAction.Update || currParams.onReqAction === onReqAction.New) {
+      if (state.reqTimeIn < scheduleToUse!) {
+        return Alert.alert('', 'Requested Time In is greater than Actual OT In');
+      } else if (state.timeRecord[state?.timeRecord?.length - 1]?.date < state.reqTimeOut) {
+        return Alert.alert('', 'Requested Time Out is greater than Actual OT Out');
+      }
     }
     await Utils.checkHaveValueRequest(
       onPanel.OT,
@@ -127,6 +135,57 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
       navigation,
     );
   };
+
+  const stateToUse = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return state.cancelReason;
+
+      case onReqAction.Review:
+        return state.reviewReason;
+
+      case onReqAction.Approve:
+        return state.approveReason;
+
+      default:
+        return '';
+    }
+  })();
+
+  const setStateToUse = (text: string) => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        setState({ cancelReason: text });
+        break;
+
+      case onReqAction.Review:
+        setState({ reviewReason: text });
+        break;
+
+      case onReqAction.Approve:
+        setState({ approveReason: text });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const reasonLabel = (() => {
+    switch (currParams.onReqAction) {
+      case onReqAction.Cancel:
+        return STRINGS.requestFieldCancellationReason;
+
+      case onReqAction.Review:
+        return STRINGS.requestFieldReviewReason;
+
+      case onReqAction.Approve:
+        return STRINGS.requestFieldApproveReason;
+
+      default:
+        return STRINGS.requestFieldReason;
+    }
+  })();
 
   return (
     <View style={styles.mainView}>
@@ -139,7 +198,9 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
         <ScrollView bounces={false}>
           <View style={styles.container}>
-            {currParams.onReqAction === onReqAction.Cancel
+            {currParams.onReqAction === onReqAction.Cancel ||
+            currParams.onReqAction === onReqAction.Review ||
+            currParams.onReqAction === onReqAction.Approve
               ? [
                   UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
@@ -152,10 +213,10 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
 
                   UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
-                    STRINGS.requestFieldCancellationReason,
-                    state.reason,
+                    reasonLabel,
+                    stateToUse || '',
                     true,
-                    (text: string) => setState({ reason: text }),
+                    setStateToUse,
                     true,
                   ),
                 ]
