@@ -523,7 +523,7 @@ export const ValuesApprovals = {
     search: '',
     selected: ValuesApprovalsManager,
     count: 0,
-    urlQuery: `${process.env.EXPO_PUBLIC_APPROVALS_DEFAULTPARAMS}`,
+    urlQuery: ``,
     successList: [],
     failedList: [],
     approvalCounts: {},
@@ -639,11 +639,15 @@ export const ValuesSelectionList = (params: ParamsSelectionList) => {
     State: {
       data: Utils.setSelectionList(params) as Array<TypeSelectionList>,
       name: '',
+      page: 1,
     },
 
     Handle: {
-      isLoading: false,
+      isLoading: true,
       refreshing: false,
+      isWaiting: false,
+      isLoadMore: true,
+      isSecondary: false,
     },
   };
 };

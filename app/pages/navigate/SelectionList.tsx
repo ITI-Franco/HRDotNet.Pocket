@@ -8,13 +8,15 @@ import { useRoute } from '@react-navigation/native';
 import Loader from 'src/components/loader/Loader';
 import PageHeader from 'src/components/header/PageHeader';
 import Note from 'src/components/note/Note';
-import { COLORS, STRINGS, STYLES } from 'src';
+import { COLORS, STRINGS, STYLES, ASSETS } from 'src';
 import { Utils } from 'src/utils/Utils';
 import { StateSelectionList, TypeHandle, TypeSelectionList, TypeNavProp } from 'src/types/Types';
 import { APIMethods, ContentTypes, FieldLimit, ValuesSelectionList } from 'src/constants/Values';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
 import { UtilsDisplay } from 'src/utils/UtilsDisplay';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import EndListNote from 'src/components/note/EndListNote';
 
 const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
   const styles = STYLES.ComponentSelectionList;
@@ -31,6 +33,25 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     ValuesSelectionList(params).Handle,
   );
 
+  const processData = (mappedData: { ID: number; name: string; code: string }[]) => {
+    setHandle({ isLoading: false });
+    if (mappedData.length === 0 && state.data.length > 0) {
+      setHandle({
+        isLoadMore: false,
+        isWaiting: false,
+      });
+
+      return;
+    }
+
+    setState({
+      data: state.page || (1 > 1 && handle.isLoadMore) ? [...state.data, ...mappedData] : mappedData,
+    });
+
+    setHandle({
+      isWaiting: false,
+    });
+  };
   const fetchData = (keyword: string) => {
     const search = encodeURIComponent(keyword);
 
@@ -38,7 +59,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       UtilsFetch.connect(
         APIMethods.GET,
         ContentTypes.JSON,
-        `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules?Name=${search}`,
+        `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/schedules?Name=${search}&page=${state.page}&pageSize=30`,
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
@@ -46,16 +67,19 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
             name: item?.name ?? '',
             code: item?.name ?? '',
           }));
-
-          setState({ data: mappedData });
+          processData(mappedData);
         })
-        .catch(console.error);
+        .catch((err) => {
+          console.error(err);
+          setHandle({ isLoading: false, isWaiting: false });
+        })
+        .finally(() => setHandle({ isLoading: false, isWaiting: false }));
     } else if ((params as any).currParams.onPanel == 1) {
       if ((params as any).action === 'OBRequest-Location') {
         UtilsFetch.connect(
           APIMethods.GET,
           ContentTypes.JSON,
-          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations?Name=${search}`,
+          `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/locations?Name=${search}&page=${state.page}&pageSize=30`,
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
@@ -64,7 +88,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
               code: item?.name ?? '',
             }));
 
-            setState({ data: mappedData });
+            processData(mappedData);
           })
           .catch(console.error);
       } else if ((params as any).action === 'OBRequest-Branch') {
@@ -72,8 +96,8 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
           APIMethods.GET,
           ContentTypes.JSON,
           `${process.env.EXPO_PUBLIC_REQUEST}/maintenance/branches?Location=${encodeURIComponent(
-            (params as any).currParams.location?.name ?? '',
-          )}&Name=${search}`,
+            (params as any).currParams.location.name,
+          )}&Name=${search}&page=${state.page}&pageSize=30`,
         )
           .then((response) => {
             const mappedData = response.data.items.map((item: any) => ({
@@ -82,7 +106,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
               code: item?.name ?? '',
             }));
 
-            setState({ data: mappedData });
+            processData(mappedData);
           })
           .catch(console.error);
       }
@@ -90,7 +114,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       UtilsFetch.connect(
         APIMethods.GET,
         ContentTypes.JSON,
-        `${process.env.EXPO_PUBLIC_REQUEST}/leave-management/maintenance/leave-parameters?Name=${search}`,
+        `${process.env.EXPO_PUBLIC_REQUEST}/leave-management/maintenance/leave-parameters?Name=${search}&page=${state.page}&pageSize=30`,
       )
         .then((response) => {
           const mappedData = response.data.items.map((item: any) => ({
@@ -99,7 +123,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
             code: item?.code ?? '',
           }));
 
-          setState({ data: mappedData });
+          processData(mappedData);
         })
         .catch(console.error);
     }
@@ -111,7 +135,7 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [state.name]);
+  }, [state.name, state.page]);
 
   const renderItem = ({ item, index }: { item: TypeSelectionList; index: number }) => (
     <MemoizedRequestItem item={item} index={index} />
@@ -122,6 +146,31 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
       <Text style={styles.titleText}>{item?.name ?? ''}</Text>
     </TouchableOpacity>
   ));
+
+  const onHandleSetReachedEnd = () => {
+    setHandle({ isWaiting: true });
+    setState({
+      page: (state.page || 1) + 1,
+    });
+  };
+
+  const ListFooterComponent = () => {
+    return (
+      <React.Fragment>
+        {state.data.length <= 0 && !handle.isLoading && <Note text={STRINGS.nothingFound} icon="magnifying-glass" />}
+
+        {handle.isWaiting && (
+          <View style={styles.loader}>
+            <Image source={ASSETS.loadEllipsis} style={{ width: 40, height: 40 }} />
+
+            <Text style={styles.loaderText}>{STRINGS.loading}</Text>
+          </View>
+        )}
+
+        {!handle.isLoadMore && state.data.length > 0 && <EndListNote />}
+      </React.Fragment>
+    );
+  };
 
   return (
     <React.Fragment>
@@ -156,6 +205,14 @@ const SelectionList: React.FC<TypeNavProp> = ({ navigation }) => {
               removeClippedSubviews={true}
               onEndReachedThreshold={0.1}
               renderItem={renderItem}
+              onEndReached={() => {
+                state.data.length >= Number(process.env.EXPO_PUBLIC_REQUEST_PAGESIZE) &&
+                  handle.isLoadMore &&
+                  !handle.isWaiting &&
+                  state.data &&
+                  onHandleSetReachedEnd();
+              }}
+              ListFooterComponent={ListFooterComponent}
             />
           ) : (
             <Note text={STRINGS.nothingFound} icon="magnifying-glass" />

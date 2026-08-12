@@ -667,7 +667,9 @@ export type StateLoanDetails = {
 };
 
 // Selection List
-export type StateSelectionList = { data: Array<TypeSelectionList>; name?: string };
+export type StateSelectionList = {
+  data: Array<TypeSelectionList>; name?: string, page?: number;
+};
 
 // COS Request
 export type StateCOSRequest = {
@@ -678,7 +680,11 @@ export type StateCOSRequest = {
   checkbox: Array<{ name: string }>;
   reason: string;
   attachment: Attachment;
+  referenceNo?: string;
   documentNo?: string;
+  cancelReason?: string;
+  approveReason?: string;
+  reviewReason?: string;
 };
 
 // LV Request
@@ -735,6 +741,10 @@ export type StateOTOFFRequest = {
   reason: string;
   attachment: Attachment;
   documentNo?: string;
+  referenceNo?: string;
+  cancelReason?: string;
+  approveReason?: string;
+  reviewReason?: string;
 };
 
 // Request Details
@@ -1126,3 +1136,5 @@ export type Badge = {
   totalCount: number | undefined;
   // isLoading?: boolean;
 };
+
+export type AllApplicationState = StateCOSRequest | StateMLRequest | StateOBRequest | StateOTOFFRequest

@@ -33,10 +33,8 @@ type TypeContext = {
   onHandlePress: (index: number) => void;
   onHandleRefreshControl: () => void;
   onHandleSetReachedEnd: () => void;
-  onHandleEffectI: () => void;
-  onHandleEffectII: () => void;
-  onHandleEffectIII: () => void;
-  onHandleEffectIV: () => void;
+  onHandleSetURLReviewal: () => void;
+  onHandleFetchReviewal: () => void;
   isSelectable: (value: SchemaRequestApplications) => boolean;
   ApprovalCount: () => void;
 };
@@ -61,6 +59,17 @@ export const Context = createContext<TypeContext>({
   onHandleEffectII: () => {},
   onHandleEffectIII: () => {},
   onHandleEffectIV: () => {},
+  onHandleCheckbox: () => {},
+  onHandleSelectAll: () => {},
+  onHandleApprovals: () => {},
+  onHandleClosePrompt: () => {},
+  onHandleCancelPrompt: () => {},
+  onHandleReviewPrompt: () => {},
+  onHandlePress: () => {},
+  onHandleRefreshControl: () => {},
+  onHandleSetReachedEnd: () => {},
+  onHandleSetURLReviewal: () => {},
+  onHandleFetchReviewal: () => {},
   isSelectable: () => false,
   ApprovalCount: () => {},
 });
@@ -142,7 +151,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
 
   const onHandlePress = (index: number) => {
     setHandle({ isLoading: true });
-    setState({ selectedButton: index, data: [], urlQuery: `${process.env.EXPO_PUBLIC_APPROVALS_DEFAULTPARAMS}` });
+    setState({ selectedButton: index, data: [] });
   };
 
   const onHandleRefreshControl = () => {
@@ -154,25 +163,27 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     setState({ page: state.page + 1 });
   };
 
-  const onHandleEffectI = () => {
-    setState({ count: 0 });
+  const onHandleSetURLReviewal = () => {
+    const field = [2, 3, 5].includes(state.selectedButton) ? 'DateFiled' : 'DateFrom';
+    setHandle({ isLoading: true, isLoadMore: true, isWaiting: true });
+    setState({
+      filterType: field,
+      filterValue: `${removeDashFrom} - ${removeDashTo}`,
+      displayValue: `Date Period: ${DateTimeUtils.getIsoDateWord(removeDashFrom)} - ${DateTimeUtils.getIsoDateWord(removeDashTo)}`,
+      urlQuery: `&DateField=${field}&DateFrom=${removeDashFrom}` + `&DateTo=${removeDashTo}&sortBy=-DocumentNo`,
+      data: [],
+      page: 1,
+      count: 0,
+    });
   };
 
-  const onHandleEffectII = () => {
-    setState({ urlQuery: `${process.env.EXPO_PUBLIC_APPROVALS_DEFAULTPARAMS}` });
-  };
-
-  const onHandleEffectIII = () => {
-    setState({ data: [], page: 1, count: 0 });
-    setHandle({ isLoadMore: true, isWaiting: true });
-  };
-
-  const onHandleEffectIV = () => {
-    const interval = setTimeout(async () => {
-      await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
-    }, 50);
-
-    return () => clearTimeout(interval);
+  const onHandleFetchReviewal = () => {
+    if (state.urlQuery !== '') {
+      const interval = setTimeout(async () => {
+        await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
+      }, 50);
+      return () => clearTimeout(interval);
+    }
   };
 
   const ApprovalCount = async () => {
@@ -191,7 +202,6 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
         setState,
         handle,
         setHandle,
-
         onHandleCheckbox,
         onHandleSelectAll,
         onHandleApprovals,
@@ -201,10 +211,8 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
         onHandlePress,
         onHandleRefreshControl,
         onHandleSetReachedEnd,
-        onHandleEffectI,
-        onHandleEffectII,
-        onHandleEffectIII,
-        onHandleEffectIV,
+        onHandleSetURLReviewal,
+        onHandleFetchReviewal,
         isSelectable,
         ApprovalCount,
       }}

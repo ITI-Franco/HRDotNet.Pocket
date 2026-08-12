@@ -2596,6 +2596,7 @@ export const STYLES = {
       borderRadius: 30,
       marginTop: 20,
       width: '45%',
+      zIndex: 1
     },
 
     disabledButton: {
@@ -2628,6 +2629,7 @@ export const STYLES = {
       borderRadius: 30,
       marginTop: 20,
       width: '45%',
+      zIndex: 1
     },
 
     borderButtonText: {
@@ -2644,6 +2646,15 @@ export const STYLES = {
       width: '100%',
       marginTop: 15,
     },
+    rowBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      marginLeft: 20,
+      width: '100%',
+      marginTop: 15,
+    },
+
 
     search: {
       fontFamily: 'Inter_400Regular',
@@ -3493,6 +3504,21 @@ export const STYLES = {
       borderBottomColor: COLORS.lighterGray,
       borderBottomWidth: 1,
     },
+
+    loader: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+      paddingBottom: 20,
+      flexDirection: 'row',
+    },
+
+    loaderText: {
+      marginLeft: 10,
+      fontFamily: 'Inter_500Medium',
+      color: COLORS.lighterGray,
+    },
+
 
     titleText: {
       fontFamily: 'Inter_500Medium',

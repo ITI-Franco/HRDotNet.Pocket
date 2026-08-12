@@ -403,11 +403,17 @@ export const STRINGS = {
     startDate: 'Select Start Date',
     endDate: 'Select End Date',
   },
-  styledPlaceholderTime: '<t>Time</t>',
+  styledPlaceholderDateRange: {
+    startDate: '<t>Select Start Date</t>',
+    endDate: '<t>Select End Date</t>',
+  },
+  styledPlaceholderMissedLogDate: "<t>Select Missed Log Date</t>",
+  styledPlaceholderTime: '<t>Select Time</t>',
   placeholderTimeRange: {
     startTime: 'Select Start Time',
     endTime: 'Select End Time',
   },
+
   placeholderLocation: 'Enter Location',
   placeholderReason: 'Enter Reason',
   placeholderReferenceNo: 'Enter Reference No.',

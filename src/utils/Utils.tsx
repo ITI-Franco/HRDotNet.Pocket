@@ -29,6 +29,8 @@ import {
   HistoryItem,
   PropsRequestSummary,
   AttachmentHistory,
+  StateCOSRequest,
+  AllApplicationState,
 } from 'src/types/Types';
 import { Camera } from 'expo-camera';
 import { fieldDisplayNames, FieldKey } from 'src/constants/Values';
@@ -151,6 +153,7 @@ export const Utils = {
     let pageTitle: string | undefined = '';
 
     const actionTitles: Record<number, string> = {
+      1: '',
       2: 'Update',
       3: 'Cancel',
       4: 'Review',
@@ -164,31 +167,31 @@ export const Utils = {
 
     switch (panel) {
       case 0:
-        pageHeaderTitle(STRINGS.pageTitleCOSRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleCOSRequest);
         break;
 
       case 1:
-        pageHeaderTitle(STRINGS.pageTitleOBRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleOBRequest);
         break;
 
       case 2:
-        pageHeaderTitle(STRINGS.pageTitleOTRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleOTRequest);
         break;
 
       case 3:
-        pageHeaderTitle(STRINGS.pageTitleOFFRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleOFFRequest);
         break;
 
       case 4:
-        pageHeaderTitle(STRINGS.pageTitleLVRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleLVRequest);
         break;
 
       case 5:
-        pageHeaderTitle(STRINGS.pageTitleMLRequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleMLRequest);
         break;
 
       case 6:
-        pageHeaderTitle(STRINGS.pageTitleCTORequest);
+        pageTitle = pageHeaderTitle(STRINGS.pageTitleCTORequest);
         break;
 
       default:
@@ -838,7 +841,7 @@ export const Utils = {
     setHandle: React.Dispatch<Partial<TypeHandle>>,
     navigation: NavigationProp<ParamListBase>,
   ) => {
-    console.log('Reee', reqAction);
+
 
     const getSourceVal = (value: string) => {
       if (FieldLabels[panel] && value in FieldLabels[panel]) {
@@ -961,12 +964,23 @@ export const Utils = {
     return Platform.OS === 'ios' ? true : false; // True for IOS, False for Android
   },
 
+  trimData: (state: AllApplicationState) => {
+    return {
+      ...state,
+      reason: state.reason?.trim() || "",
+      referenceNo: state.referenceNo?.trim() || "",
+      reviewReason: state.reviewReason?.trim() || '',
+      approveReason: state.approveReason?.trim() || '',
+      cancelReason: state.cancelReason?.trim() || ''
+    }
+  },
+
   panelDateToParse: (panel: number, data?: PropsRequestSummary) => {
     let dateToParse: string | { dateFrom: string; dateTo: string } | undefined = undefined;
 
     switch (panel) {
       case onPanel.COS:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
+        dateToParse = DateTimeUtils.abbreviatedMonthDateRange(data?.startDate || "", data?.endDate || "");
         break;
 
       case onPanel.OB:
@@ -995,6 +1009,8 @@ export const Utils = {
     }
     return dateToParse;
   },
+
+
 
 
   panelBatchDateParse: (panel: number, data?: SchemaRequestApplications) => {
@@ -1046,6 +1062,39 @@ export const Utils = {
     let oldFields = {};
 
     switch (panel) {
+
+      case onPanel.COS:
+
+        const dateTo =
+          typeof oldData?.filing.dateFiled === "object"
+            ? oldData.filing.dateFiled.dateTo
+            : oldData?.filing.dateFiled;
+        const dateFrom =
+          typeof oldData?.filing.dateFiled === "object"
+            ? oldData.filing.dateFiled.dateFrom
+            : oldData?.filing.dateFiled;
+
+        newFields = {
+          DateFrom: DateTimeUtils.isoToDateWord(String(newData?.startDate)),
+          DateTo: DateTimeUtils.isoToDateWord(String(newData?.endDate)),
+          Schedule: newData?.requested.name,
+          RestDay: newData?.restDay == 0 ? false : true,
+          Reason: newData?.reason,
+          ReferenceNo: newData?.referenceNo ?? "",
+        };
+
+        oldFields = {
+          DateFrom: DateTimeUtils.isoToDateWord(String(dateFrom)),
+          DateTo: DateTimeUtils.isoToDateWord(String(dateTo)),
+          Schedule: oldData?.filing.requested?.name,
+          RestDay: oldData?.filing.requested?.isRestDay,
+          Reason: oldData?.filing.reason,
+          ReferenceNo: oldData?.filing.referenceNo ?? "",
+        };
+
+
+        break;
+
       case onPanel.ML:
         newFields = {
           DateFiled: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
@@ -1084,6 +1133,7 @@ export const Utils = {
         };
         break;
 
+
       case onPanel.OB:
         newFields = {
           DateFrom: DateTimeUtils.isoToDateWord(String(newData?.OBDateFrom)),
@@ -1106,6 +1156,7 @@ export const Utils = {
           ReferenceNo: oldData?.filing.referenceNo ?? '',
           Reason: oldData?.filing.reason,
         };
+        break;
 
       default:
         break;
@@ -1121,8 +1172,68 @@ export const Utils = {
     panel: number,
     changedFields: Record<string, { from: any; to: any }>,
     attachmentChanges: string[],
+    oldData: SchemaRequestApplications
   ) => {
     switch (panel) {
+      case onPanel.COS:
+
+        const orderedFields = [
+          FieldKey.Schedule,
+          FieldKey.RestDay,
+          FieldKey.ReferenceNo,
+          FieldKey.Reason,
+        ];
+        const dateFromChange = changedFields[FieldKey.DateFrom];
+        const dateToChange = changedFields[FieldKey.DateTo];
+
+        const dateTo =
+          typeof oldData?.filing.dateFiled === "object"
+            ? oldData.filing.dateFiled.dateTo
+            : oldData?.filing.dateFiled;
+        const dateFrom =
+          typeof oldData?.filing.dateFiled === "object"
+            ? oldData.filing.dateFiled.dateFrom
+            : oldData?.filing.dateFiled;
+
+
+        const dateFromToUse = dateFromChange?.from || DateTimeUtils.isoToDateWord(String(dateFrom))
+        const dateToUse = dateFromChange?.to || DateTimeUtils.isoToDateWord(String(dateTo))
+
+        return [
+          ...(dateFromChange || dateToChange
+            ? [
+              `${fieldDisplayNames.COSDatePeriod}: from ${DateTimeUtils.abbreviatedMonthDateRange(
+                DateTimeUtils.formatToDash(dateFromChange?.from || dateFromToUse),
+                DateTimeUtils.formatToDash(dateToChange?.from || dateToUse)
+              )} into "${DateTimeUtils.abbreviatedMonthDateRange(
+                DateTimeUtils.formatToDash(dateFromChange?.to || dateFromToUse),
+                DateTimeUtils.formatToDash(dateToChange?.to || dateToUse)
+              )}"`,
+            ]
+            : []),
+
+          ...orderedFields
+            .filter((key) => changedFields[key])
+            .map((key) => {
+              const { from, to } = changedFields[key];
+              const displayKey = fieldDisplayNames[key] ?? key;
+
+              if (key === FieldKey.ReferenceNo) {
+                if (!from && to) return `${displayKey}: Added "${to}"`;
+                if (from && !to) return `${displayKey}: Removed "${from}"`;
+                return `${displayKey}: from "${from}" into "${to}"`;
+              }
+
+              if (key === FieldKey.RestDay) {
+                const fromLabel = from === true || from === "true" ? "Yes" : "No";
+                const toLabel = to === true || to === "true" ? "Yes" : "No";
+                return `${displayKey}: from "${fromLabel}" into "${toLabel}"`;
+              }
+
+              return `${displayKey}: from "${from}" into "${to}"`;
+            }),
+          ...attachmentChanges
+        ].join(', ');
       case onPanel.ML:
         return [
           ...Object.entries(changedFields)

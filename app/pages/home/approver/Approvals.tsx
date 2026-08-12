@@ -14,7 +14,6 @@ import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useApprovals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
-import { useGlobalStore } from 'src/store/GlobalStore';
 
 const Approvals: React.FC = () => {
   const styles = STYLES.Request;
@@ -26,15 +25,14 @@ const Approvals: React.FC = () => {
     handle,
     setHandle,
     onHandlePress,
-    onHandleEffectI,
-    onHandleEffectII,
-    onHandleEffectIII,
-    onHandleEffectIV,
+    onHandleSetURLApproval,
+    onHandleFetchApproval,
     ApprovalCount,
   } = useApprovals();
   const { cutOffPeriod } = useGlobalStore();
 
   useEffect(() => {
+    onHandleSetURLApproval();
     onHandleEffectI();
     const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0] || '');
     const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1] || '');
@@ -50,12 +48,8 @@ const Approvals: React.FC = () => {
   }, [state.selectedButton, handle.refreshing]);
 
   useEffect(() => {
-    onHandleEffectIII();
-  }, [state.selectedButton, state.urlQuery, handle.refreshing, params]);
-
-  useEffect(() => {
-    onHandleEffectIV();
-  }, [state.selectedButton, handle.refreshing, state.urlQuery, state.page, params]);
+    onHandleFetchApproval();
+  }, [handle.refreshing, state.urlQuery, state.page, params]);
 
   useEffect(() => {
     ApprovalCount();

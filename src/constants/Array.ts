@@ -5,6 +5,7 @@
 import { DateTimeUtils } from '../utils/DateTimeUtils';
 import { ASSETS } from './Assets';
 import { COLORS } from './Colors';
+import { FilingPanel } from './Enum';
 import { STRINGS } from './Strings';
 import {
   TypeTimeOff,
@@ -754,16 +755,22 @@ export const ARRAY = {
 
   requestSummary: (props: PropsRequestSummary, reqAction?: number) => [
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : [
-              { label: STRINGS.COSRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
-              { label: STRINGS.COSRequestFieldII, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
-              { label: STRINGS.COSRequestFieldIII, value: props?.requested?.name },
-              { label: STRINGS.COSRequestFieldIV, value: props?.restDay },
-              { label: STRINGS.requestFieldReason, value: props?.reason },
-            ],
+      details: ARRAY.getRequestDetails(
+        [
+          { label: STRINGS.COSRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
+          { label: STRINGS.COSRequestFieldII, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
+          { label: STRINGS.COSRequestFieldIII, value: props?.requested?.name },
+          { label: STRINGS.COSRequestFieldIV, value: props?.restDay },
+          {
+            label: STRINGS.requrestFieldReferenceNo,
+            value: props?.referenceNo,
+          },
+          { label: STRINGS.requestFieldReason, value: props?.reason },
+
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.changeOfSchedule,
         DateTimeUtils.twoDateRangeFormat(props?.startDate!, props?.endDate!),
@@ -890,12 +897,12 @@ export const ARRAY = {
             value: DateTimeUtils.timeSecondsToUnits(props?.logTime),
           },
           {
-            label: STRINGS.requestFieldReason,
-            value: props?.reason,
-          },
-          {
             label: STRINGS.requrestFieldReferenceNo,
             value: props?.referenceNo,
+          },
+          {
+            label: STRINGS.requestFieldReason,
+            value: props?.reason,
           },
         ],
         props,
@@ -998,23 +1005,6 @@ export const ARRAY = {
 
     { title: 'FilingStatus.Id', value: data?.filing?.filingStatus?.id },
     { title: 'FilingStatus.Name', value: data?.filing?.filingStatus?.name },
-    { title: 'ReferenceNo', value: data?.filing?.referenceNo },
-    { title: 'DateTransaction', value: DateTimeUtils.isoToDateDash(data?.filing?.dateTransaction) },
-    { title: 'Reason', value: data?.filing?.reason },
-    { title: 'FileAttachment', value: data?.filing?.fileAttachment },
-    { title: 'EditLog', value: data?.editLog },
-  ],
-
-  reqBodyDefaultOB: (data: SchemaRequestApplications) => [
-    { title: 'Id', value: data?.filing?.id },
-    { title: 'Guid', value: data?.filing?.guid },
-    { title: 'DocumentNo', value: data?.filing?.documentNo },
-    { title: 'EmployeeId', value: data?.id },
-    { title: 'EmployeeCode', value: data?.code },
-    { title: 'EmployeeName', value: data?.name },
-    { title: 'CompanyId', value: data?.companyId },
-    { title: 'BranchId', value: data?.branchId },
-
     { title: 'FilingStatusId', value: data?.filing?.filingStatus?.id },
     { title: 'FilingStatus', value: data?.filing?.filingStatus?.name },
     { title: 'ReferenceNo', value: data?.filing?.referenceNo },
@@ -1035,7 +1025,7 @@ export const ARRAY = {
 
   requestBodyCOS: (data: SchemaRequestApplications) => [
     ...ARRAY.reqBodyDefault(data),
-    { title: 'DepartmentId', value: data?.departmentId },
+    { title: 'DepartmentId', value: data?.departmentId ?? 0 },
     { title: 'DateFiled.DateFrom', value: (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! },
     { title: 'DateFiled.DateTo', value: (data?.filing?.dateFiled as { dateTo: string })?.dateTo! },
     { title: 'Requested.Id', value: data?.filing?.requested?.id },
@@ -1045,7 +1035,6 @@ export const ARRAY = {
 
   requestBodyOB: (data: SchemaRequestApplications) => [
     ...ARRAY.reqBodyDefault(data),
-    ...ARRAY.reqBodyDefaultOB(data),
     { title: 'DepartmentId', value: data?.departmentId ?? 0 },
     { title: 'LocationId', value: data?.filing?.location?.id },
     { title: 'Location', value: data?.filing?.location?.name },
@@ -1101,8 +1090,7 @@ export const ARRAY = {
 
   COSFilter: () => [
     { label: STRINGS.labelDateTransaction, value: STRINGS.fieldDateTransaction },
-    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
-
+    { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFrom },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelRequestedSchedule, value: STRINGS.fieldRequested },
     { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
@@ -1144,6 +1132,7 @@ export const ARRAY = {
     { label: STRINGS.labelDatePeriod, value: STRINGS.fieldDateFiled },
     { label: STRINGS.labelDocumentNo, value: STRINGS.fieldDocumentNo },
     { label: STRINGS.labelLogType, value: STRINGS.fieldLogType },
+    { label: STRINGS.labelDocStatus, value: STRINGS.fieldDocStatus },
   ],
 
   requestFormDataUpdate: (params: SchemaRequestApplications) => [
@@ -1177,19 +1166,6 @@ export const ARRAY = {
     { title: 'DocumentNo', value: params?.filing?.documentNo },
     { title: 'FilingStatus.Id', value: params?.filing?.filingStatus?.id },
     { title: 'FilingStatus.Name', value: params?.filing?.filingStatus?.name },
-  ],
-
-  requestFormDataOB: (reqAction: number, params: SchemaRequestApplications) => [
-    reqAction === 2 ? { ...ARRAY.requestFormDataUpdate(params) } : { ...ARRAY.requestFormDataCancel(params) },
-    { title: 'EmployeeId', value: params?.id },
-    { title: 'EmployeeCode', value: params?.code },
-    { title: 'EmployeeName', value: params?.name },
-    { title: 'CompanyId', value: params?.companyId },
-    { title: 'BranchId', value: params?.branchId },
-    { title: 'DepartmentId', value: params?.departmentId || 0 },
-    { title: 'Id', value: params?.filing?.id },
-    { title: 'Guid', value: params?.filing?.guid },
-    { title: 'DocumentNo', value: params?.filing?.documentNo },
     { title: 'FilingStatusId', value: params?.filing?.filingStatus?.id },
     { title: 'FilingStatus', value: params?.filing?.filingStatus?.name },
   ],
