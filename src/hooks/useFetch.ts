@@ -570,7 +570,6 @@ export const useFetch = {
       formData.append('LocationBranchId', parsed?.branch?.ID);
       formData.append('LocationBranch', parsed?.branch?.name);
     }
-
     let dataSet = (await UtilsFetch.panelNewRequestFormData(panel, parsed)) as Array<{
       title: string;
       value: string | number | boolean;
@@ -578,9 +577,9 @@ export const useFetch = {
 
     dataSet.map((data) => {
       const typedData = data as { title: string; value: string | number | boolean };
+
       formData.append(typedData.title, typedData.value);
     });
-
     // Iba iba per applications yung date
     const dateParse = Utils.panelDateToParse(panel, parsed);
 
@@ -676,7 +675,6 @@ export const useFetch = {
           );
         } else {
           const errors = await UtilsFetch.catchErrors(error);
-
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -1259,6 +1257,7 @@ export const useFetch = {
         details: ARRAY.personalDetails(personalData),
       });
     } catch (error) {
+      console.error('Error profile response', error);
       throw error;
     }
   },
@@ -1283,6 +1282,7 @@ export const useFetch = {
 
       return cutoffData;
     } catch (error) {
+      console.error(error);
       throw error;
     }
   },
@@ -1310,6 +1310,7 @@ export const useFetch = {
 
       return personalData;
     } catch (error) {
+      console.error('Error profile response', error);
       throw error;
     }
   },

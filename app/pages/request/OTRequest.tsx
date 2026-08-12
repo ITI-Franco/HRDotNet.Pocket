@@ -126,6 +126,7 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
         return Alert.alert('', 'Requested Time Out is greater than Actual OT Out');
       }
     }
+
     await Utils.checkHaveValueRequest(
       onPanel.OT,
       currParams.onReqAction,
@@ -284,6 +285,17 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
                     STRINGS.styledPlaceholderTime,
                     () => setHandle({ isTimeToPicker: true }),
                     'time',
+                  ),
+
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
+                    STRINGS.requrestFieldReferenceNo,
+                    state.referenceNo || '',
+                    true,
+                    (text: string) => setState({ referenceNo: text }),
+                    true,
+                    14,
+                    STRINGS.placeholderReferenceNo,
                   ),
 
                   UtilsDisplay.DisplayFieldTextInput(
