@@ -778,17 +778,23 @@ export const ARRAY = {
       ),
     },
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : [
-              {
-                label: STRINGS.labelDocumentNo,
-                value: props?.documentNo!,
-              },
-
-              { label: STRINGS.requestFieldCancellationReason, value: props?.cancelReason },
-            ],
+      details: ARRAY.getRequestDetails(
+        [
+          {
+            label: STRINGS.OBSummaryFieldI,
+            value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
+          },
+          {
+            label: STRINGS.OBSummaryFieldII,
+            value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
+          },
+          { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
+          { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
+          { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.officialBusiness,
         DateTimeUtils.twoDateRangeFormat(props?.OBDateFrom!, props?.OBDateTo!),
