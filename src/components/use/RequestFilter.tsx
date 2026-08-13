@@ -10,7 +10,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { PropsRequestSearch, StateApplicationsSearch } from 'src/types/Types';
 import { APIMethods, ContentTypes, ValuesRequestSearch } from 'src/constants/Values';
 import { UtilsDisplay } from 'src/utils/UtilsDisplay';
-import { COLORS, STRINGS, STYLES, DateTimeUtils, ERRORS, ARRAY } from 'src';
+import { COLORS, STRINGS, STYLES, DateTimeUtils } from 'src';
 import { Utils } from 'src/utils/Utils';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
 
@@ -366,6 +366,7 @@ const RequestFilter: React.FC<PropsRequestSearch> = ({ state, handle }) => {
                 setItems={setDocStatusItems}
                 style={{ marginVertical: 10 }}
                 zIndex={10}
+                placeholder={STRINGS.placeholderDocStatus}
               />
             ) : (
               <View style={styles.row}>
