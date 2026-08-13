@@ -290,8 +290,13 @@ export type Schedules = {
   timeOut: string;
   breakTimeIn: string;
   breakTimeOut: string;
+  shiftType:
+    | {
+        shiftTypeId: number;
+        shiftType: string;
+      }
+    | string;
   shiftTypeId: number;
-  shiftType: string;
   isPremium: boolean;
 };
 

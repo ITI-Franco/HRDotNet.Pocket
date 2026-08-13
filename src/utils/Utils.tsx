@@ -1098,14 +1098,24 @@ export const Utils = {
         };
         break;
 
+      case onPanel.OFF:
       case onPanel.OT:
         newFields = {
-          // OT mappings
+          DateFiled: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
+          'OT From': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeIn!),
+          'OT To': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeOut!),
+          Reason: newData?.reason,
+          ReferenceNo: newData?.referenceNo ?? '',
         };
 
         oldFields = {
-          // OT mappings
+          DateFiled: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateFiled)),
+          'OT From': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateFrom!),
+          'OT To': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateTo!),
+          Reason: oldData?.filing.reason,
+          ReferenceNo: oldData?.filing.referenceNo ?? '',
         };
+        break;
         break;
 
       case onPanel.LV:

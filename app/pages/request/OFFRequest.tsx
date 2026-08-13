@@ -281,6 +281,17 @@ const OFFRequest: React.FC<TypeNavStack> = ({ navigation }) => {
 
                   UtilsDisplay.DisplayFieldTextInput(
                     handle.isInputCheck!,
+                    STRINGS.requrestFieldReferenceNo,
+                    state.referenceNo || '',
+                    true,
+                    (text: string) => setState({ referenceNo: text }),
+                    true,
+                    14,
+                    STRINGS.placeholderReferenceNo,
+                  ),
+
+                  UtilsDisplay.DisplayFieldTextInput(
+                    handle.isInputCheck!,
                     STRINGS.requestFieldReason,
                     state.reason,
                     true,
