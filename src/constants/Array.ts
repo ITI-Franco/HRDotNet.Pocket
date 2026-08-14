@@ -5,7 +5,6 @@
 import { DateTimeUtils } from '../utils/DateTimeUtils';
 import { ASSETS } from './Assets';
 import { COLORS } from './Colors';
-import { FilingPanel } from './Enum';
 import { STRINGS } from './Strings';
 import {
   TypeTimeOff,

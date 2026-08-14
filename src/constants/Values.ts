@@ -707,6 +707,7 @@ export const ValuesOBRequest = {
     reviewReason: '',
     approveReason: '',
     referenceNo: '',
+    hasBranches: false,
   },
 
   Handle: {

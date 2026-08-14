@@ -746,6 +746,7 @@ export type StateOBRequest = {
   cancelReason?: string;
   approveReason?: string;
   reviewReason?: string;
+  hasBranches?: boolean;
 };
 
 // OFF Request
