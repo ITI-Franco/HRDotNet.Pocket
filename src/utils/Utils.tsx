@@ -7,7 +7,7 @@ import { ActivityIndicator, Linking, Alert, Platform } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Gesture } from 'react-native-gesture-handler';
 import CryptoJS from 'react-native-crypto-js';
-import { FieldLabels, RequestType, RequiredFieldRequest } from 'src/constants/Enum';
+import { FieldLabels, FilingPanel, RequestType, RequiredFieldRequest } from 'src/constants/Enum';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
@@ -89,10 +89,11 @@ export const Utils = {
 
     const timeFrom: string = DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateFrom);
 
-    const timeSched = `\n${!DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
-      ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
-      : timeFrom
-      }`;
+    const timeSched = `\n${
+      !DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
+        ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
+        : timeFrom
+    }`;
 
     if (val.source.toUpperCase().includes('L-')) {
       ((color = COLORS.lightPurple), (title = STRINGS.leave));
@@ -251,15 +252,14 @@ export const Utils = {
       .join(' ');
   },
 
-
   properSuffixName: (suffix?: string | null): string => {
-    if (!suffix) return "";
+    if (!suffix) return '';
 
-    const value = suffix.trim().replace(/\.+$/, "");
+    const value = suffix.trim().replace(/\.+$/, '');
 
     if (GENERATION_SUFFIX_REGEX.test(value)) {
       const lower = value.toLowerCase();
-      return lower.charAt(0).toUpperCase() + lower.slice(1) + ".";
+      return lower.charAt(0).toUpperCase() + lower.slice(1) + '.';
     }
 
     if (ROMAN_NUMERAL_REGEX.test(value)) {
@@ -271,9 +271,9 @@ export const Utils = {
 
   formatHyphenatedName: (value: string) =>
     value
-      .split("-")
+      .split('-')
       .map((part) => Utils.toTitleCase(part))
-      .join("-"),
+      .join('-'),
 
   formatEmployeeName: (name: string) => {
     const parts = name.split(',').map((p) => p.trim());
@@ -296,18 +296,13 @@ export const Utils = {
     return format;
   },
 
+  formatNameHistory: (name?: { firstName?: string; middleName?: string; lastName?: string; suffix?: string }) => {
+    if (!name) return '';
 
-  formatNameHistory: (name?: {
-    firstName?: string;
-    middleName?: string;
-    lastName?: string;
-    suffix?: string;
-  }) => {
-    if (!name) return "";
-
-    return `${name.lastName ? Utils.formatHyphenatedName(name.lastName) : ""}, ${name.firstName ? Utils.formatHyphenatedName(name.firstName) : ""
-      } ${name.suffix ? Utils.properSuffixName(name.suffix) : ""} ${name.middleName ? Utils.formatHyphenatedName(name.middleName) : ""}`
-      .replace(/\s+/g, " ")
+    return `${name.lastName ? Utils.formatHyphenatedName(name.lastName) : ''}, ${
+      name.firstName ? Utils.formatHyphenatedName(name.firstName) : ''
+    } ${name.suffix ? Utils.properSuffixName(name.suffix) : ''} ${name.middleName ? Utils.formatHyphenatedName(name.middleName) : ''}`
+      .replace(/\s+/g, ' ')
       .trim();
   },
 
@@ -467,9 +462,9 @@ export const Utils = {
   amountFormat: (amount: number) => {
     return amount
       ? amount.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
       : 0;
   },
 
@@ -564,7 +559,7 @@ export const Utils = {
           ...state.clockedData,
           address: currAddress
             ? `${checkNull(currAddress?.name)} ${checkNull(currAddress?.street)} ` +
-            `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
+              `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
             : STRINGS.noAddressLocation,
         },
       });
@@ -1056,12 +1051,8 @@ export const Utils = {
         const dateFiled = data?.filing?.dateFiled;
 
         dateToParse = DateTimeUtils.abbreviatedMonthDateRange(
-          typeof dateFiled === 'object'
-            ? dateFiled.dateFrom
-            : '',
-          typeof dateFiled === 'object'
-            ? dateFiled.dateTo
-            : ''
+          typeof dateFiled === 'object' ? dateFiled.dateFrom : '',
+          typeof dateFiled === 'object' ? dateFiled.dateTo : '',
         );
         break;
 
@@ -1250,14 +1241,14 @@ export const Utils = {
         return [
           ...(dateFromChange || dateToChange
             ? [
-              `${fieldDisplayNames.COSDatePeriod}: from ${DateTimeUtils.abbreviatedMonthDateRange(
-                DateTimeUtils.formatToDash(dateFromChange?.from || dateFromToUse),
-                DateTimeUtils.formatToDash(dateToChange?.from || dateToUse),
-              )} into "${DateTimeUtils.abbreviatedMonthDateRange(
-                DateTimeUtils.formatToDash(dateFromChange?.to || dateFromToUse),
-                DateTimeUtils.formatToDash(dateToChange?.to || dateToUse),
-              )}"`,
-            ]
+                `${fieldDisplayNames.COSDatePeriod}: from ${DateTimeUtils.abbreviatedMonthDateRange(
+                  DateTimeUtils.formatToDash(dateFromChange?.from || dateFromToUse),
+                  DateTimeUtils.formatToDash(dateToChange?.from || dateToUse),
+                )} into "${DateTimeUtils.abbreviatedMonthDateRange(
+                  DateTimeUtils.formatToDash(dateFromChange?.to || dateFromToUse),
+                  DateTimeUtils.formatToDash(dateToChange?.to || dateToUse),
+                )}"`,
+              ]
             : []),
 
           ...orderedFields
@@ -1524,4 +1515,54 @@ export const Utils = {
 
   resetNavigation: async (nav: TypeNavStack['navigation'], name: string, screen: string) =>
     nav.reset({ index: 0, routes: [{ name: name, params: { screen: screen } }] }),
+};
+
+type CutOffPeriod = [string | null, string | null] | undefined;
+
+export const FilingUtils = {
+  isEligibleFiling: (
+    item: SchemaRequestApplications,
+    index: number,
+    cutOffPeriod: CutOffPeriod,
+    eligibleStatuses: string[] = [STRINGS.filed],
+  ): boolean => {
+    const filingStatus = item.filing?.filingStatus?.name;
+    const hasEligibleStatus = filingStatus != null && eligibleStatuses.includes(filingStatus);
+
+    if (!hasEligibleStatus) {
+      return false;
+    }
+
+    if (index === FilingPanel.OB) {
+      return (
+        item.filing?.dateRange?.dateFrom! >= cutOffPeriod?.[0]! && item.filing?.dateRange?.dateTo! <= cutOffPeriod?.[1]!
+      );
+    }
+
+    if (index === FilingPanel.COS || index === FilingPanel.CTO || index === FilingPanel.LV) {
+      const dateFiled = item.filing?.dateFiled;
+
+      if (typeof dateFiled === 'object' && dateFiled !== null) {
+        return dateFiled.dateFrom >= cutOffPeriod?.[0]! && dateFiled.dateTo <= cutOffPeriod?.[1]!;
+      }
+
+      return false;
+    }
+
+    return item.filing?.dateFiled! >= cutOffPeriod?.[0]! && item.filing?.dateFiled! <= cutOffPeriod?.[1]!;
+  },
+
+  countEligible: (
+    counts: Record<number, SchemaRequestApplications[]> | undefined,
+    cutOffPeriod: CutOffPeriod,
+    eligibleStatuses: string[] = [STRINGS.filed],
+  ): number => {
+    return Object.entries(counts ?? {}).reduce((total, [indexStr, items]) => {
+      const index = Number(indexStr);
+      const eligible = (items ?? []).filter((item) =>
+        FilingUtils.isEligibleFiling(item, index, cutOffPeriod, eligibleStatuses),
+      );
+      return total + eligible.length;
+    }, 0);
+  },
 };

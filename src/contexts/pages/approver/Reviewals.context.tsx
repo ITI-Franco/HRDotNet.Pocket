@@ -167,19 +167,6 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  // const onHandleFetchReviewal = () => {
-  //   if (state.urlQuery !== '') {
-  //     const interval = setTimeout(async () => {
-  //       await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
-  //     }, 50);
-
-  //     return () => {
-  //       setHandle({ isLoading: false });
-  //       clearTimeout(interval);
-  //     };
-  //   }
-  // };
-
   const onHandleFetchReviewal = async () => {
     if (state.urlQuery !== '') {
       await useFetch.Reviewals(navigation, state, setState, handle, setHandle);

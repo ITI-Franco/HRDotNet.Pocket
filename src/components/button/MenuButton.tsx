@@ -9,18 +9,23 @@ import * as Animatable from 'react-native-animatable';
 import { Shadow } from 'react-native-shadow-2';
 
 import { STYLES, STRINGS, ASSETS } from 'src';
-import { Utils } from 'src/utils/Utils';
+import { FilingUtils, Utils } from 'src/utils/Utils';
 import { useNavigation } from '@react-navigation/native';
 import { PropsMenuButton, TypeObjectValues } from 'src/types/Types';
 import { useHome } from 'src/contexts/tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
   const styles = STYLES.ComponentMenuButton;
 
   const navigation = useNavigation();
   const { state, checkTeamMembers } = useHome();
+  const { reviewalCounts, approvalCounts, cutOffPeriod } = useGlobalStore();
+
+  const reviewalsTotal = FilingUtils.countEligible(reviewalCounts, cutOffPeriod);
+  const approvalsTotal = FilingUtils.countEligible(approvalCounts, cutOffPeriod, [STRINGS.filed, STRINGS.reviewed]);
 
   const badge = (text: number) => {
     return (
@@ -78,6 +83,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
       },
       {
         navigate: () => navigation.navigate(STRINGS.pathReviewals as never),
+        badge: reviewalsTotal !== 0 && badge(reviewalsTotal),
         image: ASSETS.iconPending,
         title: STRINGS.menuBtnTitleIII,
         disabled: !reviewer,
@@ -86,6 +92,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
     secondRow: [
       {
         navigate: () => navigation.navigate(STRINGS.pathApprovals as never),
+        badge: approvalsTotal !== 0 && badge(approvalsTotal),
         image: onShowImage(ASSETS.iconCOSRequest, ASSETS.iconApprovals),
         title: onShowTitle(STRINGS.menuBtnTitleUserI, STRINGS.menuBtnTitleApproverI),
         disabled: !approver,
