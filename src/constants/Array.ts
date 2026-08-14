@@ -802,34 +802,36 @@ export const ARRAY = {
       ),
     },
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : [
-              { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-              { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
-              {
-                label: STRINGS.OTRequestFieldIII,
-                value:
-                  props.schedule?.isPremium! === true
-                    ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
-                      DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
-                      : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
-                    : props.schedule?.timeOut
-                      ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
-                      : undefined,
-              },
-              {
-                label: STRINGS.OTRequestFieldIV,
-                value: props?.timeRecord
-                  ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                  : null,
-              },
-              { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-              { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-              { label: STRINGS.requestFieldReason, value: props?.reason },
-            ],
+      details: ARRAY.getRequestDetails(
+        [
+          { label: STRINGS.OTRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+          { label: STRINGS.OTRequestFieldII, value: props?.schedule?.name },
+          {
+            label: STRINGS.OTRequestFieldIII,
+            value:
+              props.schedule?.isPremium! === true
+                ? DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date) <
+                  DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeIn)
+                  : DateTimeUtils.timeSecondsToUnits(props.timeRecord[0]?.date)
+                : props.schedule?.timeOut
+                  ? DateTimeUtils.timeSecondsToUnits(props.schedule?.timeOut)
+                  : undefined,
+          },
+          {
+            label: STRINGS.OTRequestFieldIV,
+            value: props?.timeRecord
+              ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+              : null,
+          },
+          { label: STRINGS.OTRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+          { label: STRINGS.OTRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+          { label: STRINGS.requestFieldReason, value: props?.reason },
+          { label: STRINGS.requrestFieldReferenceNo, value: props?.referenceNo },
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.overtime,
         DateTimeUtils.dateDefaultToWord(props?.date),
@@ -838,30 +840,28 @@ export const ARRAY = {
       ),
     },
     {
-      details:
-        reqAction === ARRAY.reqAction[0].Cancel
-          ? [...ARRAY.requestCancellation(props)]
-          : ARRAY.getRequestDetails(
-              [
-                { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
-                { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
-                {
-                  label: STRINGS.OFFRequestFieldIII,
-                  value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut),
-                },
-                {
-                  label: STRINGS.OFFRequestFieldIV,
-                  value: props?.timeRecord
-                    ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
-                    : null,
-                },
-                { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
-                { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
-                { label: STRINGS.requestFieldReason, value: props?.reason },
-              ],
-              props,
-              reqAction,
-            ),
+      details: ARRAY.getRequestDetails(
+        [
+          { label: STRINGS.OFFRequestFieldI, value: DateTimeUtils.dateDefaultToWord(props?.date) },
+          { label: STRINGS.OFFRequestFieldII, value: props?.schedule?.name },
+          {
+            label: STRINGS.OFFRequestFieldIII,
+            value: DateTimeUtils.timeSecondsToUnits(props?.schedule?.timeOut),
+          },
+          {
+            label: STRINGS.OFFRequestFieldIV,
+            value: props?.timeRecord
+              ? DateTimeUtils.timeSecondsToUnits(props?.timeRecord[props?.timeRecord?.length - 1]?.date)
+              : null,
+          },
+          { label: STRINGS.OFFRequestFieldV, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeIn) },
+          { label: STRINGS.OFFRequestFieldVI, value: DateTimeUtils.timeSecondsToUnits(props?.reqTimeOut) },
+          { label: STRINGS.requestFieldReason, value: props?.reason },
+          { label: STRINGS.requrestFieldReferenceNo, value: props?.referenceNo },
+        ],
+        props,
+        reqAction,
+      ),
       subText: STRINGS.requestSuccess(
         STRINGS.offset,
         DateTimeUtils.dateDefaultToWord(props?.date),
