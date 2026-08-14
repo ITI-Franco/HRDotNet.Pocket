@@ -33,7 +33,7 @@ import {
   AllApplicationState,
 } from 'src/types/Types';
 import { Camera } from 'expo-camera';
-import { fieldDisplayNames, FieldKey } from 'src/constants/Values';
+import { fieldDisplayNames, FieldKey, GENERATION_SUFFIX_REGEX, ROMAN_NUMERAL_REGEX } from 'src/constants/Values';
 
 const [onPanel] = ARRAY.panel as TypePanel[];
 const [onReqAction] = ARRAY.reqAction as TypeReqAction[];
@@ -89,11 +89,10 @@ export const Utils = {
 
     const timeFrom: string = DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateFrom);
 
-    const timeSched = `\n${
-      !DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
-        ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
-        : timeFrom
-    }`;
+    const timeSched = `\n${!DateTimeUtils.checkIsoNullValue(val?.dateTimeRange!?.dateTo)
+      ? timeFrom + ' - ' + DateTimeUtils.isoToTimeUnits(val?.dateTimeRange!?.dateTo)
+      : timeFrom
+      }`;
 
     if (val.source.toUpperCase().includes('L-')) {
       ((color = COLORS.lightPurple), (title = STRINGS.leave));
@@ -252,6 +251,30 @@ export const Utils = {
       .join(' ');
   },
 
+
+  properSuffixName: (suffix?: string | null): string => {
+    if (!suffix) return "";
+
+    const value = suffix.trim().replace(/\.+$/, "");
+
+    if (GENERATION_SUFFIX_REGEX.test(value)) {
+      const lower = value.toLowerCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1) + ".";
+    }
+
+    if (ROMAN_NUMERAL_REGEX.test(value)) {
+      return value.toUpperCase();
+    }
+
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  },
+
+  formatHyphenatedName: (value: string) =>
+    value
+      .split("-")
+      .map((part) => Utils.toTitleCase(part))
+      .join("-"),
+
   formatEmployeeName: (name: string) => {
     const parts = name.split(',').map((p) => p.trim());
 
@@ -271,6 +294,21 @@ export const Utils = {
     const format = `${Utils.toTitleCase(lastName)}, ${Utils.toTitleCase(firstName)} ${suffix} ${Utils.toTitleCase(middleName)}`;
 
     return format;
+  },
+
+
+  formatNameHistory: (name?: {
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    suffix?: string;
+  }) => {
+    if (!name) return "";
+
+    return `${name.lastName ? Utils.formatHyphenatedName(name.lastName) : ""}, ${name.firstName ? Utils.formatHyphenatedName(name.firstName) : ""
+      } ${name.suffix ? Utils.properSuffixName(name.suffix) : ""} ${name.middleName ? Utils.formatHyphenatedName(name.middleName) : ""}`
+      .replace(/\s+/g, " ")
+      .trim();
   },
 
   appendHistoryItem: (oldHistoryLog: string | null, newHistoryLog: HistoryItem): string => {
@@ -429,9 +467,9 @@ export const Utils = {
   amountFormat: (amount: number) => {
     return amount
       ? amount.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
       : 0;
   },
 
@@ -526,7 +564,7 @@ export const Utils = {
           ...state.clockedData,
           address: currAddress
             ? `${checkNull(currAddress?.name)} ${checkNull(currAddress?.street)} ` +
-              `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
+            `${checkNull(currAddress?.city)} ${checkNull(currAddress?.country)}`
             : STRINGS.noAddressLocation,
         },
       });
@@ -889,20 +927,9 @@ export const Utils = {
             (panel === 2 && reqAction === 5 && key === 'timeRecord') ||
             (panel === 2 && reqAction === 4 && key === 'timeRecord') ||
             (panel === 2 && reqAction === 3 && key === 'timeRecord') ||
-            (reqAction === 1 && key === 'cancelReason') ||
-            (reqAction === 2 && key === 'cancelReason') ||
-            (reqAction === 4 && key === 'cancelReason') ||
-            (reqAction === 5 && key === 'cancelReason') ||
-            (reqAction === 1 && key === 'reviewReason') ||
-            (reqAction === 3 && key === 'reviewReason') ||
-            (reqAction === 2 && key === 'reviewReason') ||
-            (reqAction === 5 && key === 'reviewReason') ||
-            (reqAction === 4 && key === 'reviewReason') ||
-            (reqAction === 1 && key === 'approveReason') ||
-            (reqAction === 3 && key === 'approveReason') ||
-            (reqAction === 2 && key === 'approveReason') ||
-            (reqAction === 4 && key === 'approveReason') ||
-            (reqAction === 4 && key === 'approveReason')
+            (key === 'cancelReason' && [1, 2, 4, 5].includes(reqAction)) ||
+            (key === 'reviewReason' && [1, 2, 3, 5].includes(reqAction)) ||
+            (key === 'approveReason' && [1, 2, 3, 4].includes(reqAction))
           ) {
             continue;
           }
@@ -975,6 +1002,20 @@ export const Utils = {
     };
   },
 
+  normalize: (date: string) => {
+    const dateFiled = new Date(date);
+    dateFiled.setHours(0, 0, 0, 0);
+    return dateFiled.getTime();
+  },
+
+  hasDateRangeOverlap(newFrom: string, newTo: string, existingFrom: string, existingTo: string): boolean {
+    const start = Utils.normalize(newFrom);
+    const end = Utils.normalize(newTo);
+    const exStart = Utils.normalize(existingFrom);
+    const exEnd = Utils.normalize(existingTo);
+    return start <= exEnd && end >= exStart;
+  },
+
   panelDateToParse: (panel: number, data?: PropsRequestSummary) => {
     let dateToParse: string | { dateFrom: string; dateTo: string } | undefined = undefined;
 
@@ -1012,7 +1053,16 @@ export const Utils = {
 
     switch (panel) {
       case 0:
-        dateToParse = DateTimeUtils.getIsoDateWord((data?.filing?.dateFiled as string) || '');
+        const dateFiled = data?.filing?.dateFiled;
+
+        dateToParse = DateTimeUtils.abbreviatedMonthDateRange(
+          typeof dateFiled === 'object'
+            ? dateFiled.dateFrom
+            : '',
+          typeof dateFiled === 'object'
+            ? dateFiled.dateTo
+            : ''
+        );
         break;
 
       case 1:
@@ -1200,14 +1250,14 @@ export const Utils = {
         return [
           ...(dateFromChange || dateToChange
             ? [
-                `${fieldDisplayNames.COSDatePeriod}: from ${DateTimeUtils.abbreviatedMonthDateRange(
-                  DateTimeUtils.formatToDash(dateFromChange?.from || dateFromToUse),
-                  DateTimeUtils.formatToDash(dateToChange?.from || dateToUse),
-                )} into "${DateTimeUtils.abbreviatedMonthDateRange(
-                  DateTimeUtils.formatToDash(dateFromChange?.to || dateFromToUse),
-                  DateTimeUtils.formatToDash(dateToChange?.to || dateToUse),
-                )}"`,
-              ]
+              `${fieldDisplayNames.COSDatePeriod}: from ${DateTimeUtils.abbreviatedMonthDateRange(
+                DateTimeUtils.formatToDash(dateFromChange?.from || dateFromToUse),
+                DateTimeUtils.formatToDash(dateToChange?.from || dateToUse),
+              )} into "${DateTimeUtils.abbreviatedMonthDateRange(
+                DateTimeUtils.formatToDash(dateFromChange?.to || dateFromToUse),
+                DateTimeUtils.formatToDash(dateToChange?.to || dateToUse),
+              )}"`,
+            ]
             : []),
 
           ...orderedFields

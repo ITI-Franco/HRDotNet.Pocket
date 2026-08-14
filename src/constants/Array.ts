@@ -777,6 +777,7 @@ export const ARRAY = {
       ),
     },
     {
+<<<<<<< HEAD
       details: ARRAY.getRequestDetails(
         [
           {
@@ -794,6 +795,24 @@ export const ARRAY = {
         props,
         reqAction,
       ),
+=======
+      details:
+        reqAction === ARRAY.reqAction[0].Cancel
+          ? [...ARRAY.requestCancellation(props)]
+          : [
+            {
+              label: STRINGS.OBSummaryFieldI,
+              value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
+            },
+            {
+              label: STRINGS.OBSummaryFieldII,
+              value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
+            },
+            { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
+            { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
+            { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
+          ],
+>>>>>>> dcd19435b1725cd6be7699910e0d5069969e2a78
       subText: STRINGS.requestSuccess(
         STRINGS.officialBusiness,
         DateTimeUtils.twoDateRangeFormat(props?.OBDateFrom!, props?.OBDateTo!),
@@ -874,12 +893,12 @@ export const ARRAY = {
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
           : [
-              { label: STRINGS.LVRequestFieldI, value: props?.leaveType?.name },
-              { label: STRINGS.LVRequestFieldIII, value: props?.leaveOption?.name },
-              { label: STRINGS.LVRequestFieldIV, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
-              { label: STRINGS.LVRequestFieldV, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
-              { label: STRINGS.requestFieldReason, value: props?.reason },
-            ],
+            { label: STRINGS.LVRequestFieldI, value: props?.leaveType?.name },
+            { label: STRINGS.LVRequestFieldIII, value: props?.leaveOption?.name },
+            { label: STRINGS.LVRequestFieldIV, value: DateTimeUtils.dateDefaultToWord(props?.startDate!) },
+            { label: STRINGS.LVRequestFieldV, value: DateTimeUtils.dateDefaultToWord(props?.endDate!) },
+            { label: STRINGS.requestFieldReason, value: props?.reason },
+          ],
       subText: STRINGS.requestSuccess(
         STRINGS.leave,
         DateTimeUtils.twoDateRangeFormat(props?.startDate!, props?.endDate!),
@@ -935,6 +954,7 @@ export const ARRAY = {
     { title: 'Requested.Id', value: parsed?.requested?.ID },
     { title: 'Requested.Name', value: parsed?.requested?.name },
     { title: 'Requested.IsRestDay', value: parsed?.restDay ? true : false },
+    { title: 'ReferenceNo', value: parsed?.referenceNo },
   ],
 
   formDataOB: (parsed: StateOBRequest) => [
@@ -1071,15 +1091,15 @@ export const ARRAY = {
 
     ...(typeof data?.filing.shiftSchedule?.shiftType! === 'string'
       ? [
-          { title: 'Schedule.ShiftTypeId', value: data?.filing.shiftSchedule?.shiftTypeId },
-          { title: 'Schedule.ShiftType', value: String(data?.filing.shiftSchedule?.shiftType!) },
-        ]
+        { title: 'Schedule.ShiftTypeId', value: data?.filing.shiftSchedule?.shiftTypeId },
+        { title: 'Schedule.ShiftType', value: String(data?.filing.shiftSchedule?.shiftType!) },
+      ]
       : [
-          { title: 'Schedule.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
-          { title: 'Schedule.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
-          { title: 'ShiftType.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
-          { title: 'ShiftType.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
-        ]),
+        { title: 'Schedule.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
+        { title: 'Schedule.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
+        { title: 'ShiftType.ShiftTypeId', value: Object(data?.filing.shiftSchedule?.shiftType).shiftTypeId! },
+        { title: 'ShiftType.ShiftType', value: Object(data?.filing.shiftSchedule?.shiftType).shiftType! },
+      ]),
     ,
     { title: 'FilingStatusId', value: data?.filing?.filingStatus.id },
     { title: 'FilingStatus', value: data?.filing?.filingStatus.name },
@@ -1250,13 +1270,13 @@ export const ARRAY = {
       shiftType:
         typeof params?.filing?.shiftSchedule?.shiftType === 'string'
           ? {
-              shiftType: params?.filing?.shiftSchedule?.shiftType,
-              shiftTypeId: params?.filing?.shiftSchedule?.shiftTypeId,
-            }
+            shiftType: params?.filing?.shiftSchedule?.shiftType,
+            shiftTypeId: params?.filing?.shiftSchedule?.shiftTypeId,
+          }
           : {
-              shiftType: params?.filing?.shiftSchedule?.shiftType?.shiftType,
-              shiftTypeId: params?.filing?.shiftSchedule?.shiftType?.shiftTypeId,
-            },
+            shiftType: params?.filing?.shiftSchedule?.shiftType?.shiftType,
+            shiftTypeId: params?.filing?.shiftSchedule?.shiftType?.shiftTypeId,
+          },
 
       isPremium: params?.filing?.shiftSchedule?.isPremium,
     },
@@ -1304,11 +1324,11 @@ export const ARRAY = {
       title: STRINGS.cllnDateFiled,
       value:
         (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom! ||
-        (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
+          (data?.filing?.dateFiled as { dateTo: string })?.dateTo!
           ? DateTimeUtils.twoDateRangeFormat(
-              (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
-              (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
-            )
+            (data?.filing?.dateFiled as { dateFrom: string })?.dateFrom!,
+            (data?.filing?.dateFiled as { dateTo: string })?.dateTo!,
+          )
           : data?.filing?.dateRange?.dateFrom || data?.filing?.dateRange?.dateTo
             ? DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom, data?.filing?.dateRange?.dateTo)
             : DateTimeUtils.dateDefaultToWord(data?.filing?.dateFiled as string),

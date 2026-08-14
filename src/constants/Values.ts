@@ -906,6 +906,10 @@ export const FieldLimit = {
   },
 };
 
+export const ROMAN_NUMERAL_REGEX = /^(m{0,4}(cm|cd|d?c{0,3})?(xc|xl|l?x{0,3})?(ix|iv|v?i{0,3}))$/i;
+
+export const GENERATION_SUFFIX_REGEX = /^(jr|sr)\.?$/i;
+
 export const fieldDisplayNames: Record<string, string> = {
   TimeInOut: 'Log Time',
   LogType: 'Log Type',

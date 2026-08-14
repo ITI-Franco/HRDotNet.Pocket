@@ -50,8 +50,8 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
     const loadProfile = async () => {
       try {
         const data = await useFetch.Profile();
-        setEmployeeName(Utils.formatEmployeeName(data.FullName));
-        setEmployeeName(Utils.formatEmployeeName(data.FullName));
+        setEmployeeName(data.FullName);
+        setEmployeeName(data.FullName);
         setEmployeePayrollInfo({
           paymentFrequencyId: data.paymentFrequecyId,
           payrollGroupId: data.payrollGroupId,
@@ -124,7 +124,7 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) {}
+    } catch (err) { }
   })();
   return (
     <React.Fragment>

@@ -2,7 +2,7 @@
 // Designed by : Alex Diane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
@@ -19,12 +19,16 @@ import {
   ParamsRequestApplication,
   TypePanel,
   TypeReqAction,
+  SchemaRequestApplications,
 } from 'src/types/Types';
+import OverlapNote from 'src/components/note/OverlapNote';
+import { useFetch } from 'src/hooks/useFetch';
 
 const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
   const styles = STYLES.NewRequest;
   const [onPanel] = useState<TypePanel[]>(ARRAY.panel)[0];
   const [onReqAction] = useState<TypeReqAction[]>(ARRAY.reqAction)[0];
+  const [myDataCOS, setDataCOS] = useState<SchemaRequestApplications[]>([])
 
   const params = useRoute()?.params as ParamsRequestApplication;
   const currParams: ParamsRequestApplication = {
@@ -56,6 +60,73 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
       : stateFilingData,
       handleFilingData);
   }, []);
+
+  useEffect(() => {
+    const loadMyCOS = async () => {
+      try {
+        const data = await useFetch.GetMYCOS();
+        setDataCOS(data.items)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadMyCOS()
+  }, [])
+
+
+  const overlappingItems = useMemo(() => {
+    const filtered =
+      myDataCOS?.filter((item) => {
+        if (!state.startDate || !state.endDate) return false;
+
+        const isApproved = item.filing.filingStatus.name === STRINGS.approved;
+
+        const dateFiled = item.filing.dateFiled;
+
+        const dateFrom =
+          typeof dateFiled === 'object' && dateFiled !== null
+            ? dateFiled.dateFrom
+            : dateFiled || '';
+
+        const dateTo =
+          typeof dateFiled === 'object' && dateFiled !== null
+            ? dateFiled.dateTo
+            : dateFiled || '';
+
+        return (
+          isApproved &&
+
+          Utils.hasDateRangeOverlap(
+            state.startDate,
+            state.endDate,
+            dateFrom,
+            dateTo
+          )
+        );
+      }) ?? [];
+
+    const seen = new Map<string, (typeof filtered)[number]>();
+    filtered.forEach((item) => {
+      const dateFiled = item.filing.dateFiled;
+      const itemDateFrom =
+        typeof dateFiled === 'object' && dateFiled !== null
+          ? dateFiled.dateFrom
+          : dateFiled || '';
+      const itemDateTo =
+        typeof dateFiled === 'object' && dateFiled !== null
+          ? dateFiled.dateTo
+          : dateFiled || '';
+
+      const key = `${itemDateFrom}_${itemDateTo}`;
+
+      if (!seen.has(key)) {
+        seen.set(key, item);
+      }
+    });
+
+
+    return Array.from(seen.values());
+  }, [myDataCOS, state.endDate, state.startDate]);
 
   useEffect(() => {
     currParams?.requested && setState({ requested: currParams?.requested });
@@ -149,117 +220,118 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
       <PageHeader name={Utils.panelPageHeaderTitle(currParams.onPanel, currParams.onReqAction)} />
 
       <ScrollView style={styles.container}>
+        {overlappingItems.length >= 1 && <OverlapNote dateFrom={state.startDate} dateTo={state.endDate} />}
         {currParams.onReqAction === onReqAction.Cancel ||
-        currParams.onReqAction === onReqAction.Review ||
-        currParams.onReqAction === onReqAction.Approve
+          currParams.onReqAction === onReqAction.Review ||
+          currParams.onReqAction === onReqAction.Approve
           ? [
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requestFieldDocumentNo,
-                state.documentNo!,
-                true,
-                () => ({}),
-                false,
-              ),
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requestFieldDocumentNo,
+              state.documentNo!,
+              true,
+              () => ({}),
+              false,
+            ),
 
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                reasonLabel,
-                stateToUse || '',
-                true,
-                setStateToUse,
-                true,
-                FieldLimit.reason.maxLength,
-                STRINGS.placeholderReason,
-                true,
-              ),
-            ]
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              reasonLabel,
+              stateToUse || '',
+              true,
+              setStateToUse,
+              true,
+              FieldLimit.reason.maxLength,
+              STRINGS.placeholderReason,
+              true,
+            ),
+          ]
           : [
-              UtilsDisplay.DisplayFieldWithIcon(
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldI,
-                state.startDate,
-                true,
-                DateTimeUtils.dateDefaultToWord(state.startDate),
-                STRINGS.styledPlaceholderDateRange.startDate,
-                () => setHandle({ isDateFromPicker: true }),
-                'calendar',
-                true,
-              ),
+            UtilsDisplay.DisplayFieldWithIcon(
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldI,
+              state.startDate,
+              true,
+              DateTimeUtils.dateDefaultToWord(state.startDate),
+              STRINGS.styledPlaceholderDateRange.startDate,
+              () => setHandle({ isDateFromPicker: true }),
+              'calendar',
+              true,
+            ),
 
-              UtilsDisplay.DisplayFieldWithIcon(
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldII,
-                state.endDate,
-                true,
-                DateTimeUtils.dateDefaultToWord(state.endDate),
-                STRINGS.styledPlaceholderDateRange.endDate,
-                () => setHandle({ isDateToPicker: true }),
-                'calendar',
-                true,
-              ),
+            UtilsDisplay.DisplayFieldWithIcon(
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldII,
+              state.endDate,
+              true,
+              DateTimeUtils.dateDefaultToWord(state.endDate),
+              STRINGS.styledPlaceholderDateRange.endDate,
+              () => setHandle({ isDateToPicker: true }),
+              'calendar',
+              true,
+            ),
 
-              UtilsDisplay.DisplayButtonField(
-                true,
-                handle.isInputCheck!,
-                STRINGS.COSRequestFieldIII,
-                state.requested.name || '',
-                state.requested?.name,
-                STRINGS.tapSelectPlaceholder('Schedule'),
-                () =>
-                  navigation.navigate(STRINGS.pathSelectionList, {
-                    currParams,
-                    action: STRINGS.selectionListCOSRequest,
-                  }),
-                false,
-                true,
-              ),
+            UtilsDisplay.DisplayButtonField(
+              true,
+              handle.isInputCheck!,
+              STRINGS.COSRequestFieldIII,
+              state.requested.name || '',
+              state.requested?.name,
+              STRINGS.tapSelectPlaceholder('Schedule'),
+              () =>
+                navigation.navigate(STRINGS.pathSelectionList, {
+                  currParams,
+                  action: STRINGS.selectionListCOSRequest,
+                }),
+              false,
+              true,
+            ),
 
-              UtilsDisplay.DisplayFieldCheckbox(
-                state.checkbox,
-                true,
-                handle.isInputCheck!,
-                handle.checkSelect!,
-                state.requested.name || '',
-                STRINGS.COSRequestFieldIIV,
-                (item, index) => onHandleCheck(item as string, index as number),
-                false,
-              ),
+            UtilsDisplay.DisplayFieldCheckbox(
+              state.checkbox,
+              true,
+              handle.isInputCheck!,
+              handle.checkSelect!,
+              state.requested.name || '',
+              STRINGS.COSRequestFieldIIV,
+              (item, index) => onHandleCheck(item as string, index as number),
+              false,
+            ),
 
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requrestFieldReferenceNo,
-                state.referenceNo || '',
-                true,
-                (text: string) => setState({ referenceNo: text }),
-                true,
-                14,
-                STRINGS.placeholderReferenceNo,
-              ),
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requrestFieldReferenceNo,
+              state.referenceNo || '',
+              true,
+              (text: string) => setState({ referenceNo: text }),
+              true,
+              14,
+              STRINGS.placeholderReferenceNo,
+            ),
 
-              UtilsDisplay.DisplayFieldTextInput(
-                handle.isInputCheck!,
-                STRINGS.requestFieldReason,
-                state.reason,
-                true,
-                (text: string) => setState({ reason: text }),
-                true,
-                FieldLimit.reason.maxLength,
-                STRINGS.placeholderReason,
-                true,
-              ),
+            UtilsDisplay.DisplayFieldTextInput(
+              handle.isInputCheck!,
+              STRINGS.requestFieldReason,
+              state.reason,
+              true,
+              (text: string) => setState({ reason: text }),
+              true,
+              FieldLimit.reason.maxLength,
+              STRINGS.placeholderReason,
+              true,
+            ),
 
-              UtilsDisplay.DisplayFieldAttachment(
-                handle.isInputCheck!,
-                STRINGS.fileAttachment,
-                state.attachment.uri || state.attachment.url!,
-                true,
-                () => navigation.navigate(STRINGS.pathCamera, currParams),
-                () => Utils.fileAttach(setState),
-                () => currParams,
-                true,
-              ),
-            ]}
+            UtilsDisplay.DisplayFieldAttachment(
+              handle.isInputCheck!,
+              STRINGS.fileAttachment,
+              state.attachment.uri || state.attachment.url!,
+              true,
+              () => navigation.navigate(STRINGS.pathCamera, currParams),
+              () => Utils.fileAttach(setState),
+              () => currParams,
+              true,
+            ),
+          ]}
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={onNextHandler}>
@@ -279,8 +351,8 @@ const COSRequest: React.FC<TypeNavProp> = ({ navigation }) => {
         'date',
         (date: string) => onEndDateChange(date),
         () => setHandle({ isDateToPicker: false }),
-        undefined,
         state.endDate ? DateTimeUtils.dateDefaultToDate(state.endDate) : DateTimeUtils.dayToDate(),
+        state.startDate ? DateTimeUtils.dateDefaultToDate(state.startDate) : DateTimeUtils.dayToDate(),
       )}
     </View>
   );
