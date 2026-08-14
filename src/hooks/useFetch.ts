@@ -580,6 +580,7 @@ export const useFetch = {
 
       formData.append(typedData.title, typedData.value);
     });
+
     // Iba iba per applications yung date
     const dateParse = Utils.panelDateToParse(panel, parsed);
 
@@ -658,6 +659,15 @@ export const useFetch = {
       formData.append('FileAttachment', parsed?.attachment?.url);
     }
 
+    const formEntries = Array.from(formData.entries());
+
+    if (panel === 3) {
+      formData.delete('ShiftType.ShiftTypeId');
+      formData.delete('ShiftType.ShiftType');
+    }
+
+    console.log('form', JSON.stringify(Array.from(formData.entries()), null, 2));
+
     await UtilsFetch.connect(
       APIMethods.POST,
       ContentTypes.Multipart,
@@ -675,6 +685,7 @@ export const useFetch = {
           );
         } else {
           const errors = await UtilsFetch.catchErrors(error);
+          console.log(errors);
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,

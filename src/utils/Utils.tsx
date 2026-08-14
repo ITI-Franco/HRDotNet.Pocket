@@ -883,8 +883,10 @@ export const Utils = {
             ['restDay'].includes(key) ||
             ['documentNo'].includes(key) ||
             ['referenceNo'].includes(key) ||
+            (panel === 3 && reqAction === 5 && key === 'timeRecord') ||
             (panel === 3 && reqAction === 4 && key === 'timeRecord') ||
             (panel === 3 && reqAction === 3 && key === 'timeRecord') ||
+            (panel === 2 && reqAction === 5 && key === 'timeRecord') ||
             (panel === 2 && reqAction === 4 && key === 'timeRecord') ||
             (panel === 2 && reqAction === 3 && key === 'timeRecord') ||
             (reqAction === 1 && key === 'cancelReason') ||
@@ -986,11 +988,8 @@ export const Utils = {
         break;
 
       case onPanel.OT:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
-        break;
-
       case onPanel.OFF:
-        dateToParse = DateTimeUtils.getIsoDateWord(data?.dateFiled || '');
+        dateToParse = DateTimeUtils.getIsoDateWord(data?.date || '');
         break;
 
       case onPanel.LV:
@@ -1099,9 +1098,26 @@ export const Utils = {
         break;
 
       case onPanel.OFF:
+        newFields = {
+          OffsetDate: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
+          'OFF From': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeIn!),
+          'OFF To': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeOut!),
+          Reason: newData?.reason,
+          ReferenceNo: newData?.referenceNo ?? '',
+        };
+
+        oldFields = {
+          OffsetDate: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateFiled)),
+          'OFF From': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateFrom!),
+          'OFF To': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateTo!),
+          Reason: oldData?.filing.reason,
+          ReferenceNo: oldData?.filing.referenceNo ?? '',
+        };
+        break;
+
       case onPanel.OT:
         newFields = {
-          DateFiled: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
+          OvertimeDate: DateTimeUtils.isoToDateWord(String(newData?.dateFiled)),
           'OT From': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeIn!),
           'OT To': DateTimeUtils.isoToTimeSecondToPMAM(newData?.reqTimeOut!),
           Reason: newData?.reason,
@@ -1109,13 +1125,12 @@ export const Utils = {
         };
 
         oldFields = {
-          DateFiled: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateFiled)),
+          OvertimeDate: DateTimeUtils.isoToDateWord(String(oldData?.filing.dateFiled)),
           'OT From': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateFrom!),
           'OT To': DateTimeUtils.isoToTimeSecondToPMAM(oldData?.filing.requested?.dateTo!),
           Reason: oldData?.filing.reason,
           ReferenceNo: oldData?.filing.referenceNo ?? '',
         };
-        break;
         break;
 
       case onPanel.LV:
@@ -1251,8 +1266,76 @@ export const Utils = {
         ].join(', ');
 
       case onPanel.OT:
-        // OT-specific formatting
-        return '';
+        return [
+          ...Object.entries(changedFields)
+            .filter(([key]) => !['FileAttachment', 'UploadedFile'].includes(key))
+            .map(([key, { from, to }]) => {
+              const displayKey = fieldDisplayNames[key] ?? key;
+
+              switch (key) {
+                case FieldKey.OTDate:
+                  return `${displayKey}: from "${DateTimeUtils.formatDateToMonthDayYear(
+                    from,
+                  )}" into "${DateTimeUtils.formatDateToMonthDayYear(to)}"`;
+
+                case FieldKey.OTFrom:
+                case FieldKey.OTTo:
+                  return `${displayKey}: from "${from}" into "${to}"`;
+
+                case FieldKey.ReferenceNo:
+                  if (!from && to) {
+                    return `${displayKey}: Added "${to}"`;
+                  }
+
+                  if (from && !to) {
+                    return `${displayKey}: Removed "${from}"`;
+                  }
+
+                  return `${displayKey}: from "${from}" into "${to}"`;
+
+                default:
+                  return `${displayKey}: from "${from}" into "${to}"`;
+              }
+            }),
+
+          ...attachmentChanges,
+        ].join(', ');
+
+      case onPanel.OFF:
+        return [
+          ...Object.entries(changedFields)
+            .filter(([key]) => !['FileAttachment', 'UploadedFile'].includes(key))
+            .map(([key, { from, to }]) => {
+              const displayKey = fieldDisplayNames[key] ?? key;
+
+              switch (key) {
+                case FieldKey.OTDate:
+                  return `${displayKey}: from "${DateTimeUtils.formatDateToMonthDayYear(
+                    from,
+                  )}" into "${DateTimeUtils.formatDateToMonthDayYear(to)}"`;
+
+                case FieldKey.OTFrom:
+                case FieldKey.OTTo:
+                  return `${displayKey}: from "${from}" into "${to}"`;
+
+                case FieldKey.ReferenceNo:
+                  if (!from && to) {
+                    return `${displayKey}: Added "${to}"`;
+                  }
+
+                  if (from && !to) {
+                    return `${displayKey}: Removed "${from}"`;
+                  }
+
+                  return `${displayKey}: from "${from}" into "${to}"`;
+
+                default:
+                  return `${displayKey}: from "${from}" into "${to}"`;
+              }
+            }),
+
+          ...attachmentChanges,
+        ].join(', ');
 
       case onPanel.LV:
         // Leave-specific formatting

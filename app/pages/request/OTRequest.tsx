@@ -74,8 +74,10 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
       const interval = setTimeout(async () => {
         try {
           if (state.date != '') {
-            await useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle);
-            await useFetch.TimeRecord(navigation, state, setState, handle, setHandle);
+            await Promise.all([
+              useFetch.TimeRecord(navigation, state, setState, handle, setHandle),
+              useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle),
+            ]);
           }
         } catch (error) {
           console.error(error);
@@ -194,7 +196,11 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
 
       {handle.isLoading && <Loader />}
 
-      {handle.isToast!.show && <Toast handle={handle.isToast!} setHandle={setHandle} />}
+      {currParams.onReqAction === onReqAction.Cancel ||
+        currParams.onReqAction === onReqAction.Review ||
+        (currParams.onReqAction === onReqAction.Approve && handle.isToast!.show && (
+          <Toast handle={handle.isToast!} setHandle={setHandle} />
+        ))}
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
         <ScrollView bounces={false}>
@@ -218,6 +224,9 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
                     stateToUse || '',
                     true,
                     setStateToUse,
+                    true,
+                    FieldLimit.reason.maxLength,
+                    STRINGS.placeholderReason,
                     true,
                   ),
                 ]
@@ -306,6 +315,8 @@ const OTRequest: React.FC<TypeNavStack> = ({ navigation }) => {
                     (text: string) => setState({ reason: text }),
                     true,
                     FieldLimit.reason.maxLength,
+                    STRINGS.placeholderReason,
+                    true,
                   ),
 
                   UtilsDisplay.DisplayFieldAttachment(

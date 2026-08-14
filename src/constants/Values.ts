@@ -942,4 +942,9 @@ export enum FieldKey {
   RestDay = 'RestDay',
   Schedule = 'Schedule',
   Reason = 'Reason',
+  OTDate = 'OvertimeDate',
+  OTFrom = 'OTFrom',
+  OFFFrom = 'OFFFrom',
+  OTTo = 'OTTo',
+  OFFTo = 'OFFTo',
 }
