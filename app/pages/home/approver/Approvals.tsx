@@ -80,7 +80,7 @@ const Approvals: React.FC = () => {
                     const isFiled = filingStatus === STRINGS.filed;
                     const isReviewed = filingStatus === STRINGS.reviewed;
 
-                    if (!isFiled || !isReviewed) {
+                    if (!isFiled && !isReviewed) {
                       return false;
                     }
 
@@ -121,13 +121,13 @@ const Approvals: React.FC = () => {
                             styles.approvalCountButton,
                             state.selectedButton === index
                               ? {
-                                color: COLORS.orange,
-                                backgroundColor: COLORS.clearWhite,
-                              }
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
                               : {
-                                color: COLORS.clearWhite,
-                                backgroundColor: COLORS.orange,
-                              },
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
                           ]}
                         >
                           {count}
