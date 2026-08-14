@@ -428,6 +428,7 @@ export const STRINGS = {
   blank: '•••••••',
   dash: '----------',
   blankLine: '──────────',
+  overlapMessage: "An existing COS filing is recorded for the following dates. Proceeding will overwrite the current record.",
 
   //required
   requiredReason: 'Reason is required',

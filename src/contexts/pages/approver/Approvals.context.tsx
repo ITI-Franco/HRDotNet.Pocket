@@ -43,23 +43,23 @@ type TypeContext = {
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => {},
+  setState: () => { },
   handle: ValuesApprovals.Handle,
-  setHandle: () => {},
+  setHandle: () => { },
 
-  onHandleCheckbox: () => {},
-  onHandleSelectAll: () => {},
-  onHandleApprovals: () => {},
-  onHandleClosePrompt: () => {},
-  onHandleCancelPrompt: () => {},
-  onHandleApprovePrompt: () => {},
-  onHandlePress: () => {},
-  onHandleRefreshControl: () => {},
-  onHandleSetReachedEnd: () => {},
-  onHandleSetURLApproval: () => {},
-  onHandleFetchApproval: () => {},
+  onHandleCheckbox: () => { },
+  onHandleSelectAll: () => { },
+  onHandleApprovals: () => { },
+  onHandleClosePrompt: () => { },
+  onHandleCancelPrompt: () => { },
+  onHandleApprovePrompt: () => { },
+  onHandlePress: () => { },
+  onHandleRefreshControl: () => { },
+  onHandleSetReachedEnd: () => { },
+  onHandleSetURLApproval: () => { },
+  onHandleFetchApproval: () => { },
   isSelectable: () => false,
-  ApprovalCount: () => {},
+  ApprovalCount: () => { },
 });
 
 export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
@@ -127,9 +127,9 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-          successList: [],
-          failedList: [],
-        });
+        successList: [],
+        failedList: [],
+      });
   };
 
   const onHandleApprovePrompt = async () => {
@@ -173,7 +173,10 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
       const interval = setTimeout(async () => {
         await useFetch.Approvals(navigation, state, setState, handle, setHandle);
       }, 50);
-      return () => clearTimeout(interval);
+      return () => {
+        setHandle({ isLoading: false });
+        clearTimeout(interval);
+      };
     }
   };
 

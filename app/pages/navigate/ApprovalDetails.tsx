@@ -177,6 +177,12 @@ const ApprovalDetails: React.FC<TypeNavStack> = ({ navigation }) => {
                 {DisplayContent()}
 
                 <View style={[styles.rowWrapper, { marginTop: 20, marginBottom: 10 }]}>
+                  <Text style={styles.titleText}>{STRINGS.cllnReferenceNo}</Text>
+
+                  <Text style={styles.valueText}>{state.data?.filing?.referenceNo || STRINGS.blankLine}</Text>
+                </View>
+
+                <View style={[styles.rowWrapper, { marginTop: 20, marginBottom: 10 }]}>
                   <Text style={styles.titleText}>{STRINGS.cllnReason}</Text>
 
                   <Text style={styles.valueText}>{state.data?.filing?.reason || STRINGS.blankLine}</Text>

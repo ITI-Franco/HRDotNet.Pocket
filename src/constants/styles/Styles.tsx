@@ -3526,6 +3526,67 @@ export const STYLES = {
     },
   }),
 
+  ComponentOverlapNote: StyleSheet.create({
+    container: {
+      overflow: 'hidden',
+      borderRadius: 8,
+    },
+
+    alertBox: {
+      width: '100%',
+      padding: 16,
+      borderLeftWidth: 8,
+      borderLeftColor: '#F97316',
+      backgroundColor: '#FFF7ED',
+    },
+
+    content: {
+      gap: 8,
+    },
+
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+
+    label: {
+      color: '#374151',
+      fontWeight: '600',
+    },
+
+    messageContainer: {
+      paddingLeft: 20,
+    },
+
+    message: {
+      color: '#374151',
+      fontSize: 14,
+    },
+
+    list: {
+      paddingLeft: 24,
+      marginTop: 4,
+    },
+
+    listItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+
+    bullet: {
+      color: '#374151',
+      fontSize: 14,
+      marginRight: 8,
+    },
+
+    listText: {
+      flex: 1,
+      color: '#374151',
+      fontSize: 14,
+    },
+  }),
+
   // Styled Text Styles
   StyledText: StyleSheet.create({
     sm_u: {
