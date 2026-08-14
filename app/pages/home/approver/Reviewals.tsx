@@ -120,13 +120,13 @@ const Reviewals: React.FC = () => {
                             styles.approvalCountButton,
                             state.selectedButton === index
                               ? {
-                                color: COLORS.orange,
-                                backgroundColor: COLORS.clearWhite,
-                              }
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
                               : {
-                                color: COLORS.clearWhite,
-                                backgroundColor: COLORS.orange,
-                              },
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
                           ]}
                         >
                           {count}
