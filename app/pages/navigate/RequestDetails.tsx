@@ -153,10 +153,11 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
   const isFiled = filingStatusId === FilingStatus.Filed;
   const isReviewed = filingStatusId === FilingStatus.Reviewed;
   const isApproved = filingStatusId === FilingStatus.Approved;
+
   const isSecondary = params.isSecondary;
 
   const showApprovalButton = isSecondary && (isFiled || isReviewed);
-  const showCancelButton = !isSecondary && (isFiled || isApproved);
+  const showCancelButton = !isSecondary && (isFiled || isApproved || isReviewed);
   const showUpdateButton = !isSecondary && isFiled;
 
   return (
@@ -236,7 +237,7 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
           <View style={styles.rowView}>
             {showApprovalButton && <DisplayApprovalButton />}
 
-            {!params.isSecondary && (
+            {!isSecondary && (
               <>
                 {showCancelButton && (
                   <TouchableOpacity

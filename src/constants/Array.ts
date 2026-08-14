@@ -1327,20 +1327,13 @@ export const ARRAY = {
   requestDetailsOB: (data: SchemaRequestApplications) => [
     {
       space: true,
-      title: STRINGS.OBSummaryFieldI,
-      value: DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom!, data?.filing?.dateRange?.dateTo!),
+      title: STRINGS.labelDocumentNo,
+      value: data.filing.documentNo,
     },
     {
-      space: false,
-      title: STRINGS.cllnOBTime,
-      value: DateTimeUtils.twoTimeRangeFormat(data?.filing?.timeRange?.timeIn!, data?.filing?.timeRange?.timeOut!),
-    },
-    { space: false, adjust: true, title: STRINGS.cllnLocation, value: data?.filing?.location?.name },
-    {
-      space: false,
-      adjust: true,
-      title: STRINGS.cllnBranch,
-      value: data?.filing?.location?.locationBranch || STRINGS.blankLine,
+      space: true,
+      title: STRINGS.requestFieldApproveReason,
+      value: data.filing.approveReason,
     },
   ],
 
