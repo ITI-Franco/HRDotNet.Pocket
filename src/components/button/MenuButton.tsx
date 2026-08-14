@@ -2,26 +2,30 @@
 // Designed by : Alex Diane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { useEffect, useReducer, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, ImageRequireSource, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, ImageRequireSource } from 'react-native';
 import { Image } from 'expo-image';
 import * as Animatable from 'react-native-animatable';
 import { Shadow } from 'react-native-shadow-2';
 
 import { STYLES, STRINGS, ASSETS } from 'src';
-import { Utils } from 'src/utils/Utils';
+import { FilingUtils, Utils } from 'src/utils/Utils';
 import { useNavigation } from '@react-navigation/native';
-import { PropsMenuButton, StateMenuButton, TypeObjectValues } from 'src/types/Types';
+import { PropsMenuButton, TypeObjectValues } from 'src/types/Types';
 import { useHome } from 'src/contexts/tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import { useGlobalStore } from 'src/store/GlobalStore';
 
 const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
   const styles = STYLES.ComponentMenuButton;
 
   const navigation = useNavigation();
   const { state, checkTeamMembers } = useHome();
+  const { reviewalCounts, approvalCounts, cutOffPeriod } = useGlobalStore();
+
+  const reviewalsTotal = FilingUtils.countEligible(reviewalCounts, cutOffPeriod);
+  const approvalsTotal = FilingUtils.countEligible(approvalCounts, cutOffPeriod, [STRINGS.filed, STRINGS.reviewed]);
 
   const badge = (text: number) => {
     return (
@@ -79,6 +83,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
       },
       {
         navigate: () => navigation.navigate(STRINGS.pathReviewals as never),
+        badge: reviewalsTotal !== 0 && badge(reviewalsTotal),
         image: ASSETS.iconPending,
         title: STRINGS.menuBtnTitleIII,
         disabled: !reviewer,
@@ -87,6 +92,7 @@ const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
     secondRow: [
       {
         navigate: () => navigation.navigate(STRINGS.pathApprovals as never),
+        badge: approvalsTotal !== 0 && badge(approvalsTotal),
         image: onShowImage(ASSETS.iconCOSRequest, ASSETS.iconApprovals),
         title: onShowTitle(STRINGS.menuBtnTitleUserI, STRINGS.menuBtnTitleApproverI),
         disabled: !approver,

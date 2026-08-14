@@ -215,7 +215,9 @@ export const useFetch = {
           error: errors,
           setHandle: setHandle,
           toastMessage:
-            errors.request.status === StatusCode.BadRequest ? `${errors.response.data.errors[0].message} ${process.env.EXPO_PUBLIC_LOGIN} ${JSON.stringify(errors1, null, 2)}  ` : `${ERRORS.error}  ${process.env.EXPO_PUBLIC_LOGIN} ${JSON.stringify(errors1, null, 2)}`,
+            errors.request.status === StatusCode.BadRequest
+              ? `${errors.response.data.errors[0].message} ${process.env.EXPO_PUBLIC_LOGIN} ${JSON.stringify(errors1, null, 2)}  `
+              : `${ERRORS.error}  ${process.env.EXPO_PUBLIC_LOGIN} ${JSON.stringify(errors1, null, 2)}`,
         });
       });
   },
@@ -354,8 +356,7 @@ export const useFetch = {
 
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery} `;
 
-
-    console.log("endPoint", endPoint)
+    console.log('endPoint', endPoint);
 
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
@@ -393,13 +394,16 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  ApprovalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+  ApprovalsCounts: async (
+    buttonsLength: number,
+    urlQuery: string,
+  ): Promise<Record<number, SchemaRequestApplications[]>> => {
     const counts: Record<number, SchemaRequestApplications[]> = {};
 
     await Promise.all(
-      state.buttons.map(async (_, index) => {
+      Array.from({ length: buttonsLength }).map(async (_, index) => {
         const url = UtilsFetch.panelApprovalsURL(index);
-        const endPoint = `${url}?${state.urlQuery}`;
+        const endPoint = `${url}?${urlQuery}`;
 
         try {
           const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
@@ -433,7 +437,7 @@ export const useFetch = {
     let url: unknown = UtilsFetch.panelReviewalsURL(state.selectedButton);
     let endPoint = `${url}?page=${state.page}&pageSize=${process.env.EXPO_PUBLIC_REQUEST_PAGESIZE + state.urlQuery}`;
 
-    console.log("Endd", endPoint)
+    console.log('Endd', endPoint);
 
     await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint)
       .then((response: { data: { items: SchemaRequestApplications[]; total: number } }) => {
@@ -455,7 +459,7 @@ export const useFetch = {
         if (error.request.status === 403) {
           nav.navigate(STRINGS.pathForbidden);
         } else {
-          setHandle({ isLoading: false, isWaiting: false })
+          setHandle({ isLoading: false, isWaiting: false });
           await UtilsFetch.catchEvent({
             error: error,
             setHandle: setHandle,
@@ -471,13 +475,16 @@ export const useFetch = {
       .finally(() => setHandle({ isLoading: false, isWaiting: false }));
   },
 
-  ReviewalsCounts: async (state: StateApplications): Promise<Record<number, SchemaRequestApplications[]>> => {
+  ReviewalsCounts: async (
+    buttonsLength: number,
+    urlQuery: string,
+  ): Promise<Record<number, SchemaRequestApplications[]>> => {
     const counts: Record<number, SchemaRequestApplications[]> = {};
 
     await Promise.all(
-      state.buttons.map(async (_, index) => {
+      Array.from({ length: buttonsLength }).map(async (_, index) => {
         const url = UtilsFetch.panelReviewalsURL(index);
-        const endPoint = `${url}?${state.urlQuery}`;
+        const endPoint = `${url}?${urlQuery}`;
 
         try {
           const response = await UtilsFetch.connect(APIMethods.GET, ContentTypes.JSON, endPoint);
@@ -494,7 +501,7 @@ export const useFetch = {
     return counts;
   },
 
-  Teams: async () => { },
+  Teams: async () => {},
 
   RequestById: async (
     nav: StackNavigationProp<ParamListBase>,
@@ -646,10 +653,10 @@ export const useFetch = {
         undefinedUri === ''
           ? formData.append('FileAttachment', parsed?.attachment?.uri)
           : formData.append('FileAttachment', {
-            name: split[split.length - 1],
-            uri: parsed?.attachment?.uri,
-            type: type,
-          });
+              name: split[split.length - 1],
+              uri: parsed?.attachment?.uri,
+              type: type,
+            });
 
         const generateEditLog = Utils.generateHistoryItem(parsed?.reason, formatName, 'New', dateParse);
 
@@ -685,7 +692,7 @@ export const useFetch = {
 
       .then(() => {
         setHandle({ isSuccess: true });
-        console.log("Fff", formData)
+        console.log('Fff', formData);
       })
       .catch(async (error: TypeError) => {
         if (error.request.status === StatusCode.Unauthorized) {
@@ -1087,11 +1094,10 @@ export const useFetch = {
 
     state.data.forEach((item: SchemaRequestApplications) => {
       if (item.isChecked) {
-
-        console.log("Iteem", item)
+        console.log('Iteem', item);
         const dateParse = Utils.panelBatchDateParse(state.selectedButton, item);
 
-        console.log("Batchh", dateParse)
+        console.log('Batchh', dateParse);
         const generatedEditLog = Utils.generateHistoryItem(
           state.batchReason || '',
           employeeName || '',
@@ -1217,13 +1223,13 @@ export const useFetch = {
 
         res.length > 0
           ? setState({
-            clockIn: res[0],
-            clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
-          })
+              clockIn: res[0],
+              clockOut: res.length > 1 ? res[res.length - 1] : ValuesSchemaCalendarEntries,
+            })
           : setState({
-            clockIn: ValuesSchemaCalendarEntries,
-            clockOut: ValuesSchemaCalendarEntries,
-          });
+              clockIn: ValuesSchemaCalendarEntries,
+              clockOut: ValuesSchemaCalendarEntries,
+            });
       })
       .catch(async (error: TypeError) => {
         await UtilsFetch.catchEvent({
@@ -1318,7 +1324,7 @@ export const useFetch = {
         `${process.env.EXPO_PUBLIC_PROFILE}`,
       );
 
-      const fullName = Utils.formatNameHistory(response.data.personalInformation?.name)
+      const fullName = Utils.formatNameHistory(response.data.personalInformation?.name);
       let personalData = {
         FullName: fullName ?? '',
         Name_Department: response.data.recordInformation?.workInformation?.company?.department?.name ?? '',
@@ -1342,10 +1348,9 @@ export const useFetch = {
 
   GetMYCOS: async () => {
     try {
-      const response = await axios.get(`${process.env.EXPO_PUBLIC_REQUEST_COS}`)
+      const response = await axios.get(`${process.env.EXPO_PUBLIC_REQUEST_COS}`);
 
-      return response.data
-
+      return response.data;
     } catch (error) {
       console.error('Error response', error);
       throw error;

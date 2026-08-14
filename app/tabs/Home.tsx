@@ -16,7 +16,7 @@ import LoaderPage from 'src/components/loader/LoaderPage';
 import { COLORS, STYLES, STRINGS, ASSETS } from 'src';
 import { TypeNavStack } from 'src/types/Types';
 import { GestureDetector } from 'react-native-gesture-handler';
-import { Utils } from 'src/utils/Utils';
+import { RequestCounts, Utils } from 'src/utils/Utils';
 import { useHome } from 'src/contexts/tabs';
 import { useFocusEffect } from 'expo-router';
 import { jwtDecode } from 'jwt-decode';
@@ -114,6 +114,13 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
     }, [state.userDetails.profile_uri]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      RequestCounts.refreshReviewalCounts();
+      RequestCounts.refreshApprovalCounts();
+    }, []),
+  );
+
   (async () => {
     try {
       const token = await AsyncStorage.getItem('AT');
@@ -124,7 +131,7 @@ const Home: React.FC<TypeNavStack> = ({ navigation }) => {
       } else {
         throw new Error('Token Not Found.');
       }
-    } catch (err) { }
+    } catch (err) {}
   })();
   return (
     <React.Fragment>

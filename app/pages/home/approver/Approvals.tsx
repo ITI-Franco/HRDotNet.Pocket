@@ -17,23 +17,15 @@ import { useFocusEffect } from 'expo-router';
 import { SchemaRequestApplications } from 'src/types/Types';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { FilingPanel } from 'src/constants/Enum';
+import { FilingUtils } from 'src/utils/Utils';
 
 const Approvals: React.FC = () => {
   const styles = STYLES.Request;
 
-  const { cutOffPeriod } = useGlobalStore();
+  const { cutOffPeriod, approvalCounts } = useGlobalStore();
 
-  const {
-    params,
-    state,
-    setState,
-    handle,
-    setHandle,
-    onHandlePress,
-    onHandleSetURLApproval,
-    onHandleFetchApproval,
-    ApprovalCount,
-  } = useApprovals();
+  const { params, state, setState, handle, setHandle, onHandlePress, onHandleSetURLApproval, onHandleFetchApproval } =
+    useApprovals();
 
   useEffect(() => {
     onHandleSetURLApproval();
@@ -42,10 +34,6 @@ const Approvals: React.FC = () => {
   useEffect(() => {
     onHandleFetchApproval();
   }, [handle.refreshing, state.urlQuery, state.page, , params]);
-
-  useEffect(() => {
-    ApprovalCount();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,37 +62,9 @@ const Approvals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const filteredItems =
-                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
-                    const filingStatus = item.filing?.filingStatus?.name;
-
-                    const isFiled = filingStatus === STRINGS.filed;
-                    const isReviewed = filingStatus === STRINGS.reviewed;
-
-                    if (!isFiled || !isReviewed) {
-                      return false;
-                    }
-
-                    if (index === FilingPanel.OB) {
-                      return (
-                        item.filing?.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
-                        item.filing?.dateRange?.dateTo! <= cutOffPeriod?.[1]!
-                      );
-                    }
-
-                    if (index === FilingPanel.COS || index === FilingPanel.CTO || index === FilingPanel.LV) {
-                      const dateFiled = item.filing?.dateFiled;
-
-                      if (typeof dateFiled === 'object' && dateFiled !== null) {
-                        return dateFiled.dateFrom >= cutOffPeriod?.[0]! && dateFiled.dateTo <= cutOffPeriod?.[1]!;
-                      }
-
-                      return false;
-                    }
-
-                    return (
-                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! && item.filing?.dateFiled! <= cutOffPeriod?.[1]!
-                    );
-                  }) ?? [];
+                  approvalCounts?.[index]?.filter((item: SchemaRequestApplications) =>
+                    FilingUtils.isEligibleFiling(item, index, cutOffPeriod, [STRINGS.filed, STRINGS.reviewed]),
+                  ) ?? [];
 
                 const count = filteredItems.length;
 
@@ -121,13 +81,13 @@ const Approvals: React.FC = () => {
                             styles.approvalCountButton,
                             state.selectedButton === index
                               ? {
-                                color: COLORS.orange,
-                                backgroundColor: COLORS.clearWhite,
-                              }
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
                               : {
-                                color: COLORS.clearWhite,
-                                backgroundColor: COLORS.orange,
-                              },
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
                           ]}
                         >
                           {count}

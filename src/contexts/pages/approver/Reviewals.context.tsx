@@ -17,6 +17,7 @@ import { useFetch } from 'src/hooks/useFetch';
 import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { STRINGS } from 'src/constants/Strings';
+import { RequestCounts } from 'src/utils/Utils';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -37,29 +38,27 @@ type TypeContext = {
   onHandleSetURLReviewal: () => void;
   onHandleFetchReviewal: () => void;
   isSelectable: (value: SchemaRequestApplications) => boolean;
-  ApprovalCount: () => void;
 };
 
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => { },
+  setState: () => {},
   handle: ValuesApprovals.Handle,
-  setHandle: () => { },
+  setHandle: () => {},
 
-  onHandleCheckbox: () => { },
-  onHandleSelectAll: () => { },
-  onHandleApprovals: () => { },
-  onHandleClosePrompt: () => { },
-  onHandleCancelPrompt: () => { },
-  onHandleReviewPrompt: () => { },
-  onHandlePress: () => { },
-  onHandleRefreshControl: () => { },
-  onHandleSetReachedEnd: () => { },
-  onHandleSetURLReviewal: () => { },
-  onHandleFetchReviewal: () => { },
+  onHandleCheckbox: () => {},
+  onHandleSelectAll: () => {},
+  onHandleApprovals: () => {},
+  onHandleClosePrompt: () => {},
+  onHandleCancelPrompt: () => {},
+  onHandleReviewPrompt: () => {},
+  onHandlePress: () => {},
+  onHandleRefreshControl: () => {},
+  onHandleSetReachedEnd: () => {},
+  onHandleSetURLReviewal: () => {},
+  onHandleFetchReviewal: () => {},
   isSelectable: () => false,
-  ApprovalCount: () => { },
 });
 
 export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
@@ -127,9 +126,9 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-        successList: [],
-        failedList: [],
-      });
+          successList: [],
+          failedList: [],
+        });
   };
 
   const onHandleReviewPrompt = async () => {
@@ -137,6 +136,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
 
     await useFetch.BatchReviewals(navigation, state, setState, handle, setHandle, employeeName).then(() => {
       setHandle({ isLoading: false });
+      RequestCounts.refreshReviewalCounts();
     });
   };
 
@@ -169,38 +169,10 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  // const onHandleFetchReviewal = () => {
-  //   if (state.urlQuery !== '') {
-  //     const interval = setTimeout(async () => {
-  //       await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
-  //     }, 50);
-
-  //     return () => {
-  //       setHandle({ isLoading: false });
-  //       clearTimeout(interval);
-  //     };
-  //   }
-  // };
-
   const onHandleFetchReviewal = async () => {
     if (state.urlQuery !== '') {
-      await useFetch.Reviewals(
-        navigation,
-        state,
-        setState,
-        handle,
-        setHandle
-      );
+      await useFetch.Reviewals(navigation, state, setState, handle, setHandle);
     }
-  };
-
-
-  const ApprovalCount = async () => {
-    const counts = await useFetch.ReviewalsCounts(state);
-
-    setState({
-      approvalCounts: counts,
-    });
   };
 
   return (
@@ -223,7 +195,6 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
         onHandleSetURLReviewal,
         onHandleFetchReviewal,
         isSelectable,
-        ApprovalCount,
       }}
     >
       {children}

@@ -8,7 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Toast from 'src/components/use/Toast';
 import PageHeader from 'src/components/header/PageHeader';
-import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
+import { COLORS, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useReviewals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
@@ -17,23 +17,15 @@ import ConfirmmationReviewal from 'src/components/prompt/ConfirmationReviewal';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { SchemaRequestApplications } from 'src/types/Types';
 import { FilingPanel } from 'src/constants/Enum';
+import { FilingUtils } from 'src/utils/Utils';
 
 const Reviewals: React.FC = () => {
   const styles = STYLES.Request;
 
-  const { cutOffPeriod } = useGlobalStore();
+  const { cutOffPeriod, reviewalCounts } = useGlobalStore();
 
-  const {
-    params,
-    state,
-    setState,
-    handle,
-    setHandle,
-    onHandlePress,
-    onHandleSetURLReviewal,
-    onHandleFetchReviewal,
-    ApprovalCount,
-  } = useReviewals();
+  const { params, state, setState, handle, setHandle, onHandlePress, onHandleSetURLReviewal, onHandleFetchReviewal } =
+    useReviewals();
 
   useEffect(() => {
     onHandleSetURLReviewal();
@@ -42,10 +34,6 @@ const Reviewals: React.FC = () => {
   useEffect(() => {
     onHandleFetchReviewal();
   }, [handle.refreshing, state.urlQuery, state.page, state.fetchKey, params]);
-
-  useEffect(() => {
-    ApprovalCount();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,36 +62,9 @@ const Reviewals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const filteredItems =
-                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
-                    const filingStatus = item.filing?.filingStatus?.name;
-
-                    const isFiled = filingStatus === STRINGS.filed;
-
-                    if (!isFiled) {
-                      return false;
-                    }
-
-                    if (index === FilingPanel.OB) {
-                      return (
-                        item.filing?.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
-                        item.filing?.dateRange?.dateTo! <= cutOffPeriod?.[1]!
-                      );
-                    }
-
-                    if (index === FilingPanel.COS || index === FilingPanel.CTO || index === FilingPanel.LV) {
-                      const dateFiled = item.filing?.dateFiled;
-
-                      if (typeof dateFiled === 'object' && dateFiled !== null) {
-                        return dateFiled.dateFrom >= cutOffPeriod?.[0]! && dateFiled.dateTo <= cutOffPeriod?.[1]!;
-                      }
-
-                      return false;
-                    }
-
-                    return (
-                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! && item.filing?.dateFiled! <= cutOffPeriod?.[1]!
-                    );
-                  }) ?? [];
+                  reviewalCounts?.[index]?.filter((item: SchemaRequestApplications) =>
+                    FilingUtils.isEligibleFiling(item, index, cutOffPeriod),
+                  ) ?? [];
 
                 const count = filteredItems.length;
 
@@ -120,13 +81,13 @@ const Reviewals: React.FC = () => {
                             styles.approvalCountButton,
                             state.selectedButton === index
                               ? {
-                                color: COLORS.orange,
-                                backgroundColor: COLORS.clearWhite,
-                              }
+                                  color: COLORS.orange,
+                                  backgroundColor: COLORS.clearWhite,
+                                }
                               : {
-                                color: COLORS.clearWhite,
-                                backgroundColor: COLORS.orange,
-                              },
+                                  color: COLORS.clearWhite,
+                                  backgroundColor: COLORS.orange,
+                                },
                           ]}
                         >
                           {count}

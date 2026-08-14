@@ -68,11 +68,11 @@ export type SchemaRequestApplications = {
     };
 
     dateFiled?:
-    | {
-      dateFrom: string;
-      dateTo: string;
-    }
-    | string;
+      | {
+          dateFrom: string;
+          dateTo: string;
+        }
+      | string;
 
     leaveParameter?: {
       // Leave
@@ -123,11 +123,11 @@ export type SchemaRequestApplications = {
       breakTimeOut: string;
       isPremium: boolean;
       shiftType?:
-      | {
-        shiftTypeId: number;
-        shiftType: string;
-      }
-      | string;
+        | {
+            shiftTypeId: number;
+            shiftType: string;
+          }
+        | string;
       shiftTypeId: number;
     };
 
@@ -291,11 +291,11 @@ export type Schedules = {
   breakTimeIn: string;
   breakTimeOut: string;
   shiftType:
-  | {
-    shiftTypeId: number;
-    shiftType: string;
-  }
-  | string;
+    | {
+        shiftTypeId: number;
+        shiftType: string;
+      }
+    | string;
   shiftTypeId: number;
   isPremium: boolean;
 };
@@ -895,7 +895,6 @@ export type StateApplications = {
 
   batchReason?: string;
   batchEmployeeName?: string; //
-  approvalCounts?: Record<number, SchemaRequestApplications[]>;
 };
 
 // Components
@@ -1000,7 +999,6 @@ export type OverlapNoteProps = {
   dateFrom: string;
   dateTo: string;
 };
-
 
 // Pending Panel
 export type PropsPendingPanel = {
