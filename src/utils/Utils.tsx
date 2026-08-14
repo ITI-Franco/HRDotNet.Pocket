@@ -887,11 +887,6 @@ export const Utils = {
       return value;
     };
 
-    function getIndefiniteArticle(word: string): string {
-      const vowels = ['a', 'e', 'i', 'o', 'u'];
-      return vowels.includes(word[0].toLowerCase()) ? 'an' : 'a';
-    }
-
     const formatKey = (key: string) => {
       let field = key.replace(/([a-z])([A-Z])/g, '$1 $2');
       field = field
@@ -900,7 +895,7 @@ export const Utils = {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
       const enumVal = getSourceVal(key);
-      return `Please assign ${getIndefiniteArticle(enumVal === key ? field : enumVal)} ${enumVal === key ? field : enumVal}.`;
+      return `${enumVal === key ? field : enumVal} is Required.`;
     };
 
     const isEmptyValue = (value: unknown): boolean => {

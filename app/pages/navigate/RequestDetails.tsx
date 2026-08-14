@@ -61,12 +61,6 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
         );
         break;
 
-      case onPanel.OB:
-        display = ARRAY.requestDetailsOB(state.data).map((item: unknown, index: number) =>
-          DisplayRow(item as TypeObjectValues, index),
-        );
-        break;
-
       case onPanel.OT:
       case onPanel.OFF:
         display = ARRAY.requestDetailsOTOFF(state.data).map((item: TypeObjectValues, index: number) =>
@@ -148,6 +142,18 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
     return () => clearTimeout(timeoutId);
   }, [handle.refreshing]);
 
+  const filingStatusId = state.data?.filing?.filingStatus?.id;
+
+  const isFiled = filingStatusId === FilingStatus.Filed;
+  const isReviewed = filingStatusId === FilingStatus.Reviewed;
+  const isApproved = filingStatusId === FilingStatus.Approved;
+
+  const isSecondary = params.isSecondary;
+
+  const showApprovalButton = isSecondary && (isFiled || isReviewed);
+  const showCancelButton = !isSecondary && (isFiled || isApproved || isReviewed);
+  const showUpdateButton = !isSecondary && isFiled;
+
   return (
     <React.Fragment>
       <PageHeader name={STRINGS.pageTitleRequestDetails} />
@@ -223,23 +229,26 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
           </View>
 
           <View style={styles.rowView}>
-            {params.isSecondary ? (
-              (state.data?.filing?.filingStatus?.id === FilingStatus.Filed ||
-                state.data?.filing?.filingStatus?.id === FilingStatus.Reviewed) && <DisplayApprovalButton />
-            ) : state.data?.filing?.filingStatus?.id === FilingStatus.Filed ? (
-              <React.Fragment>
-                <TouchableOpacity
-                  style={{ ...styles.button, backgroundColor: COLORS.red }}
-                  onPress={() => onRequestHandle(onReqAction.Cancel)}
-                >
-                  <Text style={styles.textButton}>{STRINGS.cancel}</Text>
-                </TouchableOpacity>
+            {showApprovalButton && <DisplayApprovalButton />}
 
-                <TouchableOpacity style={styles.button} onPress={() => onRequestHandle(onReqAction.Update)}>
-                  <Text style={styles.textButton}>{STRINGS.update}</Text>
-                </TouchableOpacity>
-              </React.Fragment>
-            ) : null}
+            {!isSecondary && (
+              <>
+                {showCancelButton && (
+                  <TouchableOpacity
+                    style={{ ...styles.button, backgroundColor: COLORS.red }}
+                    onPress={() => onRequestHandle(onReqAction.Cancel)}
+                  >
+                    <Text style={styles.textButton}>{STRINGS.cancel}</Text>
+                  </TouchableOpacity>
+                )}
+
+                {showUpdateButton && (
+                  <TouchableOpacity style={styles.button} onPress={() => onRequestHandle(onReqAction.Update)}>
+                    <Text style={styles.textButton}>{STRINGS.update}</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
           </View>
 
           <SuccessPrompt

@@ -400,6 +400,7 @@ export const STRINGS = {
 
   // Placeholders
   placeholderFilter: 'Select to Filter',
+  placeholderDocStatus: 'Select to Status',
   placeholderUsername: 'Username',
   placeholderPassword: 'Password',
   placeholderSearch: 'Search',

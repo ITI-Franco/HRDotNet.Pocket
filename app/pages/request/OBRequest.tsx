@@ -18,7 +18,7 @@ import {
   TypePanel,
   TypeReqAction,
 } from 'src/types/Types';
-import { ValuesOBRequest, SelectionList, FieldLimit } from 'src/constants/Values';
+import { ValuesOBRequest, SelectionList, FieldLimit, APIMethods, ContentTypes } from 'src/constants/Values';
 
 const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
   const styles = STYLES.NewRequest;
@@ -58,9 +58,50 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    currParams.location && setState({ location: currParams.location });
-    currParams.branch && setState({ branch: currParams.branch });
-    currParams.image && setState({ attachment: currParams.image });
+    const checkBranches = async () => {
+      if (!currParams.location?.name) {
+        setState({
+          location: currParams.location,
+          branch: undefined,
+          hasBranches: false,
+        });
+        return;
+      }
+
+      try {
+        const response = await UtilsFetch.connect(
+          APIMethods.GET,
+          ContentTypes.JSON,
+          `${process.env.EXPO_PUBLIC_TIME_CLOCK_RADIUS}?Location=${encodeURIComponent(
+            currParams.location.name,
+          )}&page=1&pageSize=1`,
+        );
+
+        const hasBranches = (response.data?.items?.length ?? 0) > 0;
+
+        setState({
+          location: currParams.location,
+          hasBranches,
+          branch: hasBranches ? currParams.branch : undefined,
+        });
+      } catch (error) {
+        console.error('Error checking branches:', error);
+
+        setState({
+          location: currParams.location,
+          branch: undefined,
+          hasBranches: false,
+        });
+      }
+    };
+
+    if (currParams.location) {
+      checkBranches();
+    }
+
+    if (currParams.image) {
+      setState({ attachment: currParams.image });
+    }
   }, [params]);
 
   useEffect(() => {
@@ -263,8 +304,8 @@ const OBRequest: React.FC<TypeNavProp> = ({ navigation }) => {
                         action: STRINGS.selectionListOBRequestII,
                         label: 'Branch',
                       }),
-                    !state.location?.name ? true : false,
-                    !state.location?.name ? false : true,
+                    !state.hasBranches,
+                    state.hasBranches,
                   ),
 
                   UtilsDisplay.DisplayFieldTextInput(

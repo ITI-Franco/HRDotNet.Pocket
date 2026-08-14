@@ -5,7 +5,6 @@
 import { DateTimeUtils } from '../utils/DateTimeUtils';
 import { ASSETS } from './Assets';
 import { COLORS } from './Colors';
-import { FilingPanel } from './Enum';
 import { STRINGS } from './Strings';
 import {
   TypeTimeOff,
@@ -778,6 +777,25 @@ export const ARRAY = {
       ),
     },
     {
+<<<<<<< HEAD
+      details: ARRAY.getRequestDetails(
+        [
+          {
+            label: STRINGS.OBSummaryFieldI,
+            value: DateTimeUtils.toDateRangeHalftMonthWord(props?.OBDateFrom!, props?.OBDateTo!),
+          },
+          {
+            label: STRINGS.OBSummaryFieldII,
+            value: DateTimeUtils.twoTimeRangeFormat(props?.OBTimeIn!, props?.OBTimeOut!),
+          },
+          { label: STRINGS.OBSummaryFieldIII, value: props?.location?.name },
+          { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
+          { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
+        ],
+        props,
+        reqAction,
+      ),
+=======
       details:
         reqAction === ARRAY.reqAction[0].Cancel
           ? [...ARRAY.requestCancellation(props)]
@@ -794,6 +812,7 @@ export const ARRAY = {
             { label: STRINGS.OBSummaryFieldIV, value: props?.branch?.name ?? '' },
             { label: STRINGS.OBSummaryFieldV, value: props?.referenceNo ?? '' },
           ],
+>>>>>>> dcd19435b1725cd6be7699910e0d5069969e2a78
       subText: STRINGS.requestSuccess(
         STRINGS.officialBusiness,
         DateTimeUtils.twoDateRangeFormat(props?.OBDateFrom!, props?.OBDateTo!),
@@ -1328,20 +1347,13 @@ export const ARRAY = {
   requestDetailsOB: (data: SchemaRequestApplications) => [
     {
       space: true,
-      title: STRINGS.OBSummaryFieldI,
-      value: DateTimeUtils.twoDateRangeFormat(data?.filing?.dateRange?.dateFrom!, data?.filing?.dateRange?.dateTo!),
+      title: STRINGS.labelDocumentNo,
+      value: data.filing.documentNo,
     },
     {
-      space: false,
-      title: STRINGS.cllnOBTime,
-      value: DateTimeUtils.twoTimeRangeFormat(data?.filing?.timeRange?.timeIn!, data?.filing?.timeRange?.timeOut!),
-    },
-    { space: false, adjust: true, title: STRINGS.cllnLocation, value: data?.filing?.location?.name },
-    {
-      space: false,
-      adjust: true,
-      title: STRINGS.cllnBranch,
-      value: data?.filing?.location?.locationBranch || STRINGS.blankLine,
+      space: true,
+      title: STRINGS.requestFieldApproveReason,
+      value: data.filing.approveReason,
     },
   ],
 
