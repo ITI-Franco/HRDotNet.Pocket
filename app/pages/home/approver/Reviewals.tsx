@@ -75,18 +75,33 @@ const Reviewals: React.FC = () => {
               renderItem={({ item, index }) => {
                 const filteredItems =
                   state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
+                    const filingStatus = item.filing?.filingStatus?.name;
+
+                    const isFiled = filingStatus === STRINGS.filed;
+
+                    if (!isFiled) {
+                      return false;
+                    }
+
                     if (index === FilingPanel.OB) {
                       return (
-                        item.filing?.filingStatus?.name === STRINGS.filed &&
-                        item.filing.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
-                        item.filing.dateRange?.dateTo! <= cutOffPeriod?.[1]!
+                        item.filing?.dateRange?.dateFrom! >= cutOffPeriod?.[0]! &&
+                        item.filing?.dateRange?.dateTo! <= cutOffPeriod?.[1]!
                       );
                     }
 
+                    if (index === FilingPanel.COS || index === FilingPanel.CTO || index === FilingPanel.LV) {
+                      const dateFiled = item.filing?.dateFiled;
+
+                      if (typeof dateFiled === 'object' && dateFiled !== null) {
+                        return dateFiled.dateFrom >= cutOffPeriod?.[0]! && dateFiled.dateTo <= cutOffPeriod?.[1]!;
+                      }
+
+                      return false;
+                    }
+
                     return (
-                      item.filing?.filingStatus?.name === STRINGS.filed &&
-                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! &&
-                      item.filing?.dateFiled! <= cutOffPeriod?.[1]!
+                      item.filing?.dateFiled! >= cutOffPeriod?.[0]! && item.filing?.dateFiled! <= cutOffPeriod?.[1]!
                     );
                   }) ?? [];
 
