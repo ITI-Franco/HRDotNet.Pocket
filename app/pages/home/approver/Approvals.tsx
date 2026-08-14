@@ -41,7 +41,7 @@ const Approvals: React.FC = () => {
 
   useEffect(() => {
     onHandleFetchApproval();
-  }, [handle.refreshing, state.urlQuery, state.page, params]);
+  }, [handle.refreshing, state.urlQuery, state.page, , params]);
 
   useEffect(() => {
     ApprovalCount();
@@ -107,13 +107,13 @@ const Approvals: React.FC = () => {
                             styles.approvalCountButton,
                             state.selectedButton === index
                               ? {
-                                  color: COLORS.orange,
-                                  backgroundColor: COLORS.clearWhite,
-                                }
+                                color: COLORS.orange,
+                                backgroundColor: COLORS.clearWhite,
+                              }
                               : {
-                                  color: COLORS.clearWhite,
-                                  backgroundColor: COLORS.orange,
-                                },
+                                color: COLORS.clearWhite,
+                                backgroundColor: COLORS.orange,
+                              },
                           ]}
                         >
                           {count}
