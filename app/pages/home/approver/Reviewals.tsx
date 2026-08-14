@@ -8,7 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Toast from 'src/components/use/Toast';
 import PageHeader from 'src/components/header/PageHeader';
-import { COLORS, DateTimeUtils, STRINGS, STYLES } from 'src';
+import { COLORS, STRINGS, STYLES } from 'src';
 import RequestFilter from 'src/components/use/RequestFilter';
 import { useReviewals } from 'src/contexts/pages';
 import { useFocusEffect } from 'expo-router';
@@ -21,19 +21,10 @@ import { FilingPanel } from 'src/constants/Enum';
 const Reviewals: React.FC = () => {
   const styles = STYLES.Request;
 
-  const { cutOffPeriod } = useGlobalStore();
+  const { cutOffPeriod, reviewalCounts } = useGlobalStore();
 
-  const {
-    params,
-    state,
-    setState,
-    handle,
-    setHandle,
-    onHandlePress,
-    onHandleSetURLReviewal,
-    onHandleFetchReviewal,
-    ApprovalCount,
-  } = useReviewals();
+  const { params, state, setState, handle, setHandle, onHandlePress, onHandleSetURLReviewal, onHandleFetchReviewal } =
+    useReviewals();
 
   useEffect(() => {
     onHandleSetURLReviewal();
@@ -42,10 +33,6 @@ const Reviewals: React.FC = () => {
   useEffect(() => {
     onHandleFetchReviewal();
   }, [handle.refreshing, state.urlQuery, state.page, state.fetchKey, params]);
-
-  useEffect(() => {
-    ApprovalCount();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,7 +61,7 @@ const Reviewals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const filteredItems =
-                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
+                  reviewalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
                     const filingStatus = item.filing?.filingStatus?.name;
 
                     const isFiled = filingStatus === STRINGS.filed;

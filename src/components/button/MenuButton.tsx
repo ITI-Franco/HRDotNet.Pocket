@@ -2,8 +2,8 @@
 // Designed by : Alex Diane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { useEffect, useReducer, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, ImageRequireSource, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, ImageRequireSource } from 'react-native';
 import { Image } from 'expo-image';
 import * as Animatable from 'react-native-animatable';
 import { Shadow } from 'react-native-shadow-2';
@@ -11,11 +11,10 @@ import { Shadow } from 'react-native-shadow-2';
 import { STYLES, STRINGS, ASSETS } from 'src';
 import { Utils } from 'src/utils/Utils';
 import { useNavigation } from '@react-navigation/native';
-import { PropsMenuButton, StateMenuButton, TypeObjectValues } from 'src/types/Types';
+import { PropsMenuButton, TypeObjectValues } from 'src/types/Types';
 import { useHome } from 'src/contexts/tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 
 const MenuButton: React.FC<PropsMenuButton> = ({ show }) => {
   const styles = STYLES.ComponentMenuButton;

@@ -2,17 +2,20 @@
 // Designed by : Alex Diane Vivienne Candano
 // Developed by: Patrick William Quintana Lofranco, Jessie Cuerda
 
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets, EdgeInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { APIMethods, ContentTypes, ValuesHome } from 'src/constants/Values';
+import { APIMethods, ContentTypes, ValuesApprovals, ValuesHome } from 'src/constants/Values';
 import { useFetch } from 'src/hooks/useFetch';
 import { ParamsTabNav, StateHome, TypeHandle, TypeNavStack } from 'src/types/Types';
 import { useLoanFetch } from 'src/hooks/useLoanFetch';
 import { UtilsFetch } from 'src/utils/UtilsFetch';
 import { TeamMember } from 'src/types/Teams';
+import { useGlobalStore } from 'src/store/GlobalStore';
+import { DateTimeUtils } from 'src/utils/DateTimeUtils';
+import { STRINGS } from 'src/constants/Strings';
 
 type TypeContext = {
   insets: EdgeInsets;
@@ -47,6 +50,8 @@ export const Context = createContext<TypeContext>({
 });
 
 export const CtxHome = ({ children }: { children: React.ReactNode }) => {
+  const { cutOffPeriod, setApprovalCounts, setReviewalCounts } = useGlobalStore();
+
   const navigation: TypeNavStack['navigation'] = useNavigation();
   const insets: EdgeInsets = useSafeAreaInsets();
   const platform: string = Platform.OS;
@@ -102,6 +107,43 @@ export const CtxHome = ({ children }: { children: React.ReactNode }) => {
       throw error;
     }
   };
+
+  const fetchReviewalCounts = async () => {
+    if (!cutOffPeriod?.[0] || !cutOffPeriod?.[1]) return;
+
+    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0]);
+    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1]);
+
+    const urlQuery = `&DateField=${STRINGS.filterDateFrom}&DateFrom=${removeDashFrom}&DateTo=${removeDashTo}&sortBy=-DocumentNo`;
+
+    try {
+      const counts = await useFetch.ReviewalsCounts(ValuesApprovals.State.buttons.length, urlQuery);
+      setReviewalCounts(counts);
+    } catch (error) {
+      console.error('Reviewal count fetch error:', error);
+    }
+  };
+
+  const fetchApprovalCounts = async () => {
+    if (!cutOffPeriod?.[0] || !cutOffPeriod?.[1]) return;
+
+    const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0]);
+    const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1]);
+
+    const urlQuery = `&DateField=${STRINGS.filterDateFrom}&DateFrom=${removeDashFrom}&DateTo=${removeDashTo}&sortBy=-DocumentNo`;
+
+    try {
+      const counts = await useFetch.ApprovalsCounts(ValuesApprovals.State.buttons.length, urlQuery);
+      setApprovalCounts(counts);
+    } catch (error) {
+      console.error('Approval count fetch error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviewalCounts();
+    fetchApprovalCounts();
+  }, [cutOffPeriod]);
 
   const checkTeamMembers = async () => {
     let result: any[] = [];

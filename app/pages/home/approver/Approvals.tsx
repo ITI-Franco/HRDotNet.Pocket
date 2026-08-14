@@ -21,19 +21,10 @@ import { FilingPanel } from 'src/constants/Enum';
 const Approvals: React.FC = () => {
   const styles = STYLES.Request;
 
-  const { cutOffPeriod } = useGlobalStore();
+  const { cutOffPeriod, approvalCounts } = useGlobalStore();
 
-  const {
-    params,
-    state,
-    setState,
-    handle,
-    setHandle,
-    onHandlePress,
-    onHandleSetURLApproval,
-    onHandleFetchApproval,
-    ApprovalCount,
-  } = useApprovals();
+  const { params, state, setState, handle, setHandle, onHandlePress, onHandleSetURLApproval, onHandleFetchApproval } =
+    useApprovals();
 
   useEffect(() => {
     onHandleSetURLApproval();
@@ -42,10 +33,6 @@ const Approvals: React.FC = () => {
   useEffect(() => {
     onHandleFetchApproval();
   }, [handle.refreshing, state.urlQuery, state.page, , params]);
-
-  useEffect(() => {
-    ApprovalCount();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,7 +61,7 @@ const Approvals: React.FC = () => {
               data={state.buttons}
               renderItem={({ item, index }) => {
                 const filteredItems =
-                  state.approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
+                  approvalCounts?.[index]?.filter((item: SchemaRequestApplications) => {
                     const filingStatus = item.filing?.filingStatus?.name;
 
                     const isFiled = filingStatus === STRINGS.filed;

@@ -37,29 +37,27 @@ type TypeContext = {
   onHandleSetURLApproval: () => void;
   onHandleFetchApproval: () => void;
   isSelectable: (value: SchemaRequestApplications) => boolean;
-  ApprovalCount: () => void;
 };
 
 export const Context = createContext<TypeContext>({
   params: undefined,
   state: ValuesApprovals.State,
-  setState: () => { },
+  setState: () => {},
   handle: ValuesApprovals.Handle,
-  setHandle: () => { },
+  setHandle: () => {},
 
-  onHandleCheckbox: () => { },
-  onHandleSelectAll: () => { },
-  onHandleApprovals: () => { },
-  onHandleClosePrompt: () => { },
-  onHandleCancelPrompt: () => { },
-  onHandleApprovePrompt: () => { },
-  onHandlePress: () => { },
-  onHandleRefreshControl: () => { },
-  onHandleSetReachedEnd: () => { },
-  onHandleSetURLApproval: () => { },
-  onHandleFetchApproval: () => { },
+  onHandleCheckbox: () => {},
+  onHandleSelectAll: () => {},
+  onHandleApprovals: () => {},
+  onHandleClosePrompt: () => {},
+  onHandleCancelPrompt: () => {},
+  onHandleApprovePrompt: () => {},
+  onHandlePress: () => {},
+  onHandleRefreshControl: () => {},
+  onHandleSetReachedEnd: () => {},
+  onHandleSetURLApproval: () => {},
+  onHandleFetchApproval: () => {},
   isSelectable: () => false,
-  ApprovalCount: () => { },
 });
 
 export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
@@ -127,9 +125,9 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     state.failedList!.length <= 0 || state.successList!.length > 0
       ? setHandle({ refreshing: !handle.refreshing, isLoading: true })
       : setState({
-        successList: [],
-        failedList: [],
-      });
+          successList: [],
+          failedList: [],
+        });
   };
 
   const onHandleApprovePrompt = async () => {
@@ -180,14 +178,6 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const ApprovalCount = async () => {
-    const counts = await useFetch.ApprovalsCounts(state);
-
-    setState({
-      approvalCounts: counts,
-    });
-  };
-
   return (
     <Context.Provider
       value={{
@@ -209,7 +199,6 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
         onHandleSetURLApproval,
         onHandleFetchApproval,
         isSelectable,
-        ApprovalCount,
       }}
     >
       {children}
