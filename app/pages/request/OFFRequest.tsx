@@ -73,8 +73,10 @@ const OFFRequest: React.FC<TypeNavStack> = ({ navigation }) => {
       const interval = setTimeout(async () => {
         try {
           if (state.date != '') {
-            await useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle);
-            await useFetch.TimeRecord(navigation, state, setState, handle, setHandle);
+            await Promise.all([
+              useFetch.TimeRecord(navigation, state, setState, handle, setHandle),
+              useFetch.ProcessedSchedule(navigation, state, setState, handle, setHandle),
+            ]);
           }
         } catch (error) {
           console.error(error);
