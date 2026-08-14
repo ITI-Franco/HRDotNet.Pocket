@@ -16,6 +16,7 @@ import { TeamMember } from 'src/types/Teams';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 import { STRINGS } from 'src/constants/Strings';
+import { RequestCounts } from 'src/utils/Utils';
 
 type TypeContext = {
   insets: EdgeInsets;
@@ -143,6 +144,11 @@ export const CtxHome = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     fetchReviewalCounts();
     fetchApprovalCounts();
+  }, [cutOffPeriod]);
+
+  useEffect(() => {
+    RequestCounts.refreshReviewalCounts();
+    RequestCounts.refreshApprovalCounts();
   }, [cutOffPeriod]);
 
   const checkTeamMembers = async () => {

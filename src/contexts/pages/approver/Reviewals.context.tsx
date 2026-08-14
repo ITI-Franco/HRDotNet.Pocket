@@ -17,6 +17,7 @@ import { useFetch } from 'src/hooks/useFetch';
 import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { STRINGS } from 'src/constants/Strings';
+import { RequestCounts } from 'src/utils/Utils';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -135,6 +136,7 @@ export const CtxReviewals = ({ children }: { children: React.ReactNode }) => {
 
     await useFetch.BatchReviewals(navigation, state, setState, handle, setHandle, employeeName).then(() => {
       setHandle({ isLoading: false });
+      RequestCounts.refreshReviewalCounts();
     });
   };
 

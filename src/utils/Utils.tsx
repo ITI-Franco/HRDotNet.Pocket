@@ -33,7 +33,15 @@ import {
   AllApplicationState,
 } from 'src/types/Types';
 import { Camera } from 'expo-camera';
-import { fieldDisplayNames, FieldKey, GENERATION_SUFFIX_REGEX, ROMAN_NUMERAL_REGEX } from 'src/constants/Values';
+import {
+  fieldDisplayNames,
+  FieldKey,
+  GENERATION_SUFFIX_REGEX,
+  ROMAN_NUMERAL_REGEX,
+  ValuesApprovals,
+} from 'src/constants/Values';
+import { useGlobalStore } from 'src/store/GlobalStore';
+import { useFetch } from 'src/hooks/useFetch';
 
 const [onPanel] = ARRAY.panel as TypePanel[];
 const [onReqAction] = ARRAY.reqAction as TypeReqAction[];
@@ -1564,5 +1572,42 @@ export const FilingUtils = {
       );
       return total + eligible.length;
     }, 0);
+  },
+};
+
+const buildUrlQuery = (cutOffPeriod: [string | null, string | null] | undefined) => {
+  if (!cutOffPeriod?.[0] || !cutOffPeriod?.[1]) return null;
+
+  const removeDashFrom = DateTimeUtils.getRemoveDash(cutOffPeriod[0]);
+  const removeDashTo = DateTimeUtils.getRemoveDash(cutOffPeriod[1]);
+
+  return `&DateField=${STRINGS.filterDateFrom}&DateFrom=${removeDashFrom}&DateTo=${removeDashTo}&sortBy=-DocumentNo`;
+};
+
+export const RequestCounts = {
+  refreshReviewalCounts: async () => {
+    const { cutOffPeriod, setReviewalCounts } = useGlobalStore.getState();
+    const urlQuery = buildUrlQuery(cutOffPeriod);
+    if (!urlQuery) return;
+
+    try {
+      const counts = await useFetch.ReviewalsCounts(ValuesApprovals.State.buttons.length, urlQuery);
+      setReviewalCounts(counts);
+    } catch (error) {
+      console.error('Reviewal count refresh error:', error);
+    }
+  },
+
+  refreshApprovalCounts: async () => {
+    const { cutOffPeriod, setApprovalCounts } = useGlobalStore.getState();
+    const urlQuery = buildUrlQuery(cutOffPeriod);
+    if (!urlQuery) return;
+
+    try {
+      const counts = await useFetch.ApprovalsCounts(ValuesApprovals.State.buttons.length, urlQuery);
+      setApprovalCounts(counts);
+    } catch (error) {
+      console.error('Approval count refresh error:', error);
+    }
   },
 };

@@ -17,6 +17,7 @@ import { useFetch } from 'src/hooks/useFetch';
 import { useGlobalStore } from 'src/store/GlobalStore';
 import { DateTimeUtils } from 'src/utils/DateTimeUtils';
 import { STRINGS } from 'src/constants/Strings';
+import { RequestCounts } from 'src/utils/Utils';
 
 type TypeContext = {
   params: ParamsRequestApplication | undefined;
@@ -135,6 +136,7 @@ export const CtxApprovals = ({ children }: { children: React.ReactNode }) => {
 
     await useFetch.BatchApprovals(navigation, state, setState, handle, setHandle, employeeName).then(() => {
       setHandle({ isLoading: false });
+      RequestCounts.refreshApprovalCounts();
     });
   };
 
