@@ -61,12 +61,6 @@ const RequestDetails: React.FC<TypeNavStack> = ({ navigation }) => {
         );
         break;
 
-      case onPanel.OB:
-        display = ARRAY.requestDetailsOB(state.data).map((item: unknown, index: number) =>
-          DisplayRow(item as TypeObjectValues, index),
-        );
-        break;
-
       case onPanel.OT:
       case onPanel.OFF:
         display = ARRAY.requestDetailsOTOFF(state.data).map((item: TypeObjectValues, index: number) =>
